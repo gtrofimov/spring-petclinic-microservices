@@ -40,7 +40,7 @@ pipeline {
                     ls -la
                     echo ${CTP_URL} ${DTP_USER} ${DTP_PASS} ${ls_url}
                     curl -LO -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/coverageagent/java_agent_coverage.zip
-                    tar -xvf java_agent_coverage.zip
+                    unzip java_agent_coverage.zip
                     ls -la
                     '''
                 // unzip
