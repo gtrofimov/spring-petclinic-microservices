@@ -64,13 +64,13 @@ pipeline {
                     echo $"
                     parasoft.eula.accepted=true
                     jtest.license.use_network=true
-                    license.network.url=${ls_url}
-                    license.network.user=${ls_user}
-                    license.network.password=${ls_pass}" >> jtestcov/license.properties
+                    license.network.url=${LS_URL}
+                    license.network.user=${LS_USER}
+                    license.network.password=${LS_PASS}" >> jtestcov/license.properties
                     '''
                 // interate through services
                 sh '''
-                    java -jar jtestcov.jar \
+                    java -jar jtestcov/jtestcov.jar \
                     -soatest \
                     -app spring-petclinic-api-gateway/target/*.jar \
                     -include org/springframework/samples/** \
