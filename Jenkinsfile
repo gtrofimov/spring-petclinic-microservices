@@ -38,7 +38,7 @@ pipeline {
                 // downlaod the agent.jar and cov-tool
                 sh '''
                     ls -la
-                    curl -LO -u ${dtp_user}:${dtp_pass} ${ctp_url}/em/coverageagent/java_agent_coverage.zip
+                    curl -LO -u "${dtp_user}":"${dtp_pass} "${ctp_url}"/em/coverageagent/java_agent_coverage.zip
                     tar -xvf java_agent_coverage.zip
                     ls -la
                     '''
