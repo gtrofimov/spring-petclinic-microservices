@@ -37,9 +37,10 @@ pipeline {
                 // downlaod the agent.jar and cov-tool
                 sh '''
                     ls -la
-                    curl -iv --raw -u ${dtp_user}:${dtp_pass} ${ctp_url}/em/coverageagent/java_agent_coverage.zip
+                    curl -LO -u ${dtp_user}:${dtp_pass} ${ctp_url}/em/coverageagent/java_agent_coverage.zip
                     tar -xvf java_agent_coverage.zip
                     ls -la
+                    '''
                 // unzip
 
         }
@@ -59,9 +60,9 @@ pipeline {
             steps {
                 // copy in to the coverage folder
                 sh '''
-                    cp docker/coverage/agent.jar spring-petclinic-customers-service/src/test/resources/coverage/agent.jar
-                    cp docker/coverage/agent.jar spring-petclinic-vets-service/src/test/resources/coverage/agent.jar
-                    cp docker/coverage/agent.jar spring-petclinic-visits-service/src/test/resources/coverage/agent.jar
+                    cp jtest_agent/agent.jar spring-petclinic-customers-service/src/test/resources/coverage/agent.jar
+                    cp jtest_agent/agent.jar spring-petclinic-vets-service/src/test/resources/coverage/agent.jar
+                    cp jtest_agent/agent.jar spring-petclinic-visits-service/src/test/resources/coverage/agent.jar
                     '''
                 // check running containers
                 sh '''

@@ -17,6 +17,11 @@ target/
 # Visual Studio Code
 .factorypath
 
+# Parasoft
+agent.jar
+java_agent_coverage.zip
+jtest_agent/
+jtestcov/
 # Branch switching
 generated/
 
