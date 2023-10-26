@@ -135,7 +135,7 @@ pipeline {
             }
         }
         stage('Deploy-CodeCoverage') {
-            when { equals expected: true, actual: true }
+            when { equals expected: true, actual: false }
             steps {
                 
                 // generate static cov file
