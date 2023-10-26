@@ -45,20 +45,29 @@ pipeline {
                     echo ${ARRAY}
                     curl -LO -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/coverageagent/java_agent_coverage.zip
                     unzip java_agent_coverage.zip
+                
                     '''
+                // define services
                 script {
-                    ARRAY = ["spring-petclinic-api-gateway", "spring-petclinic-vets-service", "spring-petclinic-visits-service", "spring-petclinic-customers-service"]
+                    ARRAY = [
+                        "spring-petclinic-api-gateway", 
+                        "spring-petclinic-vets-service", 
+                        "spring-petclinic-visits-service", 
+                        "spring-petclinic-customers-service"
+                        ]
+
                     for (dir in ARRAY) {
                         sh "echo ${dir}"
                     }
                 }
 
+                // copy jars
+                script {
+                    for (dir in ARRAY) {
+                        sh "cp jtest_agent/agent.jar ${dir}/src/test/resources/coverage/agent.jar"
+                    }
+                }
                 
-                sh '''
-                    for dir in ${ARRAY}; do
-                        echo ${dir}
-                    done
-                    '''
                 // set up configs
                 sh '''
                     # Set Up and write .properties file
@@ -123,14 +132,6 @@ pipeline {
                     -include org/springframework/samples/** \
                     -settings jtestcov/jtestcli.properties                    
                     
-                    '''
-
-                // copy in to the coverage folder
-                sh '''
-                    cp jtest_agent/agent.jar spring-petclinic-api-gateway/src/test/resources/coverage/agent.jar
-                    cp jtest_agent/agent.jar spring-petclinic-customers-service/src/test/resources/coverage/agent.jar
-                    cp jtest_agent/agent.jar spring-petclinic-vets-service/src/test/resources/coverage/agent.jar
-                    cp jtest_agent/agent.jar spring-petclinic-visits-service/src/test/resources/coverage/agent.jar
                     '''
                 // check running containers
                 sh '''
