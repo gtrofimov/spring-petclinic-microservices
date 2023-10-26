@@ -57,6 +57,7 @@ pipeline {
                 // check running containers
                 sh '''
                     docker-compose -f docker-compose-cc.yml down || true
+                    sleep 30s
                     '''
                 // deploy the project
                 sh  '''
