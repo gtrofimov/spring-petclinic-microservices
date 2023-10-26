@@ -1,3 +1,7 @@
+def getArray(){
+  return ['Item1', 'Item2', 'Item3']
+}
+
 pipeline {
     agent any
     tools {
@@ -25,6 +29,8 @@ pipeline {
 
         // dtp_publish="${DTP_PUBLISH}" //false
         buildId = "${app_name}-${BUILD_TIMESTAMP}"
+
+        ARRAY=getArray()
     }
     stages {
         stage('Set Up') {
@@ -37,6 +43,7 @@ pipeline {
 
                 // downlaod the agent.jar and cov-tool
                 sh '''
+                    echo ${ARRAY}
                     curl -LO -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/coverageagent/java_agent_coverage.zip
                     unzip java_agent_coverage.zip
                     '''
@@ -78,7 +85,9 @@ pipeline {
                 
         }
         stage('Build') {
+            when { equals expected: true, actual: false }
             steps {
+                
                 // build the binaries
                 echo "Building ${env.JOB_NAME}..."
                 sh  '''
@@ -90,24 +99,18 @@ pipeline {
             }
         }
         stage('Deploy-CodeCoverage') {
+            when { equals expected: true, actual: false }
             steps {
-                // generate static cov and publish
-                sh '''
-                    # Set Up and write .properties file
-                    echo $"
-                    parasoft.eula.accepted=true
-                    jtest.license.use_network=true
-                    jtest.license.network.url=${LS_URL}
-                    jtest.license.network.user=${LS_USER}
-                    jtest.license.network.password=${LS_PASS}" >> jtestcov/license.properties
-                    '''
+                
+                // generate static cov file
                 // interate through services
                 sh '''
                     java -jar jtestcov/jtestcov.jar \
                     -soatest \
                     -app spring-petclinic-api-gateway/target/*.jar \
                     -include org/springframework/samples/** \
-                    -settings jtestcov/jtestcli.properties
+                    -settings jtestcov/jtestcli.properties                    
+                    
                     '''
 
                 // copy in to the coverage folder
