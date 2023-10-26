@@ -28,6 +28,7 @@ pipeline {
     }
     stages {
         stage('Set Up') {
+            steps {
                 // Clean before build
                 cleanWs()
 
@@ -43,6 +44,9 @@ pipeline {
                     '''
                 // unzip
 
+
+            }
+                
         }
         stage('Build') {
             steps {
