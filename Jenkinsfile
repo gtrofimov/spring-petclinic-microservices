@@ -47,6 +47,11 @@ pipeline {
                     curl -LO -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/coverageagent/java_agent_coverage.zip
                     unzip java_agent_coverage.zip
                     '''
+                sh '''
+                    for dir in ${ARRAY}; do
+                        echo ${dir}
+                    done
+                    '''
                 // set up configs
                 sh '''
                     # Set Up and write .properties file
