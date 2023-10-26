@@ -64,9 +64,9 @@ pipeline {
                     echo $"
                     parasoft.eula.accepted=true
                     jtest.license.use_network=true
-                    license.network.url=${LS_URL}
-                    license.network.user=${LS_USER}
-                    license.network.password=${LS_PASS}" >> jtestcov/license.properties
+                    jtest.license.network.url=${LS_URL}
+                    jtest.license.network.user=${LS_USER}
+                    jtest.license.network.password=${LS_PASS}" >> jtestcov/license.properties
                     '''
                 // interate through services
                 sh '''
