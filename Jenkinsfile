@@ -87,6 +87,11 @@ pipeline {
             //sh 'docker container rm ${app_name}'
             //sh 'docker image prune -f'
             // delete Jtest Cache
+            sh  '''
+                echo "cleaning up..."
+                # rm -rf ".jtest/cache"                
+                # rm -rf "*/*/*/.jtest/cache" 
+                '''
         }
     }
 }
