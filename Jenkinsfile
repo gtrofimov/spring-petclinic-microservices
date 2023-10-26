@@ -1,22 +1,49 @@
 pipeline {
     agent any
+    tools {
+        maven 'maven'
+        jdk 'JDK 17'
+    }
+    options {
+        // This is required if you want to clean before build
+        skipDefaultCheckout(true)
+    }    
     environment {
         // App Settings
-        app_name="PetClinic-Jenkins" //DTP Project
+        app_name="PetClinic" //DTP Project
 
         // Parasoft Licenses
-        ls_url="${PARASOFT_LS_URL}" //https\://dtp:8443
-        ls_user="${PARASOFT_LS_USER}" //admin
-        ls_pass="${PARASOFT_LS_PASS}"
+        ls_url="${LS_URL}" //https\://dtp:8443
+        ls_user="${LS_USER}" //admin
+        ls_pass="${LS_PASS}"
         
         // Parasoft Common Settings
-        dtp_url="${PARASOFT_DTP_URL}" //https://dtp:8443
-        dtp_user="${PARASOFT_DTP_USER}" //admin
-        dtp_pass="${PARASOFT_DTP_PASS}"
-        dtp_publish="${PARASOFT_DTP_PUBLISH}" //false
+        dtp_url="${DTP_URL}" //https://dtp:8443
+        dtp_user="${DTP_USER}" //admin
+        dtp_pass="${DTP_PASS}"
+        // dtp_publish="${DTP_PUBLISH}" //false
         buildId="${app_name}-${BUILD_TIMESTAMP}"
 
     }
+    stages {        
+        stage('Build') {
+            steps {
+                // Clean before build
+                cleanWs()
+
+                // Checkout project
+                checkout scm
+                
+                // build the project                
+                echo "Building ${env.JOB_NAME}..."
+                sh  '''
+
+                    # Build the Maven package
+                    # mvn clean package
+                                        
+                    '''
+                }
+            }
         stage('Deploy-CodeCoverage') {
             steps {
                 // downlaod the agent.jar and cov-tool
@@ -41,7 +68,6 @@ pipeline {
                 sh '''
                     
                     '''
-
                 // update CTP with yaml script upload
                 sh '''
                     # Set Up and write .properties file
@@ -52,8 +78,8 @@ pipeline {
                     '''
             }
         }
-                
-   post {
+    }            
+    post {
         // Clean after build
         always {
             //sh 'docker container stop ${app_name}'
@@ -73,8 +99,11 @@ pipeline {
                     **/.jtest/**, 
                     **/metadata.json'''
             )
-
-            deleteDir()
+            // delete Jtest Cache
+            sh  '''
+                rm -rf ".jtest/cache"                
+                rm -rf "*/*/*/.jtest/cache" 
+                '''
         }
     }
 }
