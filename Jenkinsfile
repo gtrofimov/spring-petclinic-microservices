@@ -7,47 +7,56 @@ pipeline {
     options {
         // This is required if you want to clean before build
         skipDefaultCheckout(true)
-    }    
+    }
     environment {
         // App Settings
-        app_name="PetClinic" //DTP Project
+        app_name = 'PetClinic' //DTP Project
 
         // Parasoft Licenses
-        ls_url="${LS_URL}" //https\://dtp:8443
-        ls_user="${LS_USER}" //admin
-        ls_pass="${LS_PASS}"
-        
-        // Parasoft Common Settings
-        dtp_url="${DTP_URL}" //https://dtp:8443
-        dtp_user="${DTP_USER}" //admin
-        dtp_pass="${DTP_PASS}"
-        // dtp_publish="${DTP_PUBLISH}" //false
-        buildId="${app_name}-${BUILD_TIMESTAMP}"
+        ls_url = "${LS_URL}" //https\://dtp:8443
+        ls_user = "${LS_USER}" //admin
+        ls_pass = "${LS_PASS}"
 
+        // Parasoft Common Settings
+        dtp_url = "${DTP_URL}" //https://dtp:8443
+        dtp_user = "${DTP_USER}" //admin
+        dtp_pass = "${DTP_PASS}"
+        ctp_url = "${CTP_URL}"
+
+        // dtp_publish="${DTP_PUBLISH}" //false
+        buildId = "${app_name}-${BUILD_TIMESTAMP}"
     }
-    stages {        
-        stage('Build') {
-            steps {
+    stages {
+        stage('Set Up') {
                 // Clean before build
                 cleanWs()
 
                 // Checkout project
                 checkout scm
-                
-                // build the project                
+
+                // downlaod the agent.jar and cov-tool
+                sh '''
+                    ls -la
+                    curl -iv --raw -u ${dtp_user}:${dtp_pass} ${ctp_url}/em/coverageagent/java_agent_coverage.zip
+                    tar -xvf java_agent_coverage.zip
+                    ls -la
+                // unzip
+
+        }
+        stage('Build') {
+            steps {
+                // build the project
                 echo "Building ${env.JOB_NAME}..."
                 sh  '''
 
                     # Build the Maven package
                     # mvn clean package
-                                        
+
                     '''
-                }
             }
+        }
         stage('Deploy-CodeCoverage') {
             steps {
-                // downlaod the agent.jar and cov-tool
-                // unzip
                 // copy in to the coverage folder
                 sh '''
                     cp docker/coverage/agent.jar spring-petclinic-customers-service/src/test/resources/coverage/agent.jar
@@ -67,7 +76,7 @@ pipeline {
 
                 // Health check coverage agents
                 sh '''
-                    
+
                     '''
                 // update CTP with yaml script upload
                 sh '''
@@ -79,7 +88,7 @@ pipeline {
                     '''
             }
         }
-    }            
+    }
     post {
         // Clean after build
         always {
@@ -89,8 +98,8 @@ pipeline {
             // delete Jtest Cache
             sh  '''
                 echo "cleaning up..."
-                # rm -rf ".jtest/cache"                
-                # rm -rf "*/*/*/.jtest/cache" 
+                # rm -rf ".jtest/cache"
+                # rm -rf "*/*/*/.jtest/cache"
                 '''
         }
     }
