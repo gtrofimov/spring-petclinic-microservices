@@ -40,6 +40,39 @@ pipeline {
                     curl -LO -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/coverageagent/java_agent_coverage.zip
                     unzip java_agent_coverage.zip
                     '''
+                // set up configs
+                sh '''
+                    # Set Up and write .properties file
+                    echo $"
+                    parasoft.eula.accepted=true
+                    jtest.license.use_network=true
+                    jtest.license.network.edition=custom_edition
+                    jtest.license.custom_edition_features=Jtest, Static Analysis, Flow Analysis, OWASP Rules, CWE Rules, PCI DSS Rules, DISA STIG Rules, Security Rules, Automation, Desktop Command Line, DTP Publish, Coverage, Unit Test, Unit Test Bulk Creation, Unit Test Tier 1, Unit Test Tier 2, Unit Test Tier 3, Unit Test Tier 4, Unit Test Spring Framework, Change Based Testing
+                    license.network.use.specified.server=true
+                    license.network.auth.enabled=true
+                    license.network.url=${LS_URL}
+                    license.network.user=${LS_USER}
+                    license.network.password=${LS_PASS}
+
+                    # report.associations=false
+                    # report.coverage.images=${unitCovImage}
+                    # report.scontrol=full
+                    # scope.local=true
+                    # scope.scontrol=true
+                    # scope.xmlmap=false
+                    
+                    # scontrol.git.exec=git
+                    # scontrol.rep1.git.branch=main
+                    # scontrol.rep1.git.url=${project_repo}
+                    # scontrol.rep1.type=git
+
+                    build.id=${buildId}
+                    session.tag=${jtestSessionTag}
+                    dtp.url=${DTP_URL}
+                    dtp.user=${DTP_USER}
+                    dtp.password=${DTP_PASS}
+                    dtp.project=${project_name}" > ./jtestcov/jtestcli.properties
+                    '''
 
             }
                 
@@ -74,7 +107,7 @@ pipeline {
                     -soatest \
                     -app spring-petclinic-api-gateway/target/*.jar \
                     -include org/springframework/samples/** \
-                    -settings jtestcov/license.properties
+                    -settings jtestcov/jtestcli.properties
                     '''
 
                 // copy in to the coverage folder
