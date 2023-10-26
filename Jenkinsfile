@@ -86,25 +86,7 @@ pipeline {
             //sh 'docker container stop ${app_name}'
             //sh 'docker container rm ${app_name}'
             //sh 'docker image prune -f'
-
-            archiveArtifacts(artifacts: '''
-                    **/target/**/*.war, 
-                    **/target/**/*.jar, 
-                    **/target/jtest/sa/**, 
-                    **/target/jtest/ut/**, 
-                    **/target/jtest/monitor/**, 
-                    **/soatest/report/**''',
-                fingerprint: true, 
-                onlyIfSuccessful: true,
-                excludes: '''
-                    **/.jtest/**, 
-                    **/metadata.json'''
-            )
             // delete Jtest Cache
-            sh  '''
-                rm -rf ".jtest/cache"                
-                rm -rf "*/*/*/.jtest/cache" 
-                '''
         }
     }
 }
