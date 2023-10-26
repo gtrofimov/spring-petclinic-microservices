@@ -1,7 +1,3 @@
-def getArray(){
-  return ['Item1', 'Item2', 'Item3']
-}
-
 pipeline {
     agent any
     tools {
@@ -14,7 +10,7 @@ pipeline {
     }
     environment {
         // App Settings
-        app_name = 'PetClinic' //DTP Project
+        app_name = 'petclinic' //DTP Project
 
         // Parasoft Licenses
         ls_url = "${LS_URL}" //https\://dtp:8443
@@ -30,7 +26,12 @@ pipeline {
         // dtp_publish="${DTP_PUBLISH}" //false
         buildId = "${app_name}-${BUILD_TIMESTAMP}"
 
-        ARRAY=getArray()
+        ARRAY=[
+            'spring-petclinic-api-gateway',
+            'spring-petclinic-vets-service',
+            'spring-petclinic-visits-service',
+            'spring-petclinic-customers-service'
+            ]
     }
     stages {
         stage('Set Up') {
@@ -47,6 +48,13 @@ pipeline {
                     curl -LO -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/coverageagent/java_agent_coverage.zip
                     unzip java_agent_coverage.zip
                     '''
+                script {
+                    for (dir in env.ARRAY) {
+                        sh "echo ${dir}"
+                    }
+                }
+
+                
                 sh '''
                     for dir in ${ARRAY}; do
                         echo ${dir}
