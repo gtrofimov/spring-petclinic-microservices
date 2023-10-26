@@ -26,12 +26,7 @@ pipeline {
         // dtp_publish="${DTP_PUBLISH}" //false
         buildId = "${app_name}-${BUILD_TIMESTAMP}"
 
-        ARRAY=[
-            'spring-petclinic-api-gateway',
-            'spring-petclinic-vets-service',
-            'spring-petclinic-visits-service',
-            'spring-petclinic-customers-service'
-            ]
+        ARRAY = ['spring-petclinic-api-gateway','spring-petclinic-vets-service','spring-petclinic-visits-service','spring-petclinic-customers-service']
     }
     stages {
         stage('Set Up') {
