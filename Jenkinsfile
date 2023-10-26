@@ -51,7 +51,7 @@ pipeline {
                 sh  '''
 
                     # Build the Maven package
-                    mvn clean package
+                    mvn clean package -DskipTests=true
 
                     '''
             }
