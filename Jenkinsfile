@@ -19,9 +19,9 @@ pipeline {
 
         // Parasoft Common Settings
         dtp_url = "${DTP_URL}" //https://dtp:8443
-        dtp_user = "${DTP_USER}" //admin
-        dtp_pass = "${DTP_PASS}"
-        ctp_url = "${CTP_URL}"
+        dtp_user = DTP_USER //admin
+        dtp_pass = DTP_PASS
+        ctp_url = CTP_URL
 
         // dtp_publish="${DTP_PUBLISH}" //false
         buildId = "${app_name}-${BUILD_TIMESTAMP}"
@@ -38,7 +38,7 @@ pipeline {
                 // downlaod the agent.jar and cov-tool
                 sh '''
                     ls -la
-                    curl -LO -u "${dtp_user}":"${dtp_pass} "${ctp_url}"/em/coverageagent/java_agent_coverage.zip
+                    curl -LO -u ${dtp_user}:${dtp_pass} ${ctp_url}/em/coverageagent/java_agent_coverage.zip
                     tar -xvf java_agent_coverage.zip
                     ls -la
                     '''
