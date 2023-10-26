@@ -106,7 +106,7 @@ pipeline {
                 
         }
         stage('Build') {
-            when { equals expected: true, actual: false }
+            when { equals expected: true, actual: true }
             steps {
                 
                 // build the binaries
@@ -117,14 +117,31 @@ pipeline {
                     mvn clean package -DskipTests=true
 
                     '''
+                
+                // scan the binaries
+                script {
+                    for (dir in ARRAY) {
+                     // jtest cov
+                    sh '''
+                        java -jar jtestcov/jtestcov.jar \
+                        -soatest \
+                        -app "${dir}/target/*.jar" \
+                        -include org/springframework/samples/** \
+                        -settings jtestcov/jtestcli.properties                    
+                        
+                        '''
+                    }
+                }
             }
         }
         stage('Deploy-CodeCoverage') {
-            when { equals expected: true, actual: false }
+            when { equals expected: true, actual: true }
             steps {
                 
                 // generate static cov file
                 // interate through services
+                
+                
                 sh '''
                     java -jar jtestcov/jtestcov.jar \
                     -soatest \
