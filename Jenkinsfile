@@ -1,3 +1,5 @@
+def ARRAY
+
 pipeline {
     agent any
     tools {
@@ -45,7 +47,8 @@ pipeline {
                     unzip java_agent_coverage.zip
                     '''
                 script {
-                    for (dir in env.ARRAY) {
+                    ARRAY = ["spring-petclinic-api-gateway", "spring-petclinic-vets-service", "spring-petclinic-visits-service", "spring-petclinic-customers-service"]
+                    for (dir in ARRAY) {
                         sh "echo ${dir}"
                     }
                 }
