@@ -37,34 +37,49 @@ pipeline {
 
                 // downlaod the agent.jar and cov-tool
                 sh '''
-                    ls -la
-                    echo ${CTP_URL} ${DTP_USER} ${DTP_PASS} ${ls_url}
                     curl -LO -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/coverageagent/java_agent_coverage.zip
                     unzip java_agent_coverage.zip
-                    ls -la
                     '''
-                // unzip
-
 
             }
                 
         }
         stage('Build') {
             steps {
-                // build the project
+                // build the binaries
                 echo "Building ${env.JOB_NAME}..."
                 sh  '''
 
                     # Build the Maven package
-                    # mvn clean package
+                    mvn clean package
 
                     '''
             }
         }
         stage('Deploy-CodeCoverage') {
             steps {
+                // generate static cov and publish
+                sh '''
+                    # Set Up and write .properties file
+                    echo $"
+                    parasoft.eula.accepted=true
+                    jtest.license.use_network=true
+                    license.network.url=${ls_url}
+                    license.network.user=${ls_user}
+                    license.network.password=${ls_pass}" >> jtestcov/license.properties
+                    '''
+                // interate through services
+                sh '''
+                    java -jar jtestcov.jar \
+                    -soatest \
+                    -app spring-petclinic-api-gateway/target/*.jar \
+                    -include org/springframework/samples/** \
+                    -settings jtestcov/license.properties
+                    '''
+
                 // copy in to the coverage folder
                 sh '''
+                    cp jtest_agent/agent.jar spring-petclinic-api-gateway/src/test/resources/coverage/agent.jar
                     cp jtest_agent/agent.jar spring-petclinic-customers-service/src/test/resources/coverage/agent.jar
                     cp jtest_agent/agent.jar spring-petclinic-vets-service/src/test/resources/coverage/agent.jar
                     cp jtest_agent/agent.jar spring-petclinic-visits-service/src/test/resources/coverage/agent.jar
@@ -104,6 +119,9 @@ pipeline {
             // delete Jtest Cache
             sh  '''
                 echo "cleaning up..."
+                rm -rf "jtest_agent"
+                rm -rf "jtestcov"
+                
                 # rm -rf ".jtest/cache"
                 # rm -rf "*/*/*/.jtest/cache"
                 '''
