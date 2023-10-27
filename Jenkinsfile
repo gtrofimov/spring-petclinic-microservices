@@ -28,8 +28,6 @@ pipeline {
         // dtp_publish="${DTP_PUBLISH}" //false
         buildId = "${app_name}-${BUILD_TIMESTAMP}"
 
-        // ARRAY = ["spring-petclinic-api-gateway", "spring-petclinic-vets-service", "spring-petclinic-visits-service", "spring-petclinic-customers-service"]
-
     }
     stages {
         stage('Set Up') {
@@ -42,7 +40,7 @@ pipeline {
 
                 // downlaod the agent.jar and cov-tool
                 sh '''
-                    echo ${ARRAY}
+                
                     curl -LO -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/coverageagent/java_agent_coverage.zip
                     unzip java_agent_coverage.zip
                 
@@ -127,18 +125,6 @@ pipeline {
             when { equals expected: true, actual: true }
             steps {
                 
-                // generate static cov file
-                // interate through services
-                
-                
-                sh '''
-                    java -jar jtestcov/jtestcov.jar \
-                    -soatest \
-                    -app spring-petclinic-api-gateway/target/*.jar \
-                    -include org/springframework/samples/** \
-                    -settings jtestcov/jtestcli.properties                    
-                    
-                    '''
                 // check running containers
                 sh '''
                     docker-compose -f docker-compose-cc.yml down || true
@@ -153,10 +139,12 @@ pipeline {
 
                 // Health check coverage agents
                 sh '''
-                    curl -iv --raw https://host.docker.internal:8050/status
+                    curl -iv --raw https://localhost:8050/status
 
                     '''
                 // update CTP with yaml script upload
+                // constrcut payload
+                
                 sh '''
                     # Set Up and write .properties file
                     # TODO
