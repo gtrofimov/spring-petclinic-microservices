@@ -55,10 +55,6 @@ pipeline {
                         "spring-petclinic-visits-service", 
                         "spring-petclinic-customers-service"
                         ]
-
-                    for (dir in ARRAY) {
-                        sh "echo ${dir}"
-                    }
                 }
 
                 // copy jars
@@ -122,20 +118,13 @@ pipeline {
                 script {
                     for (dir in ARRAY) {
                      // jtest cov
-                    sh '''
-                        java -jar jtestcov/jtestcov.jar \
-                        -soatest \
-                        -app "${dir}/target/*.jar" \
-                        -include org/springframework/samples/** \
-                        -settings jtestcov/jtestcli.properties                    
-                        
-                        '''
+                    sh "java -jar jtestcov/jtestcov.jar -soatest -app ${dir}/target/*.jar -include org/springframework/samples/** -settings jtestcov/jtestcli.properties"
                     }
                 }
             }
         }
         stage('Deploy-CodeCoverage') {
-            when { equals expected: true, actual: false }
+            when { equals expected: true, actual: true }
             steps {
                 
                 // generate static cov file
@@ -159,11 +148,12 @@ pipeline {
                 sh  '''
                     # Run PetClinic with Jtest coverage agent configured
                     docker-compose -f docker-compose-cc.yml up -d
-                    sleep 60s
+                    sleep 80s
                     '''
 
                 // Health check coverage agents
                 sh '''
+                    curl -iv --raw https://host.docker.internal:8050/status
 
                     '''
                 // update CTP with yaml script upload
@@ -184,6 +174,13 @@ pipeline {
             //sh 'docker container rm ${app_name}'
             //sh 'docker image prune -f'
             // delete Jtest Cache
+            archiveArtifacts(artifacts: ''' 
+                    **/target/*.jar, 
+                    ''',
+                fingerprint: true, 
+                onlyIfSuccessful: true,
+            )
+            
             sh  '''
                 echo "cleaning up..."
                 rm -rf "jtest_agent"
