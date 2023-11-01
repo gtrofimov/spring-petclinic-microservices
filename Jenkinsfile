@@ -58,7 +58,24 @@ pipeline {
                         "spring-petclinic-customers-service"
                         ]
                 }
-
+                // prepare CTP JSON file
+                script {
+                    sh '''
+                        echo ${PUBLIC_IP}
+                        ctp_response=$(curl -s -X 'GET' -H 'accept: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments?name=Local%20PetClinic&limit=50&offset=0)
+                        curl -X 'GET' -H 'accept: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments/32/config' | jq . > environment.json
+                        envId=$(echo "$ctp_response" | jq -r '.environments[0].id')
+                        echo ${envId}
+                        '''
+                    // iterate over the array of services
+                    ARRAY.each { service ->
+                        sh '''
+                            jq --arg service $SERVICE --arg timestamp $TIMESTAMP --arg public_ip $PUBLIC_IP \
+                            '.components[].instances[] | select(.coverage.dtpProject == $service) | .coverage.agentUrl |= sub("http://localhost"; "http://\($public_ip)") | .coverage.buildId |= . + "-\($service)-\($timestamp)"' \
+                            environment.json > tmpfile && mv tmpfile environment.json
+                        '''
+                    }
+                }     
                 // copy jars
                 script {
                     for (dir in ARRAY) {
@@ -100,15 +117,7 @@ pipeline {
                     dtp.project=${project_name}" > ./jtestcov/jtestcli.properties
                     '''
                 
-                // prepare CTP JSON file
-                script {
-                    sh '''
-                        echo ${PUBLIC_IP}
-                        ctp_response=$(curl -s -X 'GET' -H 'accept: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments?name=Local%20PetClinic&limit=50&offset=0)
-                        envId=$(echo "$ctp_response" | jq -r '.environments[0].id')
-                        echo ${envId}
-                        '''
-                } 
+
             }
                 
         }
