@@ -70,7 +70,7 @@ pipeline {
                         '''
                     // iterate over the array of services
                     for (service in ARRAY) {
-                            def jqCommand = """jq 'map(if .components.instances[].coverage.dtpProject == "spring-petclinic-api-gateway" then .components.instances[].coverage.agentUrl |= "FOO" else . end)' env.json > new-env.json"""
+                            def jqCommand = """jq 'map(if .components[].instances[].coverage.dtpProject == "spring-petclinic-api-gateway" then .components.instances[].coverage.agentUrl |= "FOO" else . end)' env.json > new-env.json"""
                             sh jqCommand
                             sh "cat new-env.json"
                         }
