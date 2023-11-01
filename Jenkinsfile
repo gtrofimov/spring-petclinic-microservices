@@ -100,8 +100,8 @@ pipeline {
                 // prepare CTP JSON file
                 script {
                     sh '''
-                        curl -s -X 'GET' -H 'accept: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments?name=Local%20PetClinic&limit=50&offset=0 -o response.ctp
-                        cat resposne.ctp
+                        ctp_reponse=$(curl -s -X 'GET' -H 'accept: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments?name=Local%20PetClinic&limit=50&offset=0)
+                        echo $ctp_response
                         '''
                 } 
             }
