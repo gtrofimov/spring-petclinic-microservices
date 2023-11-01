@@ -69,14 +69,12 @@ pipeline {
                         cat env.json
                         '''
                     // iterate over the array of services
-                    ARRAY.each { service ->
-                        sh '''
-                        jq '.[] | select(.components.instances.coverage.dtpProject == $service) | .components.instances.coverage.agentUrl |= "FOO"' env.json > new-env.json
-                        cat new-env.json
-
-                        '''
-                    }
-                }     
+                    for (service in ARRAY) {
+                        sh "jq 'map(if .components.instances[].coverage.dtpProject == ${service} then .components.instances[].coverage.agentUrl |= "FOO" else . end)' env.json > new-env.json"
+                        sh "cat new-env.json"
+                        }
+                        
+                    }     
                 // copy jars
                 script {
                     for (dir in ARRAY) {
