@@ -29,6 +29,9 @@ pipeline {
         // dtp_publish="${DTP_PUBLISH}" //false
         buildId = "${app_name}-${BUILD_TIMESTAMP}"
 
+        // get public IP address for the deployment
+        PUBLIC_IP = sh(script: """curl -s https://httpbin.org/ip | jq -r '.origin'""", returnStdout: true).trim()
+
     }
     stages {
         stage('Set Up') {
@@ -100,6 +103,7 @@ pipeline {
                 // prepare CTP JSON file
                 script {
                     sh '''
+                        echo ${PUBLIC_IP}
                         ctp_response=$(curl -s -X 'GET' -H 'accept: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments?name=Local%20PetClinic&limit=50&offset=0)
                         envId=$(echo "$ctp_response" | jq -r '.environments[0].id')
                         echo ${envId}
