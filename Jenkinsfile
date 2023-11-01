@@ -63,7 +63,7 @@ pipeline {
                     sh '''
                         echo ${PUBLIC_IP}
                         ctp_response=$(curl -s -X 'GET' -H 'accept: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments?name=Local%20PetClinic&limit=50&offset=0)
-                        curl -X 'GET' -H 'accept: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments/32/config' | jq . > env.json
+                        curl -X 'GET' -H 'accept: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments/32/config | jq . > env.json
                         envId=$(echo "$ctp_response" | jq -r '.environments[0].id')
                         echo ${envId}
                         cat env.json
