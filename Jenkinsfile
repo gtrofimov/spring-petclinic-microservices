@@ -69,12 +69,12 @@ pipeline {
                         '''
                     // iterate over the array of services
                     ARRAY.each { service ->
-                        sh """
-                            jq --arg service $service --arg timestamp $TIMESTAMP --arg public_ip $PUBLIC_IP \
-                            '.components[].instances[] | select(.coverage.dtpProject == \$service) | .coverage.agentUrl |= sub("http://localhost"; "http://\(\$public_ip)") | .coverage.buildId |= . + "-\(\$service)-\(\$timestamp)"' \
-                            environment.json > tmpfile && mv tmpfile environment.json
-                        """
-                        sh "cat environment.json"
+                        sh '''
+                            JSON_FILE=environment.json
+                            jq --arg service $SERVICE --arg public_ip $PUBLIC_IP \
+                            '.components[].instances[] | select(.coverage.dtpProject == $service) | .coverage.agentUrl |= sub("http://localhost"; "http://\($public_ip)") | .coverage.buildId |= . + "-\($service)-" + (.coverage.buildId | rtrimstr("-"))' \
+                            $JSON_FILE > tmpfile && mv tmpfile $JSON_FILE
+                        '''
                     }
                 }     
                 // copy jars
