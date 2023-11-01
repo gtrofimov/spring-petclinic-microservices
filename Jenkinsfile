@@ -99,7 +99,7 @@ pipeline {
                 
                 // prepare CTP JSON file
                 sh '''
-                    envId = $(echo "curl -X 'GET' -u ${DTP_USER}:${DTP_PASS} '${CTP_URL}/em/api/v3/environments?name=Local%20PetClinic&limit=50&offset=0' -H 'accept: application/json'") 
+                    envId=$(echo "curl -X 'GET' -H 'accept: application/json' -u ${DTP_USER}:${DTP_PASS} '${CTP_URL}/em/api/v3/environments?name=Local%20PetClinic&limit=50&offset=0'" | jq -r '.id') 
                     echo $envId
                     '''
             }
