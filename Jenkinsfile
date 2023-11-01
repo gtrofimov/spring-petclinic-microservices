@@ -71,7 +71,7 @@ pipeline {
                     ARRAY.each { service ->
                         sh """
                             JSON_FILE=environment.json
-                            jq --arg service \$service --arg public_ip \$PUBLIC_IP --arg timestamp \$TIMESTAMP \
+                            jq --arg service "$service" --arg public_ip "$PUBLIC_IP" --arg timestamp "$TIMESTAMP" \
                             '.components[].instances[] | select(.coverage.dtpProject == \$service) | .coverage.agentUrl |= sub("http://localhost"; "http://\(\$public_ip)") | .coverage.buildId |= . + "-\(\$service)-\(\$timestamp)"' \
                             \$JSON_FILE > tmpfile && mv tmpfile \$JSON_FILE
                         """
