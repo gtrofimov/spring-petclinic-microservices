@@ -13,6 +13,7 @@ pipeline {
     environment {
         // App Settings
         app_name = 'petclinic' //DTP Project
+        environment_name='Local PetClinic'
 
         // Parasoft Licenses
         ls_url = "${LS_URL}" //https\://dtp:8443
@@ -95,12 +96,17 @@ pipeline {
                     dtp.password=${DTP_PASS}
                     dtp.project=${project_name}" > ./jtestcov/jtestcli.properties
                     '''
-
+                
+                // prepare CTP JSON file
+                sh '''
+                    envId = $(echo "curl -X 'GET' -u ${DTP_USER}:${DTP_PASS} '${CTP_URL}/em/api/v3/environments?name=Local%20PetClinic&limit=50&offset=0' -H 'accept: application/json'") 
+                    echo $envId
+                    '''
             }
                 
         }
         stage('Build') {
-            when { equals expected: true, actual: true }
+            when { equals expected: true, actual: false }
             steps {
                 
                 // build the binaries
@@ -122,7 +128,7 @@ pipeline {
             }
         }
         stage('Deploy-CodeCoverage') {
-            when { equals expected: true, actual: true }
+            when { equals expected: true, actual: false }
             steps {
                 
                 // check running containers
@@ -139,7 +145,7 @@ pipeline {
 
                 // Health check coverage agents
                 sh '''
-                    curl -iv --raw https://localhost:8050/status
+                    // curl -iv --raw http://localhost:8050/status
 
                     '''
                 // update CTP with yaml script upload
