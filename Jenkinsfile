@@ -74,6 +74,7 @@ pipeline {
                             '.components[].instances[] | select(.coverage.dtpProject == $service) | .coverage.agentUrl |= sub("http://localhost"; "http://\($public_ip)") | .coverage.buildId |= . + "-\($service)-\($timestamp)"' \
                             environment.json > tmpfile && mv tmpfile environment.json
                         '''
+                        sh "cat environment.json"
                     }
                 }     
                 // copy jars
