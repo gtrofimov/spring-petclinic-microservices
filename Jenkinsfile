@@ -91,7 +91,7 @@ pipeline {
                             // Combine PUBLIC_IP with the original port
                             matchingComponent.instances[0].coverage.agentUrl = "${PUBLIC_IP}:${originalPort}"
                             matchingComponent.instances[0].coverage.buildId = "${service}-${BUILD_TIMESTAMP}"
-                            matchingComponent.instances[0].coverage.coverageImages = "${functionalCovImage}"
+                            // matchingComponent.instances[0].coverage.coverageImages = "${functionalCovImage}"
                         } else {
                             echo "Something is NULL!"
                         }
