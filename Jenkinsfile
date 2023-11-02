@@ -90,7 +90,7 @@ pipeline {
                             def originalPort = url.port
                             
                             // Combine PUBLIC_IP with the original port
-                            matchingComponent.instances[0].coverage.agentUrl = "${PUBLIC_IP}:${originalPort}"
+                            matchingComponent.instances[0].coverage.agentUrl = "http://${PUBLIC_IP}:${originalPort}"
                             matchingComponent.instances[0].coverage.buildId = "${service}-${BUILD_TIMESTAMP}"
                             // matchingComponent.instances[0].coverage.coverageImages = "${functionalCovImage}"
                         } else {
