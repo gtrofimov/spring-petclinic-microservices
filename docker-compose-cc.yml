@@ -28,7 +28,7 @@ services:
     entrypoint: ["./dockerize","-wait=tcp://discovery-server:8761","-timeout=60s","--","java", "${COV_AGENT_ARGS},port=8052", "org.springframework.boot.loader.JarLauncher"]
     ports:
     - 8081:8081
-    - 8051:8051
+    - 8052:8052
     volumes:
       - type: bind
         source: ./spring-petclinic-customers-service/src/test/resources/coverage
@@ -47,7 +47,7 @@ services:
 #      JAVA_OPTS: '-javaagent:/tmp/coverage/agent.jar=settings=/tmp/coverage/agent.properties,runtimeData=/tmp/coverage/runtime_coverage'
     ports:
      - 8082:8082
-     - 8052:8052 # cov agent
+     - 8054:8054 # cov agent
     volumes:
       - type: bind
         source: ./spring-petclinic-visits-service/src/test/resources/coverage
@@ -80,7 +80,7 @@ services:
      - discovery-server
     ports:
      - 8099:8080
-     - 8050:8050 # cov agent
+     - 8051:8051 # cov agent
     volumes:
       - type: bind
         source: ./spring-petclinic-vets-service/src/test/resources/coverage
