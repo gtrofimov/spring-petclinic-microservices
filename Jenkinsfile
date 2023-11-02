@@ -73,7 +73,7 @@ pipeline {
 
                     // Read in ctp.json file
                     def jsonFile = readFile("ctp.json")
-                    def json = new groovy.json.JsonSlurperClassic().parseText(jsonFile)
+                    def json = new groovy.json.JsonSlurper().parseText(jsonFile)
 
                     // debug
                     echo "${PUBLIC_IP}"
