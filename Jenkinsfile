@@ -87,10 +87,11 @@ pipeline {
                             // retain ports
                             def url = new URL(matchingComponent.instances[0].coverage.agentUrl)
                             def portMatcher = (url =~ ":([0-9]+)/")
-
                             if (portMatcher.find()) {
-                                def originalPort = portMatcher[0][1]
-                                echo "Port number: ${port}"
+                                def originalPort = portMatcher[0][1].toInteger()
+                                echo "Original Port number: ${originalPort}"
+
+                                // Now you can use originalPort in your code as needed
                             } else {
                                 echo "Port number not found in the URL."
                             }
