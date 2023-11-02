@@ -1,4 +1,8 @@
 def ARRAY
+def getCurrentTimestamp() {
+    def currentMillis = currentBuild.startTimeInMillis
+    return currentMillis.format("yyyyMMddHHmm")
+}
 
 pipeline {
     agent any
@@ -27,10 +31,11 @@ pipeline {
         ctp_url = "${CTP_URL}"
 
         // dtp_publish="${DTP_PUBLISH}" //false
-        buildId = "${app_name}-${BUILD_TIMESTAMP}"
 
         // get public IP address for the deployment
+        BUILD_TIMESTAMP = getCurrentTimestamp()
         PUBLIC_IP = sh(script: """curl -s https://httpbin.org/ip | jq -r '.origin'""", returnStdout: true).trim()
+        buildId = "${app_name}-${BUILD_TIMESTAMP}"
 
     }
     stages {
@@ -60,22 +65,44 @@ pipeline {
                 }
                 // prepare CTP JSON file
                 script {
+                    // get ctp.json file form CTP
                     sh '''
-                        echo ${PUBLIC_IP}
                         ctp_response=$(curl -s -X 'GET' -H 'accept: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments?name=Local%20PetClinic&limit=50&offset=0)
-                        curl -X 'GET' -H 'accept: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments/32/config | jq . > env.json
                         envId=$(echo "$ctp_response" | jq -r '.environments[0].id')
                         echo ${envId}
-                        cat env.json
+                        curl -X 'GET' -H 'accept: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments/${envId}/config | jq . > ctp.json
+                        cat ctp.json
                         '''
-                    // iterate over the array of services
-                    for (service in ARRAY) {
-                            def jqCommand = """jq 'map(if .components[].instances[].coverage.dtpProject == "spring-petclinic-api-gateway" then .components.instances[].coverage.agentUrl |= "FOO" else . end)' env.json > new-env.json"""
-                            sh jqCommand
-                            sh "cat new-env.json"
+
+                    // Read in ctp.json file
+                    def jsonFile = readFile("ctp.json")
+                    def json = new groovy.json.JsonSlurperClassic().parseText(jsonFile)
+
+                    // debug
+                    echo "${PUBLIC_IP}"
+
+                    // Update the 'buildId' and 'coverageImages' properties
+                    for (def service in ARRAY) {
+                        echo "service is: ${service}"
+                        def matchingComponent = json.components.find { it.instances.find { it.coverage?.dtpProject == service } }
+                        if (matchingComponent) {
+                            
+                            // retain ports
+                            def url = new URL(matchingComponent.instances[0].coverage.agentUrl)
+                            def originalPort = url.port
+                            
+                            // Combine PUBLIC_IP with the original port
+                            matchingComponent.instances[0].coverage.agentUrl = "${PUBLIC_IP}:${originalPort}"
+                            matchingComponent.instances[0].coverage.buildId = "${service}-${BUILD_TIMESTAMP}"
+                            matchingComponent.instances[0].coverage.coverageImages = "${functionalCovImage}"
+                        } else {
+                            echo "Something is NULL!"
                         }
-                        
-                    }     
+                    }
+                    // Write the updated JSON back to the file using writeJSON
+                    writeJSON file: "ctp.json", json: json, pretty: 4
+                    sh "cat ctp.json"
+                }     
                 // copy jars
                 script {
                     for (dir in ARRAY) {
