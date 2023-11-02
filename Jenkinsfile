@@ -29,7 +29,7 @@ pipeline {
         // dtp_publish="${DTP_PUBLISH}" //false
 
         // get public IP address for the deployment
-        BUILD_TIMESTAMP = 1
+        BUILD_TIMESTAMP = sh(script: 'date +%Y%m%d%H%M%S', returnStdout: true).trim()
         PUBLIC_IP = sh(script: """curl -s https://httpbin.org/ip | jq -r '.origin'""", returnStdout: true).trim()
         buildId = "${app_name}-${BUILD_TIMESTAMP}"
 
