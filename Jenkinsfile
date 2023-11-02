@@ -190,7 +190,6 @@ pipeline {
 
                     '''
                 // update CTP with yaml script upload
-                // update CTP with yaml script upload
                 sh '''
                     # upload yaml file to CTP
                     curl -X 'PUT' -u ${DTP_USER}:${DTP_PASS} \
