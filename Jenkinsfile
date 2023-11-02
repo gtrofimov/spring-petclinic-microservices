@@ -60,7 +60,10 @@ pipeline {
                         "spring-petclinic-visits-service", 
                         "spring-petclinic-customers-service"
                         ]
-                    envId = sh(script: '''curl -s -X 'GET' -H 'accept: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments?name=Local%20PetClinic&limit=50&offset=0''', returnStdout: true).trim()
+                    envId = sh(script: '''
+                                        set -e
+                                        curl -s -X 'GET' -H 'accept: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments?name=Local%20PetClinic&limit=50&offset=0
+                                    ''', returnStdout: true).trim()
                 }
                 // prepare CTP JSON file
                 script {
