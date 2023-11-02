@@ -1,8 +1,4 @@
 def ARRAY
-def getCurrentTimestamp() {
-    def currentMillis = currentBuild.startTimeInMillis
-    return currentMillis.format("yyyyMMddHHmm")
-}
 
 pipeline {
     agent any
@@ -33,11 +29,12 @@ pipeline {
         // dtp_publish="${DTP_PUBLISH}" //false
 
         // get public IP address for the deployment
-        BUILD_TIMESTAMP = getCurrentTimestamp()
+        BUILD_TIMESTAMP = 1
         PUBLIC_IP = sh(script: """curl -s https://httpbin.org/ip | jq -r '.origin'""", returnStdout: true).trim()
         buildId = "${app_name}-${BUILD_TIMESTAMP}"
 
     }
+
     stages {
         stage('Set Up') {
             steps {
