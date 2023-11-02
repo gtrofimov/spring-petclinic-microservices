@@ -186,7 +186,7 @@ pipeline {
 
                 // Health check coverage agents
                 sh '''
-                    // curl -iv --raw http://localhost:8051/status
+                    curl -iv --raw http://localhost:8051/status
 
                     '''
                 // update CTP with yaml script upload
