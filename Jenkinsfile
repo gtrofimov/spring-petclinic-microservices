@@ -147,7 +147,7 @@ pipeline {
                 
         }
         stage('Build') {
-            when { equals expected: true, actual: false }
+            when { equals expected: true, actual: true }
             steps {
                 
                 // build the binaries
@@ -169,7 +169,7 @@ pipeline {
             }
         }
         stage('Deploy-CodeCoverage') {
-            when { equals expected: true, actual: false }
+            when { equals expected: true, actual: true }
             steps {
                 
                 // check running containers
