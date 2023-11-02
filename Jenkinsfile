@@ -79,7 +79,7 @@ pipeline {
                     echo "${PUBLIC_IP}"
 
                     // Update the 'buildId' and 'coverageImages' properties
-                    for (def service in ARRAY) {
+                    for (service in ARRAY) {
                         echo "service is: ${service}"
                         def matchingComponent = json.components.find { it.instances.find { it.coverage?.dtpProject == service } }
                         if (matchingComponent) {
