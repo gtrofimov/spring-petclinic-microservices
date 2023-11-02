@@ -33,6 +33,7 @@ pipeline {
         PUBLIC_IP = sh(script: """curl -s https://httpbin.org/ip | jq -r '.origin'""", returnStdout: true).trim()
         buildId = "${app_name}-${BUILD_TIMESTAMP}"
 
+        envId = ''
     }
 
     stages {
@@ -59,13 +60,14 @@ pipeline {
                         "spring-petclinic-visits-service", 
                         "spring-petclinic-customers-service"
                         ]
+                    envId = sh(script: '''curl -s -X 'GET' -H 'accept: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments?name=Local%20PetClinic&limit=50&offset=0''', returnStdout: true).trim()
                 }
                 // prepare CTP JSON file
                 script {
                     // get ctp.json file form CTP
                     sh '''
-                        ctp_response=$(curl -s -X 'GET' -H 'accept: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments?name=Local%20PetClinic&limit=50&offset=0)
-                        envId=$(echo "$ctp_response" | jq -r '.environments[0].id')
+                        #ctp_response=$(curl -s -X 'GET' -H 'accept: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments?name=Local%20PetClinic&limit=50&offset=0)
+                        #envId=$(echo "$ctp_response" | jq -r '.environments[0].id')
                         echo ${envId}
                         curl -X 'GET' -H 'accept: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments/${envId}/config | jq . > ctp.json
                         cat ctp.json
@@ -185,11 +187,20 @@ pipeline {
 
                 // Health check coverage agents
                 sh '''
-                    // curl -iv --raw http://localhost:8050/status
+                    // curl -iv --raw http://localhost:8051/status
 
                     '''
                 // update CTP with yaml script upload
-                // constrcut payload
+                // update CTP with yaml script upload
+                sh '''
+                    # upload yaml file to CTP
+                    curl -X 'PUT' -u ${DTP_USER}:${DTP_PASS} \
+                        ${CTP_URL}/em/api/v3/environments/${envId}/config \
+                        -H 'accept: application/json' \
+                        -H 'Content-Type: application/json' \
+                        -d @ctp.json
+                    '''
+                // construct payload
                 
                 sh '''
                     # Set Up and write .properties file
