@@ -86,7 +86,7 @@ pipeline {
                             
                             // retain ports
                             def url = new URL(matchingComponent.instances[0].coverage.agentUrl)
-                            def originalPort = url.toURI().getPort()
+                            def originalPort = (url =~ ":([0-9]+)/")[0][1]
                             
                             // Combine PUBLIC_IP with the original port
                             matchingComponent.instances[0].coverage.agentUrl = "${PUBLIC_IP}:${originalPort}"
