@@ -35,7 +35,7 @@ pipeline {
         envId = sh(script: """curl -s -X 'GET' -H 'accept: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments?name=${ENCODED_ENV_NAME}&limit=50&offset=0 | jq -r '.environments[0].id'""", returnStdout: true).trim()
         // buildId = "${app_name}-${BUILD_TIMESTAMP}"
 
-
+        // Pipeline Stage Controls
         // envId = '32' // need to be dynamically acquired via curl
     }
 
@@ -172,7 +172,7 @@ pipeline {
             }
         }
         stage('Deploy-CodeCoverage') {
-            when { equals expected: true, actual: true }
+            when { equals expected: true, actual: false }
             steps {
                 
                 // check running containers
