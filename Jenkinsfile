@@ -201,14 +201,15 @@ pipeline {
                         -H 'Content-Type: application/json' \
                         -d @ctp.json
                     '''
-                // construct payload
-                
+            }
+        }
+        stage('Test') {
+            when { equals expected: true, actual: true}
+            steps {
+                // run Selenium tests
                 sh '''
-                    # Set Up and write .properties file
-                    # TODO
-
-                    # upload yaml file to CTP
-                    # TODO
+                    cd spring-petclinic-selenium-tests
+                    mvn clean test
                     '''
             }
         }

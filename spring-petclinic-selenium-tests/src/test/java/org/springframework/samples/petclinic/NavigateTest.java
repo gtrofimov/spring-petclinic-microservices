@@ -1,33 +1,30 @@
-package org.springframework.samples.petclinic;
-
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
-@ExtendWith(ParasoftWatcher.class)
-class NavigateTest {
-	
-	private static WebDriver driver;
-	
-	@BeforeAll
-	static void openBrowser() {
-		// driver = new ChromeDriver;
-		String gridURL = "http://localhost:4444/wd/hub";
-		WebDriver driver = new RemoteWebDriver(new URL(gridURL), capabilities)
-	}
-	
-	@AfterAll
-	static void closeBrowser() {
-		driver.close();
-	}
+import java.net.MalformedURLException;
+import java.net.URL;
 
-	@Test
-	void testPetClinicNavigation() throws Exception {
-		driver.get("http://localhost:8080/");
+public class NavigateTest {
+    private WebDriver driver;
+
+    @BeforeClass
+    public void setUp() throws MalformedURLException {
+        ChromeOptions options = new ChromeOptions();
+        // Set Chrome options if needed
+        options.addArguments("--headless"); // Example: Run Chrome in headless mode
+
+        URL remoteUrl = new URL("http://34.211.11.203:4444/wd/hub"); // URL of the Selenium Grid Hub
+
+        driver = new RemoteWebDriver(remoteUrl, options);
+    }
+
+    @Test
+    public void navigateToExamplePage() {
+        river.get("http://localhost:8099/");
 		Thread.sleep(1000);
 		driver.findElement(By.xpath("//a[@title=\"veterinarians\"]")).click();
 		Thread.sleep(1000);
@@ -40,6 +37,13 @@ class NavigateTest {
 		driver.findElement(By.xpath("//dd/a")).click();
 		Thread.sleep(1000);
 		driver.findElement(By.xpath("//a[@title=\"home page\"]")).click();
-	}
 
+    }
+
+    @AfterClass
+    public void tearDown() {
+        if (driver != null) {
+            driver.quit();
+        }
+    }
 }
