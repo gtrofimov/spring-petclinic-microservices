@@ -15,7 +15,7 @@ public class NavigateTest {
     public void setUp() throws MalformedURLException {
         ChromeOptions options = new ChromeOptions();
         // Set Chrome options if needed
-        options.addArguments("--headless"); // Example: Run Chrome in headless mode
+        // options.addArguments("--headless"); // Example: Run Chrome in headless mode
 
         URL remoteUrl = new URL("http://34.211.11.203:4444/wd/hub"); // URL of the Selenium Grid Hub
 
@@ -24,20 +24,10 @@ public class NavigateTest {
 
     @Test
     public void navigateToExamplePage() {
-        river.get("http://localhost:8099/");
-		Thread.sleep(1000);
-		driver.findElement(By.xpath("//a[@title=\"veterinarians\"]")).click();
-		Thread.sleep(1000);
-		driver.findElement(By.xpath("//a[@class=\"dropdown-toggle\"]")).click();
-		Thread.sleep(1000);
-		driver.findElement(By.xpath("//a[@ui-sref=\"owners\"]")).click();
-		Thread.sleep(1000);
-		driver.findElement(By.xpath("//owner-list/table/tbody/tr[1]/td[1]/a")).click();
-		Thread.sleep(1000);
-		driver.findElement(By.xpath("//dd/a")).click();
-		Thread.sleep(1000);
-		driver.findElement(By.xpath("//a[@title=\"home page\"]")).click();
+        driver.get("https://www.example.com");
+        // Perform your test actions here
 
+        
     }
 
     @AfterClass

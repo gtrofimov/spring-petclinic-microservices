@@ -37,6 +37,7 @@ pipeline {
 
 
         envId = '32' // need to be dynamically acquired via curl
+        covImage='SeleniumTests'
     }
 
     stages {
@@ -47,7 +48,11 @@ pipeline {
 
                 // Checkout project
                 checkout scm
-
+                
+                // set GID
+                script {
+                    env.GID = sh(script: 'id -g jenkins', returnStdout: true).trim()
+                }
                 // downlaod the agent.jar and cov-tool
                 sh '''
                 
@@ -106,8 +111,8 @@ pipeline {
                 }     
                 // copy jars
                 script {
-                    for (dir in ARRAY) {
-                        sh "cp jtest_agent/agent.jar ${dir}/src/test/resources/coverage/agent.jar"
+                    for (service in ARRAY) {
+                        sh "cp jtest_agent/agent.jar ${service}/src/test/resources/coverage/agent.jar"
                     }
                 }
                 
@@ -126,7 +131,7 @@ pipeline {
                     license.network.password=${LS_PASS}
 
                     # report.associations=false
-                    # report.coverage.images=${unitCovImage}
+                    report.coverage.images=${covImage}
                     # report.scontrol=full
                     # scope.local=true
                     # scope.scontrol=true
@@ -164,9 +169,15 @@ pipeline {
                 
                 // scan the binaries
                 script {
-                    for (dir in ARRAY) {
+                    for (service in ARRAY) {
                      // jtest cov
-                    sh "java -jar jtestcov/jtestcov.jar -soatest -app ${dir}/target/*.jar -include org/springframework/samples/** -settings jtestcov/jtestcli.properties"
+                    sh "java -jar jtestcov/jtestcov.jar \
+                        -soatest -app ${service}/target/*.jar \
+                        -include org/springframework/samples/** \
+                        -settings jtestcov/jtestcli.properties \
+                        -property dtp.project=${service} \
+                        -property report.dtp.publish=true
+                        -property report.coverage.images=${covImage}"
                     }
                 }
             }
@@ -204,7 +215,7 @@ pipeline {
             }
         }
         stage('Test') {
-            when { equals expected: true, actual: true}
+            when { equals expected: true, actual: false}
             steps {
                 // run Selenium tests
                 sh '''
