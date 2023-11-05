@@ -173,7 +173,7 @@ pipeline {
                     for (service in ARRAY) {
                      // jtest cov
                     sh "java -jar jtestcov/jtestcov.jar \
-                        -soatest -app ${service}/target/*.jar \
+                        -app ${service}/target/*.jar \
                         -include org/springframework/samples/** \
                         -settings jtestcov/jtestcli.properties \
                         -property dtp.project=${service} \
