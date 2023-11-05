@@ -1,37 +1,42 @@
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
-
-import java.net.MalformedURLException;
 import java.net.URL;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
 
 public class NavigateTest {
+
     private WebDriver driver;
+    private String baseUrl;
 
-    @BeforeClass
-    public void setUp() throws MalformedURLException {
+    @Before
+    public void setUp() throws Exception {
+        // Set ChromeOptions with desired arguments
         ChromeOptions options = new ChromeOptions();
-        // Set Chrome options if needed
-        // options.addArguments("--headless"); // Example: Run Chrome in headless mode
+        // Add any additional Chrome arguments or preferences if needed
+        // options.addArguments("--headless");
 
-        URL remoteUrl = new URL("http://34.211.11.203:4444/wd/hub"); // URL of the Selenium Grid Hub
+        // URL of the Selenium Grid Hub
+        URL gridUrl = new URL("http://localhost:4444/wd/hub");
 
-        driver = new RemoteWebDriver(remoteUrl, options);
+        // Create a RemoteWebDriver instance with ChromeOptions and grid URL
+        driver = new RemoteWebDriver(gridUrl, options);
+
+        // base URL
+        baseUrl = System.getProperty("baseUrl", "http://localhost:8099");
     }
 
     @Test
-    public void navigateToExamplePage() {
-        driver.get("https://www.example.com");
-        // Perform your test actions here
-
-        
+    public void testSample() {
+        // Test logic
+        driver.get(baseUrl);
     }
 
-    @AfterClass
+    @After
     public void tearDown() {
+        // Close the WebDriver session
         if (driver != null) {
             driver.quit();
         }
