@@ -216,7 +216,7 @@ pipeline {
             }
         }
         stage('Test') {
-            when { equals expected: true, actual: false}
+            when { equals expected: true, actual: true}
             steps {
                 // run Selenium tests
                 sh '''
