@@ -176,7 +176,7 @@ pipeline {
                         -include org/springframework/samples/** \
                         -settings jtestcov/jtestcli.properties \
                         -property dtp.project=${service} \
-                        -property report.dtp.publish=true
+                        -property report.dtp.publish=true \
                         -property report.coverage.images=${covImage}"
                     }
                 }
