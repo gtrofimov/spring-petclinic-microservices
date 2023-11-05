@@ -147,7 +147,7 @@ pipeline {
                     dtp.url=${DTP_URL}
                     dtp.user=${DTP_USER}
                     dtp.password=${DTP_PASS}
-                    dtp.project=${project_name}
+                    dtp.project=${app_name}
                     report.dtp.publish=true" > ./jtestcov/jtestcli.properties
                     '''
                 
