@@ -156,7 +156,7 @@ pipeline {
                 
         }
         stage('Build') {
-            when { equals expected: true, actual: true }
+            when { equals expected: true, actual: false }
             steps {
                 
                 // build the binaries
@@ -183,8 +183,8 @@ pipeline {
                 }
             }
         }
-        stage('Deploy-CodeCoverage') {
-            when { equals expected: true, actual: true }
+        stage('Deploy') {
+            when { equals expected: true, actual: false }
             steps {
                 
                 // check running containers
@@ -221,7 +221,7 @@ pipeline {
                 // run Selenium tests
                 sh '''
                     cd spring-petclinic-selenium-tests
-                    mvn clean test
+                    mvn clean test -DbaseUrl='http://${PUBLIC_IP}:8099'
                     '''
             }
         }
