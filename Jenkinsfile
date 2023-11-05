@@ -219,10 +219,10 @@ pipeline {
             when { equals expected: true, actual: true}
             steps {
                 // run Selenium tests
-                sh '''
+                sh """
                     cd spring-petclinic-selenium-tests
-                    mvn clean test -DbaseUrl='http://${PUBLIC_IP}:8099'
-                    '''
+                    mvn clean test -DbaseUrl=http://${PUBLIC_IP}:8099
+                    """
             }
         }
     }
