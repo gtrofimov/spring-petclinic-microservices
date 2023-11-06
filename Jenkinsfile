@@ -107,7 +107,7 @@ pipeline {
                             // Combine PUBLIC_IP with the original port
                             matchingComponent.instances[0].coverage.agentUrl = "http://${PUBLIC_IP}:${originalPort}"
                             matchingComponent.instances[0].coverage.buildId = "${service}-${BUILD_TIMESTAMP}"
-                            matchingComponent.instances[0].coverage.coverageImages = "${covImage}"
+                            matchingComponent.instances[0].coverage.coverageImages = "${service}"
                         } else {
                             echo "Something is NULL!"
                         }
@@ -205,7 +205,7 @@ pipeline {
                 sh  '''
                     # Run PetClinic with Jtest coverage agent configured
                     docker-compose -f docker-compose-cc.yml up -d
-                    sleep 80s
+                    sleep 90s
                     '''
 
                 // Health check coverage agents
