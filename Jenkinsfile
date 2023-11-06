@@ -161,7 +161,7 @@ pipeline {
                 
         }
         stage('Build') {
-            when { equals expected: true, actual: ${DO_BUILD} }
+            when { equals expected: true, actual: $DO_BUILD }
             steps {
                 
                 // build the binaries
