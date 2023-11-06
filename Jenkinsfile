@@ -186,7 +186,7 @@ pipeline {
                         -settings jtestcov/jtestcli.properties \
                         -property dtp.project=${service} \
                         -property report.dtp.publish=true \
-                        -property report.session.tag=${sessionTag}
+                        -property report.session.tag=${sessionTag} \
                         -property build.id='${service}-${BUILD_TIMESTAMP}'"
                     }
                 }
