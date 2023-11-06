@@ -38,6 +38,12 @@ pipeline {
 
         envId = '32' // need to be dynamically acquired via curl
         covImage='SeleniumTests'
+
+        // Build Controls
+        DO_SET_UP=true
+        DO_BUILD=true
+        DO_DEPLOY=true
+        DO_TEST-true
     }
 
     stages {
@@ -155,7 +161,7 @@ pipeline {
                 
         }
         stage('Build') {
-            when { equals expected: true, actual: false }
+            when { equals expected: true, actual: DO_BUILD }
             steps {
                 
                 // build the binaries
@@ -183,7 +189,7 @@ pipeline {
             }
         }
         stage('Deploy') {
-            when { equals expected: true, actual: false }
+            when { equals expected: true, actual: DO_DEPLOY }
             steps {
                 
                 // check running containers
@@ -215,7 +221,7 @@ pipeline {
             }
         }
         stage('Test') {
-            when { equals expected: true, actual: true}
+            when { equals expected: true, actual: DO_TEST}
             steps {
                 // run Selenium tests
                 sh """
