@@ -161,7 +161,7 @@ pipeline {
                 
         }
         stage('Build') {
-            when { equals expected: true, actual: $DO_BUILD }
+            when { equals expected: true, actual: true }
             steps {
                 
                 // build the binaries
@@ -189,7 +189,7 @@ pipeline {
             }
         }
         stage('Deploy') {
-            when { equals expected: true, actual: DO_DEPLOY }
+            when { equals expected: true, actual: true }
             steps {
                 
                 // check running containers
@@ -221,7 +221,7 @@ pipeline {
             }
         }
         stage('Test') {
-            when { equals expected: true, actual: DO_TEST}
+            when { equals expected: true, actual: true}
             steps {
                 // run Selenium tests
                 sh """
