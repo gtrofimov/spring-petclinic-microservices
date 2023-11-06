@@ -43,7 +43,7 @@ pipeline {
         DO_SET_UP=true
         DO_BUILD=true
         DO_DEPLOY=true
-        DO_TEST-true
+        DO_TEST=true
     }
 
     stages {
