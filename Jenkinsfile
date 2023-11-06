@@ -192,7 +192,7 @@ pipeline {
             }
         }
         stage('Deploy') {
-            when { equals expected: true, actual: false }
+            when { equals expected: true, actual: true }
             steps {
                 
                 // check running containers
@@ -224,7 +224,7 @@ pipeline {
             }
         }
         stage('Test') {
-            when { equals expected: true, actual: false}
+            when { equals expected: true, actual: true}
             steps {
                 // run Selenium tests
                 // docker run -d -p 4444:4444 -p 7900:7900 selenium/standalone-chrome:latest
