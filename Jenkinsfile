@@ -151,7 +151,7 @@ pipeline {
                     # scontrol.rep1.git.url=${project_repo}
                     # scontrol.rep1.type=git
 
-                    build.id=${buildId}
+                    # build.id=${buildId}
                     # session.tag=${jtestSessionTag}
                     dtp.url=${DTP_URL}
                     dtp.user=${DTP_USER}
@@ -186,7 +186,8 @@ pipeline {
                         -settings jtestcov/jtestcli.properties \
                         -property dtp.project=${service} \
                         -property report.dtp.publish=true \
-                        -property report.session.tag=${sessionTag}"
+                        -property report.session.tag=${sessionTag}
+                        -property build.id='${service}-${BUILD_TIMESTAMP}'"
                     }
                 }
             }
