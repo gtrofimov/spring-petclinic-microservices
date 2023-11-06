@@ -186,7 +186,7 @@ pipeline {
                         -settings jtestcov/jtestcli.properties \
                         -property dtp.project=${service} \
                         -property report.dtp.publish=true \
-                        -property report.coverage.images=${covImage}
+                        -property report.coverage.images=${covImage} \
                         -property report.session.tag=${sessionTag}"
                     }
                 }
