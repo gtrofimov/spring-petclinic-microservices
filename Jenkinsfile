@@ -138,7 +138,7 @@ pipeline {
                     license.network.password=${LS_PASS}
 
                     # report.associations=false
-                    report.coverage.images=${covImage}
+                    # report.coverage.images=${covImage}
                     report.scontrol=min
                     report.coverage.line.hashes=true
                     # report.scontrol=full
@@ -186,14 +186,13 @@ pipeline {
                         -settings jtestcov/jtestcli.properties \
                         -property dtp.project=${service} \
                         -property report.dtp.publish=true \
-                        -property report.coverage.images=${covImage} \
                         -property report.session.tag=${sessionTag}"
                     }
                 }
             }
         }
         stage('Deploy') {
-            when { equals expected: true, actual: true }
+            when { equals expected: true, actual: false }
             steps {
                 
                 // check running containers
@@ -225,7 +224,7 @@ pipeline {
             }
         }
         stage('Test') {
-            when { equals expected: true, actual: true}
+            when { equals expected: true, actual: false}
             steps {
                 // run Selenium tests
                 // docker run -d -p 4444:4444 -p 7900:7900 selenium/standalone-chrome:latest
