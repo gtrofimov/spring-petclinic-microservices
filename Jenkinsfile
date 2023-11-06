@@ -100,7 +100,7 @@ pipeline {
                             // Combine PUBLIC_IP with the original port
                             matchingComponent.instances[0].coverage.agentUrl = "http://${PUBLIC_IP}:${originalPort}"
                             matchingComponent.instances[0].coverage.buildId = "${service}-${BUILD_TIMESTAMP}"
-                            // matchingComponent.instances[0].coverage.coverageImages = "${functionalCovImage}"
+                            matchingComponent.instances[0].coverage.coverageImages = "${covImage}"
                         } else {
                             echo "Something is NULL!"
                         }
@@ -147,8 +147,7 @@ pipeline {
                     dtp.url=${DTP_URL}
                     dtp.user=${DTP_USER}
                     dtp.password=${DTP_PASS}
-                    dtp.project=${app_name}
-                    report.dtp.publish=true" > ./jtestcov/jtestcli.properties
+                    dtp.project=${app_name}" > ./jtestcov/jtestcli.properties
                     '''
                 
 
