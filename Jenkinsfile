@@ -38,6 +38,7 @@ pipeline {
 
         envId = '32' // need to be dynamically acquired via curl
         covImage='SeleniumTests'
+        sessionTag='jenkins-build'
 
         // Build Controls
         DO_SET_UP=true
@@ -138,6 +139,8 @@ pipeline {
 
                     # report.associations=false
                     report.coverage.images=${covImage}
+                    report.scontrol=min
+                    report.coverage.line.hashes=true
                     # report.scontrol=full
                     # scope.local=true
                     # scope.scontrol=true
@@ -149,7 +152,7 @@ pipeline {
                     # scontrol.rep1.type=git
 
                     build.id=${buildId}
-                    session.tag=${jtestSessionTag}
+                    # session.tag=${jtestSessionTag}
                     dtp.url=${DTP_URL}
                     dtp.user=${DTP_USER}
                     dtp.password=${DTP_PASS}
@@ -183,7 +186,8 @@ pipeline {
                         -settings jtestcov/jtestcli.properties \
                         -property dtp.project=${service} \
                         -property report.dtp.publish=true \
-                        -property report.coverage.images=${covImage}"
+                        -property report.coverage.images=${covImage}
+                        -property report.session.tag=${sessionTag}"
                     }
                 }
             }
@@ -224,6 +228,7 @@ pipeline {
             when { equals expected: true, actual: true}
             steps {
                 // run Selenium tests
+                // docker run -d -p 4444:4444 -p 7900:7900 selenium/standalone-chrome:latest
                 sh """
                     cd spring-petclinic-selenium-tests
                     mvn clean test -DbaseUrl=http://${PUBLIC_IP}:8099

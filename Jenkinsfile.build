@@ -32,11 +32,18 @@ pipeline {
         // dynamic vars
         BUILD_TIMESTAMP = sh(script: 'date +%Y%m%d%H%M%S', returnStdout: true).trim()
         PUBLIC_IP = sh(script: """curl -s https://httpbin.org/ip | jq -r '.origin'""", returnStdout: true).trim()
-        envId = sh(script: """curl -s -X 'GET' -H 'accept: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments?name=${ENCODED_ENV_NAME}&limit=50&offset=0 | jq -r '.environments[0].id'""", returnStdout: true).trim()
+        // envId = sh(script: """curl -s -X 'GET' -H 'accept: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments?name=${ENCODED_ENV_NAME}&limit=50&offset=0 | jq -r '.environments[0].id'""", returnStdout: true).trim()
         // buildId = "${app_name}-${BUILD_TIMESTAMP}"
 
-        // Pipeline Stage Controls
-        // envId = '32' // need to be dynamically acquired via curl
+
+        envId = '32' // need to be dynamically acquired via curl
+        covImage='SeleniumTests'
+
+        // Build Controls
+        DO_SET_UP=true
+        DO_BUILD=true
+        DO_DEPLOY=true
+        DO_TEST=true
     }
 
     stages {
@@ -47,7 +54,11 @@ pipeline {
 
                 // Checkout project
                 checkout scm
-
+                
+                // set GID
+                script {
+                    env.GID = sh(script: 'id -g jenkins', returnStdout: true).trim()
+                }
                 // downlaod the agent.jar and cov-tool
                 sh '''
                 
@@ -95,7 +106,7 @@ pipeline {
                             // Combine PUBLIC_IP with the original port
                             matchingComponent.instances[0].coverage.agentUrl = "http://${PUBLIC_IP}:${originalPort}"
                             matchingComponent.instances[0].coverage.buildId = "${service}-${BUILD_TIMESTAMP}"
-                            // matchingComponent.instances[0].coverage.coverageImages = "${functionalCovImage}"
+                            matchingComponent.instances[0].coverage.coverageImages = "${covImage}"
                         } else {
                             echo "Something is NULL!"
                         }
@@ -106,8 +117,8 @@ pipeline {
                 }     
                 // copy jars
                 script {
-                    for (dir in ARRAY) {
-                        sh "cp jtest_agent/agent.jar ${dir}/src/test/resources/coverage/agent.jar"
+                    for (service in ARRAY) {
+                        sh "cp jtest_agent/agent.jar ${service}/src/test/resources/coverage/agent.jar"
                     }
                 }
                 
@@ -126,7 +137,7 @@ pipeline {
                     license.network.password=${LS_PASS}
 
                     # report.associations=false
-                    # report.coverage.images=${unitCovImage}
+                    report.coverage.images=${covImage}
                     # report.scontrol=full
                     # scope.local=true
                     # scope.scontrol=true
@@ -142,7 +153,7 @@ pipeline {
                     dtp.url=${DTP_URL}
                     dtp.user=${DTP_USER}
                     dtp.password=${DTP_PASS}
-                    dtp.project=${project_name}" > ./jtestcov/jtestcli.properties
+                    dtp.project=${app_name}" > ./jtestcov/jtestcli.properties
                     '''
                 
 
@@ -164,14 +175,20 @@ pipeline {
                 
                 // scan the binaries
                 script {
-                    for (dir in ARRAY) {
+                    for (service in ARRAY) {
                      // jtest cov
-                    sh "java -jar jtestcov/jtestcov.jar -soatest -app ${dir}/target/*.jar -include org/springframework/samples/** -settings jtestcov/jtestcli.properties"
+                    sh "java -jar jtestcov/jtestcov.jar \
+                        -app ${service}/target/*.jar \
+                        -include org/springframework/samples/** \
+                        -settings jtestcov/jtestcli.properties \
+                        -property dtp.project=${service} \
+                        -property report.dtp.publish=true \
+                        -property report.coverage.images=${covImage}"
                     }
                 }
             }
         }
-        stage('Deploy-CodeCoverage') {
+        stage('Deploy') {
             when { equals expected: true, actual: false }
             steps {
                 
@@ -201,15 +218,16 @@ pipeline {
                         -H 'Content-Type: application/json' \
                         -d @ctp.json
                     '''
-                // construct payload
-                
-                sh '''
-                    # Set Up and write .properties file
-                    # TODO
-
-                    # upload yaml file to CTP
-                    # TODO
-                    '''
+            }
+        }
+        stage('Test') {
+            when { equals expected: true, actual: false}
+            steps {
+                // run Selenium tests
+                sh """
+                    cd spring-petclinic-selenium-tests
+                    mvn clean test -DbaseUrl=http://${PUBLIC_IP}:8099
+                    """
             }
         }
     }
