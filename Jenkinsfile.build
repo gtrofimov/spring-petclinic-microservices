@@ -175,7 +175,16 @@ pipeline {
     }
     post {
         // Clean after build
-        always {
+        success {
+            archiveArtifacts(artifacts: ''' 
+                    **/target/*.jar, 
+                    ''',
+                fingerprint: true, 
+                onlyIfSuccessful: true,
+            )
+        }
+
+        always {            
             
             sh  '''
                 echo "cleaning up..."
