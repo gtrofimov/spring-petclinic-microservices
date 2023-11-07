@@ -159,11 +159,7 @@ pipeline {
                     dtp.project=${app_name}" > ./jtestcov/jtestcli.properties
                     '''
                 
-
-            }
-
-            // run TIA
-            script {
+                script {
                     // get the last successful build-timestamp
                     def jobA = jenkins.model.Jenkins.instance.getItemByFullName('Petclinic-deploy')
                     def lastSuccessfulDeploy = jobA.lastSuccessfulBuild
@@ -182,12 +178,13 @@ pipeline {
                     } else {
                         error "This build's last build was not successful or does not have the lastSuccessfulBaselineId set."
                     }
-
+                
                     // get Impacte Tests for current deployment and baseline build
                     sh "curl -X 'GET' -u 'demo:demo-user' ${CTP_URL}/em/api/v3/environments/${envId}/coverage/impactedTests?baselineBuildId=${BASELINE_ID} -H 'accept: application/json' || true"
-                
+                }
+            }   
         }
-        }
+        
         stage('Test') {
             when { equals expected: true, actual: true}
             steps {
