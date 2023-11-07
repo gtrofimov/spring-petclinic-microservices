@@ -16,6 +16,7 @@ public class NavigateTest {
 
     private static WebDriver driver;
     private static String baseUrl;
+    private static URL gridUrl;
 
     @BeforeAll
     static void setUp() throws Exception {
@@ -26,7 +27,7 @@ public class NavigateTest {
         options.addArguments("--headless");
 
         // URL of the Selenium Grid Hub
-        URL gridUrl = new URL("http://34.211.11.203:4444/wd/hub");
+        gridUrl = System.getProperty("gridUrl","http://34.211.11.203:4444/wd/hub");
 
         // Create a RemoteWebDriver instance with ChromeOptions and grid URL
         driver = new RemoteWebDriver(gridUrl, options, false);

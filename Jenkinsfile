@@ -231,7 +231,12 @@ pipeline {
                 // docker run -d -p 4444:4444 -p 7900:7900 selenium/standalone-chrome:latest
                 sh """
                     cd spring-petclinic-selenium-tests
-                    mvn clean test -DbaseUrl=http://${PUBLIC_IP}:8099 -DbaselineId=${app_name}-${BUILD_TIMESTAMP}
+                    mvn clean test \
+                    -DbaseUrl=http://${PUBLIC_IP}:8099 \
+                    -DgridUrl=http://${PUBLIC_IP}:4444/wd/hub \
+                    -DenvId=${envId} \
+                    -DctpUrl=${CTP_URL} \
+                    -DbaselineId=${app_name}-${BUILD_TIMESTAMP}
                     """
             }
         }

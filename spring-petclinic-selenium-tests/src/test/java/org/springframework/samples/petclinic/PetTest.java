@@ -41,6 +41,7 @@ public class PetTest {
         
         // Navigate to the desired web page
         driver.get(baseUrl);
+        Thread.sleep(1000);
         // Debug
         System.out.println("Test Rename Pet");
 
