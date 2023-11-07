@@ -11,7 +11,7 @@ import org.junit.jupiter.api.extension.TestWatcher;
 
 public class ParasoftWatcher implements BeforeEachCallback, TestWatcher  {
 
-	//private static int ENV_ID;
+	private static int ENV_ID;
 	private static String sessionId;
 	private static String baselineId;
 	// private static String ctpUri;
