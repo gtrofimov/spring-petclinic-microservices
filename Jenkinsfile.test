@@ -187,6 +187,7 @@ pipeline {
                     sh "curl -X 'GET' -u 'demo:demo-user' ${CTP_URL}/em/api/v3/environments/${envId}/coverage/impactedTests?baselineBuildId=${BASELINE_ID} -H 'accept: application/json' || true"
                 
         }
+        }
         stage('Test') {
             when { equals expected: true, actual: true}
             steps {
@@ -216,11 +217,6 @@ pipeline {
         }
         // Clean after build
         always {
-            //sh 'docker container stop ${app_name}'
-            //sh 'docker container rm ${app_name}'
-            //sh 'docker image prune -f'
-            // delete Jtest Cache
-            
             sh  '''
                 echo "cleaning up..."
                 rm -rf "jtest_agent"
