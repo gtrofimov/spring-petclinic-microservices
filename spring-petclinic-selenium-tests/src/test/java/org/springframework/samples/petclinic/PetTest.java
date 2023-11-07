@@ -12,7 +12,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.samples.petclinic.ParasoftWatcher;
 
 @ExtendWith(ParasoftWatcher.class)
-public class NavigateTest {
+public class PetTest {
 
     private static WebDriver driver;
     private static String baseUrl;
@@ -21,7 +21,7 @@ public class NavigateTest {
     static void setUp() throws Exception {
         // Set ChromeOptions with desired arguments
         ChromeOptions options = new ChromeOptions();
-        
+
         // Add any additional Chrome arguments or preferences if needed
         options.addArguments("--headless");
 
@@ -36,30 +36,37 @@ public class NavigateTest {
     }
 
     @Test
-    public void testPetClinicNavigation() throws Exception{
+    public void testRename() throws Exception{
         // Test logic
         
         // Navigate to the desired web page
         driver.get(baseUrl);
         // Debug
-        System.out.println("Test PetClinic Navigation");
-        // Get the text of the heading element using its CSS selector
-        String headingText = driver.findElement(By.cssSelector("h1")).getText();
-        // Print the heading text to the console
-        System.out.println("Heading of the web page: " + headingText);
-        Thread.sleep(1000);
-        driver.findElement(By.xpath("//a[@title=\"veterinarians\"]")).click();
-        Thread.sleep(1000);
-        driver.findElement(By.xpath("//a[@class=\"dropdown-toggle\"]")).click();
-        Thread.sleep(1000);
-        driver.findElement(By.xpath("//a[@ui-sref=\"owners\"]")).click();
-        Thread.sleep(1000);
-        driver.findElement(By.xpath("//owner-list/table/tbody/tr[1]/td[1]/a")).click();
-        Thread.sleep(1000);
-        driver.findElement(By.xpath("//dd/a")).click();
-        Thread.sleep(1000);
-        driver.findElement(By.xpath("//a[@title=\"home page\"]")).click();
+        System.out.println("Test Rename Pet");
 
+        driver.findElement(By.xpath("//a[@class=\"dropdown-toggle\"]")).click();
+		Thread.sleep(1000);
+		driver.findElement(By.xpath("//a[@ui-sref=\"owners\"]")).click();
+		Thread.sleep(1000);
+		driver.findElement(By.xpath("//owner-list/table/tbody/tr[1]/td[1]/a")).click();
+		Thread.sleep(1000);
+		//driver.findElement(By.xpath("//dd/a")).click();
+        driver.findElement(By.xpath("//a[contains(.,'Edit Pet')]")).click();
+		Thread.sleep(1000);
+		driver.findElement(By.name("name")).clear();
+		driver.findElement(By.name("name")).sendKeys("Lena");
+		Thread.sleep(1000);
+		driver.findElement(By.xpath("//button[@type=\"submit\"]")).click();
+		Thread.sleep(1000);
+		//driver.findElement(By.xpath("//dd/a")).click();
+		driver.findElement(By.xpath("//a[contains(.,'Edit Pet')]")).click();
+        Thread.sleep(1000);
+		driver.findElement(By.name("name")).clear();
+		driver.findElement(By.name("name")).sendKeys("Leo");
+		Thread.sleep(1000);
+		driver.findElement(By.xpath("//button[@type=\"submit\"]")).click();
+		Thread.sleep(1000);
+		driver.findElement(By.xpath("//a[@title=\"home page\"]")).click();
     }
 
     @AfterAll

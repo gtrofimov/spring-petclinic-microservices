@@ -13,6 +13,7 @@ public class ParasoftWatcher implements BeforeEachCallback, TestWatcher  {
 
 	private static int ENV_ID = 32;
 	private static String sessionId;
+	private static String baselineId;
 
 	static {
 	    // CTP connection
@@ -72,15 +73,18 @@ public class ParasoftWatcher implements BeforeEachCallback, TestWatcher  {
 	static class ShutdownHook extends Thread {
 		@Override
 		public void run() {
+			baselineId = System.getProperty("baselineId", "latestBaseline");
 			RestAssured.with().contentType(ContentType.JSON).post("em/api/v3/environments/" + ENV_ID + "/agents/session/stop");
 			StringBuilder bodyBuilder = new StringBuilder();
 			bodyBuilder.append('{');
-			bodyBuilder.append("\"sessionTag\":\"selenium\"");
+			bodyBuilder.append("\"sessionTag\":\"jenkins-build\"");
 			bodyBuilder.append(',');
 			bodyBuilder.append("\"analysisType\":\"FUNCTIONAL_TEST\"");
 			bodyBuilder.append('}');
-			String response = RestAssured.with().contentType(ContentType.JSON).body(bodyBuilder.toString()).post("em/api/v3/environments/" + ENV_ID + "/coverage/" + sessionId).body().asString();
-			System.out.println(response);
+			String publish = RestAssured.with().contentType(ContentType.JSON).body(bodyBuilder.toString()).post("em/api/v3/environments/" + ENV_ID + "/coverage/" + sessionId).body().asString();
+			System.out.println(publish);
+			String baseline = RestAssured.with().contentType(ContentType.JSON).body("string").post("em/api/v3/environments/" + ENV_ID + "/coverage/baselines/" + baselineId).body().asString();
+			System.out.println(baseline);
 		}
 	}
 }

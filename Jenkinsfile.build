@@ -12,7 +12,7 @@ pipeline {
     }
     environment {
         // App Settings
-        app_name = 'petclinic' // top level DTP Project
+        app_name = 'spring-petclinic-microservices' // top level DTP Project
         ENV_NAME = 'Local PetClinic' // no longer makes sense
         ENCODED_ENV_NAME = URLEncoder.encode(ENV_NAME, 'UTF-8')
 
@@ -38,6 +38,7 @@ pipeline {
 
         envId = '32' // need to be dynamically acquired via curl
         covImage='SeleniumTests'
+        sessionTag='jenkins-build'
 
         // Build Controls
         DO_SET_UP=true
@@ -106,7 +107,7 @@ pipeline {
                             // Combine PUBLIC_IP with the original port
                             matchingComponent.instances[0].coverage.agentUrl = "http://${PUBLIC_IP}:${originalPort}"
                             matchingComponent.instances[0].coverage.buildId = "${service}-${BUILD_TIMESTAMP}"
-                            matchingComponent.instances[0].coverage.coverageImages = "${covImage}"
+                            matchingComponent.instances[0].coverage.coverageImages = "${service}"
                         } else {
                             echo "Something is NULL!"
                         }
@@ -137,7 +138,9 @@ pipeline {
                     license.network.password=${LS_PASS}
 
                     # report.associations=false
-                    report.coverage.images=${covImage}
+                    # report.coverage.images=${covImage}
+                    report.scontrol=min
+                    report.coverage.line.hashes=true
                     # report.scontrol=full
                     # scope.local=true
                     # scope.scontrol=true
@@ -148,8 +151,8 @@ pipeline {
                     # scontrol.rep1.git.url=${project_repo}
                     # scontrol.rep1.type=git
 
-                    build.id=${buildId}
-                    session.tag=${jtestSessionTag}
+                    # build.id=${buildId}
+                    # session.tag=${jtestSessionTag}
                     dtp.url=${DTP_URL}
                     dtp.user=${DTP_USER}
                     dtp.password=${DTP_PASS}
@@ -183,7 +186,8 @@ pipeline {
                         -settings jtestcov/jtestcli.properties \
                         -property dtp.project=${service} \
                         -property report.dtp.publish=true \
-                        -property report.coverage.images=${covImage}"
+                        -property report.session.tag=${sessionTag} \
+                        -property build.id='${service}-${BUILD_TIMESTAMP}'"
                     }
                 }
             }
@@ -201,7 +205,7 @@ pipeline {
                 sh  '''
                     # Run PetClinic with Jtest coverage agent configured
                     docker-compose -f docker-compose-cc.yml up -d
-                    sleep 80s
+                    sleep 90s
                     '''
 
                 // Health check coverage agents
@@ -224,9 +228,10 @@ pipeline {
             when { equals expected: true, actual: false}
             steps {
                 // run Selenium tests
+                // docker run -d -p 4444:4444 -p 7900:7900 selenium/standalone-chrome:latest
                 sh """
                     cd spring-petclinic-selenium-tests
-                    mvn clean test -DbaseUrl=http://${PUBLIC_IP}:8099
+                    mvn clean test -DbaseUrl=http://${PUBLIC_IP}:8099 -DbaselineId=${ENV_NAME}-${BUILD_TIMESTAMP}
                     """
             }
         }

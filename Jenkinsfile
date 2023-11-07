@@ -12,7 +12,7 @@ pipeline {
     }
     environment {
         // App Settings
-        app_name = 'petclinic' // top level DTP Project
+        app_name = 'spring-petclinic-microservices' // top level DTP Project
         ENV_NAME = 'Local PetClinic' // no longer makes sense
         ENCODED_ENV_NAME = URLEncoder.encode(ENV_NAME, 'UTF-8')
 
@@ -231,7 +231,7 @@ pipeline {
                 // docker run -d -p 4444:4444 -p 7900:7900 selenium/standalone-chrome:latest
                 sh """
                     cd spring-petclinic-selenium-tests
-                    mvn clean test -DbaseUrl=http://${PUBLIC_IP}:8099
+                    mvn clean test -DbaseUrl=http://${PUBLIC_IP}:8099 -DbaselineId=${ENV_NAME}-${BUILD_TIMESTAMP}
                     """
             }
         }
