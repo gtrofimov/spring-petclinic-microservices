@@ -11,15 +11,24 @@ import org.junit.jupiter.api.extension.TestWatcher;
 
 public class ParasoftWatcher implements BeforeEachCallback, TestWatcher  {
 
-	private static int ENV_ID = 32;
+	//private static int ENV_ID;
 	private static String sessionId;
 	private static String baselineId;
 	// private static String ctpUri;
 
 	static {
+		ENV_ID = Integer.parseInt(System.getProperty("ENV_ID", "32"));
+		// Get the base URL from a system property or environment variable
+		String ctpUrl = System.getProperty("ctpUrl", "http://35.90.203.18:8080");
+
+		// Split the ctpUrl into URI and port components
+		String[] uriComponents = ctpUrl.split(":");
+		String uri = uriComponents[0] + ":" + uriComponents[1]; // Extract the URI with protocol (e.g., http://35.90.203.18)
+		int port = Integer.parseInt(uriComponents[2]); // Extract the port (e.g., 8080)
+		
 	    // CTP connection
-		RestAssured.baseURI = "http://35.90.203.18";
-	    RestAssured.port = 8080;
+		RestAssured.baseURI = uri;
+	    RestAssured.port = port;
 	    RestAssured.authentication = RestAssured.basic("demo", "demo-user");
 		sessionId = RestAssured.with().contentType(ContentType.JSON).post("em/api/v3/environments/" + ENV_ID + "/agents/session/start").body().jsonPath().getString("session");
 		Runtime.getRuntime().addShutdownHook(new ShutdownHook());

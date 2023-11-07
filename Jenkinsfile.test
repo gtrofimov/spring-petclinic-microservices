@@ -164,7 +164,7 @@ pipeline {
                 
         }
         stage('Build') {
-            when { equals expected: true, actual: true }
+            when { equals expected: true, actual: false }
             steps {
                 
                 // build the binaries
@@ -193,7 +193,7 @@ pipeline {
             }
         }
         stage('Deploy') {
-            when { equals expected: true, actual: true }
+            when { equals expected: true, actual: false }
             steps {
                 
                 // check running containers

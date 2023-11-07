@@ -234,7 +234,9 @@ pipeline {
                     mvn clean test \
                     -DbaseUrl=http://${PUBLIC_IP}:8099 \
                     -DgridUrl=http://${PUBLIC_IP}:4444/wd/hub \
-                    -DbaselineId=${app_name}-${BUILD_TIMESTAMP}
+                    -DbaselineId=${app_name}-${BUILD_TIMESTAMP} \
+                    -DctpUrl=${CTP_URL} \
+                    -DENV_ID=${envId}
                     """
             }
         }
