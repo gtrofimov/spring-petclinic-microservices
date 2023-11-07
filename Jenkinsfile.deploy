@@ -210,7 +210,7 @@ pipeline {
         // Clean after build
         success {
             script {
-                SUCCESS_BUILD_TIMESTAMP=${BUILD_TIMESTAMP}
+                SUCCESS_BUILD_TIMESTAMP=BUILD_TIMESTAMP
             }
         }
         always {
