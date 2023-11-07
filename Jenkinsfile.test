@@ -163,67 +163,6 @@ pipeline {
             }
                 
         }
-        stage('Build') {
-            when { equals expected: true, actual: false }
-            steps {
-                
-                // build the binaries
-                echo "Building ${env.JOB_NAME}..."
-                sh  '''
-
-                    # Build the Maven package
-                    mvn clean package -DskipTests=true
-
-                    '''
-                
-                // scan the binaries
-                script {
-                    for (service in ARRAY) {
-                     // jtest cov
-                    sh "java -jar jtestcov/jtestcov.jar \
-                        -app ${service}/target/*.jar \
-                        -include org/springframework/samples/** \
-                        -settings jtestcov/jtestcli.properties \
-                        -property dtp.project=${service} \
-                        -property report.dtp.publish=true \
-                        -property report.session.tag=${sessionTag} \
-                        -property build.id='${service}-${BUILD_TIMESTAMP}'"
-                    }
-                }
-            }
-        }
-        stage('Deploy') {
-            when { equals expected: true, actual: false }
-            steps {
-                
-                // check running containers
-                sh '''
-                    docker-compose -f docker-compose-cc.yml down || true
-                    sleep 10s
-                    '''
-                // deploy the project
-                sh  '''
-                    # Run PetClinic with Jtest coverage agent configured
-                    docker-compose -f docker-compose-cc.yml up -d
-                    sleep 90s
-                    '''
-
-                // Health check coverage agents
-                sh '''
-                    curl -iv --raw http://localhost:8051/status
-
-                    '''
-                // update CTP with yaml script upload
-                sh '''
-                    # upload yaml file to CTP
-                    curl -X 'PUT' -u ${DTP_USER}:${DTP_PASS} \
-                        ${CTP_URL}/em/api/v3/environments/${envId}/config \
-                        -H 'accept: application/json' \
-                        -H 'Content-Type: application/json' \
-                        -d @ctp.json
-                    '''
-            }
-        }
         stage('Test') {
             when { equals expected: true, actual: true}
             steps {
@@ -248,20 +187,11 @@ pipeline {
             //sh 'docker container rm ${app_name}'
             //sh 'docker image prune -f'
             // delete Jtest Cache
-            archiveArtifacts(artifacts: ''' 
-                    **/target/*.jar, 
-                    ''',
-                fingerprint: true, 
-                onlyIfSuccessful: true,
-            )
             
             sh  '''
                 echo "cleaning up..."
                 rm -rf "jtest_agent"
                 rm -rf "jtestcov"
-                
-                # rm -rf ".jtest/cache"
-                # rm -rf "*/*/*/.jtest/cache"
                 '''
         }
     }
