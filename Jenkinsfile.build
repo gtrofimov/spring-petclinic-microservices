@@ -170,80 +170,12 @@ pipeline {
                     mvn clean package -DskipTests=true
 
                     '''
-                
-                // scan the binaries
-                script {
-                    for (service in ARRAY) {
-                     // jtest cov
-                    sh "java -jar jtestcov/jtestcov.jar \
-                        -app ${service}/target/*.jar \
-                        -include org/springframework/samples/** \
-                        -settings jtestcov/jtestcli.properties \
-                        -property dtp.project=${service} \
-                        -property report.dtp.publish=true \
-                        -property report.session.tag=${sessionTag} \
-                        -property build.id='${service}-${BUILD_TIMESTAMP}'"
-                    }
-                }
-            }
-        }
-        stage('Deploy') {
-            when { equals expected: true, actual: false }
-            steps {
-                
-                // check running containers
-                sh '''
-                    docker-compose -f docker-compose-cc.yml down || true
-                    sleep 10s
-                    '''
-                // deploy the project
-                sh  '''
-                    # Run PetClinic with Jtest coverage agent configured
-                    docker-compose -f docker-compose-cc.yml up -d
-                    sleep 90s
-                    '''
-
-                // Health check coverage agents
-                sh '''
-                    curl -iv --raw http://localhost:8051/status
-
-                    '''
-                // update CTP with yaml script upload
-                sh '''
-                    # upload yaml file to CTP
-                    curl -X 'PUT' -u ${DTP_USER}:${DTP_PASS} \
-                        ${CTP_URL}/em/api/v3/environments/${envId}/config \
-                        -H 'accept: application/json' \
-                        -H 'Content-Type: application/json' \
-                        -d @ctp.json
-                    '''
-            }
-        }
-        stage('Test') {
-            when { equals expected: true, actual: false}
-            steps {
-                // run Selenium tests
-                // docker run -d -p 4444:4444 -p 7900:7900 selenium/standalone-chrome:latest
-                sh """
-                    cd spring-petclinic-selenium-tests
-                    mvn clean test -DbaseUrl=http://${PUBLIC_IP}:8099 -DbaselineId=${app-name}-${BUILD_TIMESTAMP}
-                    """
             }
         }
     }
     post {
         // Clean after build
         always {
-            //sh 'docker container stop ${app_name}'
-            //sh 'docker container rm ${app_name}'
-            //sh 'docker image prune -f'
-            // delete Jtest Cache
-            archiveArtifacts(artifacts: ''' 
-                    **/target/*.jar, 
-                    ''',
-                fingerprint: true, 
-                onlyIfSuccessful: true,
-            )
             
             sh  '''
                 echo "cleaning up..."
