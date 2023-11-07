@@ -13,7 +13,7 @@ public class ParasoftWatcher implements BeforeEachCallback, TestWatcher  {
 
 	private static int ENV_ID;
 	private static String sessionId;
-	private static String baselineId;
+	//private static String baselineId;
 	// private static String ctpUri;
 
 	static {
@@ -83,7 +83,7 @@ public class ParasoftWatcher implements BeforeEachCallback, TestWatcher  {
 	static class ShutdownHook extends Thread {
 		@Override
 		public void run() {
-			baselineId = System.getProperty("baselineId", "latestBaseline");
+			//baselineId = System.getProperty("baselineId", "latestBaseline");
 			RestAssured.with().contentType(ContentType.JSON).post("em/api/v3/environments/" + ENV_ID + "/agents/session/stop");
 			StringBuilder bodyBuilder = new StringBuilder();
 			bodyBuilder.append('{');
@@ -93,8 +93,8 @@ public class ParasoftWatcher implements BeforeEachCallback, TestWatcher  {
 			bodyBuilder.append('}');
 			String publish = RestAssured.with().contentType(ContentType.JSON).body(bodyBuilder.toString()).post("em/api/v3/environments/" + ENV_ID + "/coverage/" + sessionId).body().asString();
 			System.out.println(publish);
-			String baseline = RestAssured.with().contentType(ContentType.JSON).body("string").post("em/api/v3/environments/" + ENV_ID + "/coverage/baselines/" + baselineId).body().asString();
-			System.out.println(baseline);
+			//String baseline = RestAssured.with().contentType(ContentType.JSON).body("string").post("em/api/v3/environments/" + ENV_ID + "/coverage/baselines/" + baselineId).body().asString();
+			//System.out.println(baseline);
 		}
 	}
 }
