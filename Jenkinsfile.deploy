@@ -161,8 +161,22 @@ pipeline {
             when { equals expected: true, actual: true }
             steps {
                 copyArtifacts(projectName: 'Petclinic-build', selector: lastSuccessful())
-
                 
+                // scan the binaries
+                script {
+                    for (service in ARRAY) {
+                     // jtest cov
+                    sh "java -jar jtestcov/jtestcov.jar \
+                        -app ${service}/target/*.jar \
+                        -include org/springframework/samples/** \
+                        -settings jtestcov/jtestcli.properties \
+                        -property dtp.project=${service} \
+                        -property report.dtp.publish=true \
+                        -property report.session.tag=${sessionTag} \
+                        -property build.id='${service}-${BUILD_TIMESTAMP}'"
+                    }
+                }
+
                 // check running containers
                 sh '''
                     docker-compose -f docker-compose-cc.yml down || true
