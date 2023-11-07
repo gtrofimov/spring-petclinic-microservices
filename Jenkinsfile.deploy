@@ -160,7 +160,6 @@ pipeline {
         stage('Deploy') {
             when { equals expected: true, actual: true }
             steps {
-                copyArtifacts(projectName: 'Petclinic-build', selector: lastSuccessful())
                 // check running containers
                 sh '''
                     docker-compose -f docker-compose-cc.yml down || true
