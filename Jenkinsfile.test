@@ -1,4 +1,5 @@
 def ARRAY
+def BUILD_TIMESTAMP
 
 pipeline {
     agent any
@@ -45,7 +46,7 @@ pipeline {
         // Build Controls
         BASELINE_ID='foo'
         lastSuccessfulBaselineId='foo'
-        BUILD_TIMESTAMP = ''
+        
     }
 
     stages {
