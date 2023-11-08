@@ -203,6 +203,8 @@ pipeline {
                         -H 'Content-Type: application/json' \
                         -d @ctp.json
                     '''
+                SUCCESS_BUILD_TIMESTAMP=${BUILD_TIMESTAMP}
+            
             }
         }
     }
