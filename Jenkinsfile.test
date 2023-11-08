@@ -32,7 +32,7 @@ pipeline {
         // dtp_publish="${DTP_PUBLISH}" //false
 
         // dynamic vars
-        //BUILD_TIMESTAMP = sh(script: 'date +%Y%m%d%H%M%S', returnStdout: true).trim()
+        BUILD_TIMESTAMP = sh(script: 'date +%Y%m%d%H%M%S', returnStdout: true).trim()
         
         PUBLIC_IP = sh(script: """curl -s https://httpbin.org/ip | jq -r '.origin'""", returnStdout: true).trim()
         ENCODED_ENV_NAME = URLEncoder.encode(ENV_NAME, 'UTF-8')
