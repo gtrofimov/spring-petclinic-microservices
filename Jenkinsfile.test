@@ -161,7 +161,7 @@ pipeline {
                     '''
                 
                                
-                    // get Impacte Tests for current deployment and baseline build
+                    // get Impacted Tests for current deployment and baseline build
                     sh "curl -X 'GET' -u '${DTP_USER}:demo-user' ${CTP_URL}/em/api/v3/environments/${envId}/coverage/impactedTests?baselineBuildId=foo -H 'accept: application/json' || true"
                 }
             }   
@@ -181,7 +181,7 @@ pipeline {
                     """
                 sh """
                     curl -X DELETE -H 'accept: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments/${envId}/coverage/baselines/foo
-                    curl -X GET -H 'accept: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments/${envId}/coverage/baselines/foo
+                    curl -X POST -H 'accept: application/json' -H 'Content-Type" application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments/${envId}/coverage/baselines/foo -d {"string"}
                     """
                 
             }
