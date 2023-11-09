@@ -203,18 +203,12 @@ pipeline {
                         -H 'Content-Type: application/json' \
                         -d @ctp.json
                     '''
-                SUCCESS_BUILD_TIMESTAMP=${BUILD_TIMESTAMP}
             
             }
         }
     }
     post {
-        // Clean after build
-        success {
-            script {
-                SUCCESS_BUILD_TIMESTAMP=BUILD_TIMESTAMP
-            }
-        }
+
         always {
             sh  '''
                 echo "cleaning up..."
