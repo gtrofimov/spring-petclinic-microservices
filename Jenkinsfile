@@ -256,13 +256,6 @@ pipeline {
             //sh 'docker container rm ${app_name}'
             //sh 'docker image prune -f'
             // delete Jtest Cache
-            archiveArtifacts(artifacts: ''' 
-                    **/target/*.jar, 
-                    ''',
-                fingerprint: true, 
-                onlyIfSuccessful: true,
-            )
-            
             sh  '''
                 echo "cleaning up..."
                 rm -rf "jtest_agent"
