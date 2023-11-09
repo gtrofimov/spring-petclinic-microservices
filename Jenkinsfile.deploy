@@ -9,6 +9,9 @@ pipeline {
     options {
         // This is required if you want to clean before build
         skipDefaultCheckout(true)
+
+        // Ontly keep 5 jobs history and 2 jobs artifacts
+        buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '2'))
     }
     environment {
         // App Settings
