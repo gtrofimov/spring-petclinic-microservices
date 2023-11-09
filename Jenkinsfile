@@ -94,7 +94,6 @@ pipeline {
     post {
         // Clean after build
         always {
-            '
             // delete Cov-tool stuff
             sh  '''
                 echo "cleaning up..."
