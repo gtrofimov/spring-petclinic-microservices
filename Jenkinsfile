@@ -13,6 +13,18 @@ pipeline {
         // Ontly keep 5 jobs history and 2 jobs artifacts
         buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '2'))
     }
+    parameters {
+        string(name: 'LS_URL', defaultValue: 'https://dtp:8443', description: 'Parasoft LS URL')
+        string(name: 'CTP_URL', defaultValue: '', description: 'Parasoft CTP URL')
+        string(name: 'DTP_URL', defaultValue: 'https://dtp:8443', description: 'Parasoft DTP URL')
+        string(name: 'DTP_USER', defaultValue: 'admin', description: 'Parasoft DTP Username')
+        string(name: 'DTP_PASS', defaultValue: '', description: 'Parasoft DTP Password')
+        //string(name: 'ENV_NAME', defaultValue: 'Local PetClinic', description: 'Environment Name')
+        //string(name: 'SERVICES_ARRAY', defaultValue: '', description: 'Array of services')
+        //string(name: 'PORTS', defaultValue: '', description: 'Ports')
+
+        // Add other parameters as needed
+    }
     environment {
         // App Settings
         app_name = 'spring-petclinic-microservices' // top level DTP Project
@@ -77,7 +89,17 @@ pipeline {
                 // Services ARRAY
                 // Ports
     
-                build job: 'Petclinic-deploy', parameters: []
+                build job: 'Petclinic-deploy', parameters: [
+                    string(name: 'LS_URL', value: params.LS_URL),
+                    string(name: 'CTP_URL', value: params.CTP_URL),
+                    string(name: 'DTP_URL', value: params.DTP_URL),
+                    string(name: 'DTP_USER', value: params.DTP_USER),
+                    string(name: 'DTP_PASS', value: params.DTP_PASS),
+                    //string(name: 'ENV_NAME', value: params.ENV_NAME),
+                    //string(name: 'SERVICES_ARRAY', value: params.SERVICES_ARRAY),
+                    //string(name: 'PORTS', value: params.PORTS)
+                    // Add other parameters as needed
+                ]
             
             }
         }
@@ -86,7 +108,17 @@ pipeline {
             steps {
                 // run regression suite
                 // Params: GRID_URL, APP_URL, CTP_URL, ENV_NAME, BaselineId             
-                build job: 'Petclinic-test', parameters: []
+                build job: 'Petclinic-test', parameters: [
+                    string(name: 'LS_URL', value: params.LS_URL),
+                          string(name: 'CTP_URL', value: params.CTP_URL),
+                          string(name: 'DTP_URL', value: params.DTP_URL),
+                          string(name: 'DTP_USER', value: params.DTP_USER),
+                          password(name: 'DTP_PASS', value: params.DTP_PASS),
+                          //string(name: 'ENV_NAME', value: params.ENV_NAME),
+                          //string(name: 'SERVICES_ARRAY', value: params.SERVICES_ARRAY),
+                          //string(name: 'PORTS', value: params.PORTS)
+                          // Add other parameters as needed
+                ]
 
             }
         }
