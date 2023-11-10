@@ -37,10 +37,10 @@ pipeline {
         //ls_pass = "${LS_PASS}"
 
         // Parasoft Common Settings
-        dtp_url = "${DTP_URL}" //https://dtp:8443
-        dtp_user = "${DTP_USER}" //admin
-        dtp_pass = "${DTP_PASS}"
-        ctp_url = "${CTP_URL}"
+        //dtp_url = "${DTP_URL}" //https://dtp:8443
+        //dtp_user = "${DTP_USER}" //admin
+        //dtp_pass = "${DTP_PASS}"
+        //ctp_url = "${CTP_URL}"
 
         // dtp_publish="${DTP_PUBLISH}" //false
 

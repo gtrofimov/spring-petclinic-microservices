@@ -76,7 +76,7 @@ pipeline {
                 // get Impacted Tests for current deployment and baseline build
                 sh """
                     curl -X 'GET' \
-                    -u '${DTP_USER}:demo-user' \
+                    -u '${DTP_USER}:${DTP_PASS}' \
                     -H 'accept: application/json' \
                     ${CTP_URL}/em/api/v3/environments/${envId}/coverage/impactedTests?baselineBuildId=latest || true
                     """
