@@ -14,10 +14,10 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '2'))
     }
     parameters {
-        string(name: 'LS_URL', defaultValue: 'https://dtp:8443', description: 'Parasoft LS URL')
-        string(name: 'CTP_URL', defaultValue: '', description: 'Parasoft CTP URL')
+        string(name: 'LS_URL', defaultValue: 'https://lss:8443', description: 'Parasoft LS URL')
+        string(name: 'CTP_URL', defaultValue: 'https://ctp:8443', description: 'Parasoft CTP URL')
         string(name: 'DTP_URL', defaultValue: 'https://dtp:8443', description: 'Parasoft DTP URL')
-        string(name: 'DTP_USER', defaultValue: 'admin', description: 'Parasoft DTP Username')
+        string(name: 'DTP_USER', defaultValue: 'demo', description: 'Parasoft DTP Username')
         string(name: 'DTP_PASS', defaultValue: '', description: 'Parasoft DTP Password')
         //string(name: 'ENV_NAME', defaultValue: 'Local PetClinic', description: 'Environment Name')
         //string(name: 'SERVICES_ARRAY', defaultValue: '', description: 'Array of services')
