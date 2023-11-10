@@ -21,8 +21,8 @@ pipeline {
 
         // Parasoft Licenses
         ls_url = "${LS_URL}" //https\://dtp:8443
-        ls_user = "${LS_USER}" //admin
-        ls_pass = "${LS_PASS}"
+        //ls_user = "${LS_USER}" //admin
+        //ls_pass = "${LS_PASS}"
 
         // Parasoft Common Settings
         dtp_url = "${DTP_URL}" //https://dtp:8443
@@ -132,8 +132,8 @@ pipeline {
                     license.network.use.specified.server=true
                     license.network.auth.enabled=true
                     license.network.url=${LS_URL}
-                    license.network.user=${LS_USER}
-                    license.network.password=${LS_PASS}
+                    license.network.user=${DTP_USER}
+                    license.network.password=${DTP_PASS}
 
                     # report.associations=false
                     # report.coverage.images=${covImage}

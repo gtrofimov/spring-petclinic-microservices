@@ -23,8 +23,8 @@ pipeline {
 
         // Parasoft Licenses
         ls_url = "${LS_URL}" //https\://dtp:8443
-        ls_user = "${LS_USER}" //admin
-        ls_pass = "${LS_PASS}"
+        //s_user = "${LS_USER}" //admin
+        //ls_pass = "${LS_PASS}"
 
         // Parasoft Common Settings
         dtp_url = "${DTP_URL}" //https://dtp:8443
