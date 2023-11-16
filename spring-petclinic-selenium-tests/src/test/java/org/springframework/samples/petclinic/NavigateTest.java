@@ -49,7 +49,7 @@ public class NavigateTest {
         // Debug
         System.out.println("Test PetClinic Navigation");
         // Get the text of the heading element using its CSS selector
-        String headingText = driver.findElement(By.cssSelector("h1")).getText();
+        //String headingText = driver.findElement(By.cssSelector("h1")).getText();
         // Print the heading text to the console
         System.out.println("Heading of the web page: " + headingText);
         Thread.sleep(1000);

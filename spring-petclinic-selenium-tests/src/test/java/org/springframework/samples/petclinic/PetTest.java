@@ -50,6 +50,7 @@ public class PetTest {
         Thread.sleep(1000);
 
         System.out.println("Test Rename Pet");
+        Thread.sleep(1000);
 
         driver.findElement(By.xpath("//a[@class=\"dropdown-toggle\"]")).click();
 		Thread.sleep(1000);
