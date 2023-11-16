@@ -51,7 +51,7 @@ public class NavigateTest {
         // Get the text of the heading element using its CSS selector
         //String headingText = driver.findElement(By.cssSelector("h1")).getText();
         // Print the heading text to the console
-        System.out.println("Heading of the web page: " + headingText);
+        //System.out.println("Heading of the web page: " + headingText);
         Thread.sleep(1000);
         driver.findElement(By.xpath("//a[@title=\"veterinarians\"]")).click();
         Thread.sleep(1000);
