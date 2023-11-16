@@ -30,29 +30,8 @@ pipeline {
         app_name = 'spring-petclinic-microservices' // top level DTP Project
         ENV_NAME = 'Local PetClinic' // no longer makes sense
         envId = '32' // need to be dynamically acquired via curl
-        covImage='SeleniumTests'
+        //covImage='SeleniumTests'
         sessionTag='jenkins-build'
-
-        // Parasoft Licenses
-        ls_url = "${LS_URL}" //https\://dtp:8443
-        //s_user = "${LS_USER}" //admin
-        //ls_pass = "${LS_PASS}"
-
-        // Parasoft Common Settings
-        dtp_url = "${DTP_URL}" //https://dtp:8443
-        dtp_user = "${DTP_USER}" //admin
-        dtp_pass = "${DTP_PASS}"
-        ctp_url = "${CTP_URL}"
-
-        // dtp_publish="${DTP_PUBLISH}" //false
-
-        // dynamic vars
-        BUILD_TIMESTAMP = sh(script: 'date +%Y%m%d%H%M%S', returnStdout: true).trim()
-        
-        PUBLIC_IP = sh(script: """curl -s https://httpbin.org/ip | jq -r '.origin'""", returnStdout: true).trim()
-        ENCODED_ENV_NAME = URLEncoder.encode(ENV_NAME, 'UTF-8')
-        // envId = sh(script: """curl -s -X 'GET' -H 'accept: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments?name=${ENCODED_ENV_NAME}&limit=50&offset=0 | jq -r '.environments[0].id'""", returnStdout: true).trim()
-        // buildId = "${app_name}-${BUILD_TIMESTAMP}"
 
         // Build Controls
         BASELINE_ID='latest'

@@ -113,7 +113,7 @@ pipeline {
                           string(name: 'CTP_URL', value: params.CTP_URL),
                           string(name: 'DTP_URL', value: params.DTP_URL),
                           string(name: 'DTP_USER', value: params.DTP_USER),
-                          password(name: 'DTP_PASS', value: params.DTP_PASS),
+                          string(name: 'DTP_PASS', value: params.DTP_PASS),
                           //string(name: 'ENV_NAME', value: params.ENV_NAME),
                           //string(name: 'SERVICES_ARRAY', value: params.SERVICES_ARRAY),
                           //string(name: 'PORTS', value: params.PORTS)
