@@ -103,7 +103,7 @@ pipeline {
                         def buildId="${service}-${TIMESTAMP}"
 
                         // Run Maven build with Jtest tasks via Docker
-                        sh '''
+                        sh """
                         echo $PWD
                         echo $pwd
                         echo ${pwd}
@@ -136,7 +136,7 @@ pipeline {
                         -Djtest.settings='../jtest/jtestcli.properties'; \
                         "
                         cd ..
-                        '''
+                        """
                     }
 
                 }
