@@ -13,6 +13,18 @@ pipeline {
         // Ontly keep 5 jobs history and 2 jobs artifacts
         buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '2'))
     }
+    parameters {
+        string(name: 'LS_URL', description: 'Parasoft LS URL')
+        string(name: 'CTP_URL', description: 'Parasoft CTP URL')
+        string(name: 'DTP_URL', description: 'Parasoft DTP URL')
+        string(name: 'DTP_USER', description: 'Parasoft DTP Username')
+        string(name: 'DTP_PASS', description: 'Parasoft DTP Password')
+        //string(name: 'ENV_NAME', defaultValue: 'Local PetClinic', description: 'Environment Name')
+        //string(name: 'SERVICES_ARRAY', defaultValue: '', description: 'Array of services')
+        //string(name: 'PORTS', defaultValue: '', description: 'Ports')
+
+        // Add other parameters as needed
+    }
     environment {
         // App Settings
         app_name = 'spring-petclinic-microservices' // top level DTP Project
@@ -75,7 +87,7 @@ pipeline {
                     dtp.url=${DTP_URL}
                     dtp.user=${DTP_USER}
                     dtp.password=${DTP_PASS}
-                    # dtp.project=${app_name}" > ./jtestcov/jtestcli.properties
+                    # dtp.project=${app_name}" >> ./jtestcov/jtestcli.properties
                     '''
             }                
         }
