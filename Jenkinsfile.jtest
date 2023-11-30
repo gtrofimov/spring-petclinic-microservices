@@ -97,7 +97,7 @@ pipeline {
                 
                 script {
                     // def servicesArray = services_list.split(',')
-                    for (def service in ARRAY) {
+                    for (service in ARRAY) {
 
                         def unitCovImage="${service};${service}-UT"
                         def buildId="${service}-${TIMESTAMP}"
