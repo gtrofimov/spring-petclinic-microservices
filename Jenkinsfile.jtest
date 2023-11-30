@@ -104,7 +104,13 @@ pipeline {
 
                         // Run Maven build with Jtest tasks via Docker
                         sh '''
-                        cd ${service}
+                        echo $PWD
+                        echo $pwd
+                        echo ${pwd}
+                        echo $service
+                        echo ${service}
+                        
+                        cd $service
                         
                         docker run --rm -i \
                         -u "$UID:$GID" \
