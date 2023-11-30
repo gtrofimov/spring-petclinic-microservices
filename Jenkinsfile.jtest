@@ -64,9 +64,9 @@ pipeline {
                     jtest.license.custom_edition_features=Jtest, Static Analysis, Flow Analysis, OWASP Rules, CWE Rules, PCI DSS Rules, DISA STIG Rules, Security Rules, Automation, Desktop Command Line, DTP Publish, Coverage, Unit Test, Unit Test Bulk Creation, Unit Test Tier 1, Unit Test Tier 2, Unit Test Tier 3, Unit Test Tier 4, Unit Test Spring Framework, Change Based Testing
                     license.network.use.specified.server=true
                     license.network.auth.enabled=true
-                    license.network.url="${LS_URL}"
-                    license.network.user="${DTP_USER}"
-                    license.network.password="${DTP_PASS}"
+                    license.network.url=${LS_URL}
+                    license.network.user=${DTP_USER}
+                    license.network.password=${DTP_PASS}
 
                     # report.associations=false
                     # report.coverage.images=${covImage}
@@ -84,9 +84,9 @@ pipeline {
 
                     # build.id=${buildId}
                     # session.tag=${jtestSessionTag}
-                    dtp.url="${DTP_URL}"
-                    dtp.user="${DTP_USER}"
-                    dtp.password="${DTP_PASS}"
+                    dtp.url=${DTP_URL}
+                    dtp.user=${DTP_USER}
+                    dtp.password=${DTP_PASS}
                     # dtp.project=${app_name}" >> ./jtest/jtestcli.properties
                     '''
             }                
@@ -97,13 +97,14 @@ pipeline {
                 
                 script {
                     // def servicesArray = services_list.split(',')
+                    sh "echo ${ARRAY}"
                     for (service in ARRAY) {
 
                         def unitCovImage="${service};${service}-UT"
                         def buildId="${service}-${TIMESTAMP}"
 
                         // Run Maven build with Jtest tasks via Docker
-                        sh """
+                        sh '''
                         echo $PWD
                         echo $pwd
                         echo ${pwd}
@@ -136,7 +137,7 @@ pipeline {
                         -Djtest.settings='../jtest/jtestcli.properties'; \
                         "
                         cd ..
-                        """
+                        '''
                     }
 
                 }
