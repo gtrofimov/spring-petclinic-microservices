@@ -99,44 +99,37 @@ pipeline {
                     // def servicesArray = services_list.split(',')
                     sh "echo ${ARRAY}"
                     for (service in ARRAY) {
+                        sh "echo ${service}"
 
                         def unitCovImage="${service};${service}-UT"
                         def buildId="${service}-${TIMESTAMP}"
 
                         // Run Maven build with Jtest tasks via Docker
                         sh '''
-                        echo $PWD
-                        echo $pwd
-                        echo ${pwd}
-                        echo $service
-                        echo ${service}
-                        
-                        cd $service
-                        
-                        docker run --rm -i \
-                        -u "$UID:$GID" \
-                        -v "$PWD:$PWD" \
-                        -w "$PWD" \
-                        "$(docker build -q ../jtest)" /bin/bash -c " \
-                        mvn \
-                        -Dmaven.test.failure.ignore=true \
-                        test-compile jtest:agent \
-                        test jtest:jtest \
-                        -s '../jtest/.m2/settings.xml' \
-                        -Djtest.settings='../jtest/jtestcli.properties' \
-                        -Djtest.config='${jtestUTConfig}' \
-                        -Djtest.report.coverage.images='${unitCovImage}' \
-                        -Djtest.dtp.project='${service}' \
-                        -Djtest.build.id=${buildId} \
-                        -Djtest.showSettings=true \
-                        -Dproperty.report.dtp.publish=true; \
-                        mvn \
-                        -DskipTests=true \
-                        package jtest:monitor \
-                        -s '../jtest/.m2/settings.xml' \
-                        -Djtest.settings='../jtest/jtestcli.properties'; \
-                        "
-                        cd ..
+                            docker run --rm -i \
+                            -u "$UID:$GID" \
+                            -v "$PWD:$PWD" \
+                            -w "$PWD" \
+                            $(docker build -q ./jtest) /bin/bash -c " \
+                            cd ${service}; \
+                            mvn \
+                            -Dmaven.test.failure.ignore=true \
+                            test-compile jtest:agent \
+                            test jtest:jtest \
+                            -s '../jtest/.m2/settings.xml' \
+                            -Djtest.settings='../jtest/jtestcli.properties' \
+                            -Djtest.config='${jtestUTConfig}' \
+                            -Djtest.report.coverage.images='${unitCovImage}' \
+                            -Djtest.dtp.project='${service}' \
+                            -Djtest.build.id=${buildId} \
+                            -Djtest.showSettings=true \
+                            -Dproperty.report.dtp.publish=true; \
+                            mvn \
+                            -DskipTests=true \
+                            package jtest:monitor \
+                            -s '../jtest/.m2/settings.xml' \
+                            -Djtest.settings='../jtest/jtestcli.properties'; \
+                            "
                         '''
                     }
 
