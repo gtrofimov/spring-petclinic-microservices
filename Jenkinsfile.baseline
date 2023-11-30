@@ -42,11 +42,30 @@ pipeline {
             }
         }
         stage('Build') {
-            when { equals expected: true, actual: true }
+            when { equals expected: true, actual: false }
             steps {
                 
                 // Params?
                 build job: 'Petclinic-build', parameters: []
+
+            }
+        }
+        stage('Build w/ Jtest') {
+            when { equals expected: true, actual: true }
+            steps {
+                
+                // Params?
+                build job: 'Petclinic-jtest', parameters: [
+                    string(name: 'LS_URL', value: params.LS_URL),
+                    string(name: 'CTP_URL', value: params.CTP_URL),
+                    string(name: 'DTP_URL', value: params.DTP_URL),
+                    string(name: 'DTP_USER', value: params.DTP_USER),
+                    string(name: 'DTP_PASS', value: params.DTP_PASS),
+                    //string(name: 'ENV_NAME', value: params.ENV_NAME),
+                    //string(name: 'SERVICES_ARRAY', value: params.SERVICES_ARRAY),
+                    //string(name: 'PORTS', value: params.PORTS)
+                    // Add other parameters as needed
+                ]
 
             }
         }
