@@ -107,12 +107,12 @@ services:
     ports:
      - 9090:9090
   
-  selenium:
-    image: selenium/standalone-chrome:latest
-    container_name: standalone-chrome
-    ports:
-      - "4444:4444"
-      - "7900:7900"
+#  selenium:
+#    image: selenium/standalone-chrome:latest
+#    container_name: standalone-chrome
+#    ports:
+#      - "4444:4444"
+#      - "7900:7900"
 
 # Commment out to save space
   ## Grafana / Prometheus
