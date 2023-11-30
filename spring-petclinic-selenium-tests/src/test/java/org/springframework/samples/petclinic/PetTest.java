@@ -20,19 +20,18 @@ public class PetTest {
 
     @BeforeAll
     static void setUp() throws Exception {
-        
         // base URL
-        baseUrl = System.getProperty("baseUrl", "http://localhost:8099");
+        baseUrl = System.getProperty("baseUrl", "http://35.90.147.16:8099");
 
         // URL of the Selenium Grid Hub
-        gridUrl = System.getProperty("gridUrl","http://34.211.11.203:4444/wd/hub");
-        
+        gridUrl = System.getProperty("gridUrl","http://35.90.147.16:4444/wd/hub");
+
         // Set ChromeOptions with desired arguments
         ChromeOptions options = new ChromeOptions();
         
         // Add any additional Chrome arguments or preferences if needed
-        //options.addArguments("--headless");
-        //options.addArguments("--remote-allow-origins=*");
+        options.addArguments("--headless");
+        options.addArguments("--remote-allow-origins=*");
 
         // Create a RemoteWebDriver instance with ChromeOptions and grid URL
         URL url = new URL(gridUrl);
@@ -50,23 +49,34 @@ public class PetTest {
         Thread.sleep(1000);
 
         System.out.println("Test Rename Pet");
-        Thread.sleep(1000);
-
-        driver.findElement(By.xpath("//a[@class=\"dropdown-toggle\"]")).click();
+        // Thread.sleep(1000);
+		Thread.sleep(1000);
+		driver.findElement(By.xpath("//a[@class=\"dropdown-toggle\"]")).click();
 		Thread.sleep(1000);
 		driver.findElement(By.xpath("//a[@ui-sref=\"owners\"]")).click();
-		Thread.sleep(2000);
-		driver.findElement(By.xpath("//owner-list/table/tbody/tr[1]/td[1]/a")).click();
-		Thread.sleep(2000);
+		Thread.sleep(1000);
+
+        System.out.println("Still testing");
+		driver.navigate().refresh();
+        Thread.sleep(2000);
+        driver.findElement(By.xpath("//owner-list/table/tbody/tr[1]/td[1]/a")).click();
+		Thread.sleep(1000);
 		driver.findElement(By.xpath("//dd/a")).click();
 		Thread.sleep(1000);
 		driver.findElement(By.name("name")).clear();
 		driver.findElement(By.name("name")).sendKeys("Lena");
 		Thread.sleep(1000);
 		driver.findElement(By.xpath("//button[@type=\"submit\"]")).click();
-		Thread.sleep(2000);
+		Thread.sleep(1000);
+        System.out.println("Still testing");
+		driver.navigate().refresh();
+        Thread.sleep(2000);
+        driver.findElement(By.xpath("//a[@class=\"dropdown-toggle\"]")).click();
+		Thread.sleep(1000);
+		driver.findElement(By.xpath("//a[@ui-sref=\"owners\"]")).click();
+		Thread.sleep(1000);
 		driver.findElement(By.xpath("//owner-list/table/tbody/tr[1]/td[1]/a")).click();
-		Thread.sleep(2000);
+		Thread.sleep(1000);
 		driver.findElement(By.xpath("//dd/a")).click();
 		Thread.sleep(1000);
 		driver.findElement(By.name("name")).clear();

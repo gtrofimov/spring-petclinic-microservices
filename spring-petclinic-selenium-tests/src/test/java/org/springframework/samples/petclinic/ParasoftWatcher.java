@@ -19,7 +19,7 @@ public class ParasoftWatcher implements BeforeEachCallback, TestWatcher  {
 	static {
 		ENV_ID = Integer.parseInt(System.getProperty("ENV_ID", "32"));
 		// Get the base URL from a system property or environment variable
-		String ctpUrl = System.getProperty("ctpUrl", "http://35.90.203.18:8080");
+		String ctpUrl = System.getProperty("ctpUrl", "http://35.91.243.95:8080");
 
 		// Split the ctpUrl into URI and port components
 		String[] uriComponents = ctpUrl.split(":");

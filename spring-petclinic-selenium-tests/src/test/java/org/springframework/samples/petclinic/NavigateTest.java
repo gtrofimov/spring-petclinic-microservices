@@ -22,22 +22,31 @@ public class NavigateTest {
     static void setUp() throws Exception {
         
         // base URL
-        baseUrl = System.getProperty("baseUrl", "http://localhost:8099");
+        baseUrl = System.getProperty("baseUrl", "http://35.90.147.16:8099");
 
         // URL of the Selenium Grid Hub
-        gridUrl = System.getProperty("gridUrl","http://34.211.11.203:4444/wd/hub");
+        gridUrl = System.getProperty("gridUrl","http://35.90.147.16:4444/wd/hub");
         
         // Set ChromeOptions with desired arguments
         ChromeOptions options = new ChromeOptions();
         
         // Add any additional Chrome arguments or preferences if needed
-        //options.addArguments("--headless");
-        //options.addArguments("--remote-allow-origins=*");
+        options.addArguments("--headless");
+        options.addArguments("--remote-allow-origins=*");
 
         // Create a RemoteWebDriver instance with ChromeOptions and grid URL
         URL url = new URL(gridUrl);
         driver = new RemoteWebDriver(url, options, false);
 
+    }
+
+    
+    @AfterAll
+    static void tearDown() {
+        // Close the WebDriver session
+        if (driver != null) {
+            driver.quit();
+        }
     }
 
     @Test
@@ -65,13 +74,7 @@ public class NavigateTest {
         Thread.sleep(1000);
         driver.findElement(By.xpath("//a[@title=\"home page\"]")).click();
 
-    }
+        
 
-    @AfterAll
-    static void tearDown() {
-        // Close the WebDriver session
-        if (driver != null) {
-            driver.quit();
-        }
     }
 }
