@@ -30,6 +30,7 @@ pipeline {
         app_name = 'spring-petclinic-microservices' // top level DTP Project
         jtestUTConfig="jtest.builtin://Unit Tests"
         TIMESTAMP = sh(script: 'date +%Y%m%d%H%M%S', returnStdout: true).trim()
+        service='foo' // why is this needed?
     }
 
     stages {
@@ -100,16 +101,24 @@ pipeline {
                     sh "echo ${ARRAY}"
                     for (service in ARRAY) {
                         sh "echo ${service}"
+                        sh '''
+                            echo '''service'''
+                            '''
 
                         def unitCovImage="${service};${service}-UT"
                         def buildId="${service}-${TIMESTAMP}"
 
+                        sh "echo ${unitCovImage}"
+                        sh "echo ${buildId}"
                         // Run Maven build with Jtest tasks via Docker
                         sh '''
+                            echo "'''unitCovImage'''"
+                            echo "'''buildId'''"
+                            
                             docker run --rm -i \
                             -u "$UID:$GID" \
                             -v "$PWD:$PWD" \
-                            -w "$PWD" \
+                            -w "$PWD/+'''service'''" \
                             $(docker build -q ./jtest) /bin/bash -c " \
                             cd ${service}; \
                             mvn \
@@ -119,8 +128,8 @@ pipeline {
                             -s '../jtest/.m2/settings.xml' \
                             -Djtest.settings='../jtest/jtestcli.properties' \
                             -Djtest.config='${jtestUTConfig}' \
-                            -Djtest.report.coverage.images='${unitCovImage}' \
-                            -Djtest.dtp.project='${service}' \
+                            -Djtest.report.coverage.images=${unitCovImage} \
+                            -Djtest.dtp.project='''service''' \
                             -Djtest.build.id=${buildId} \
                             -Djtest.showSettings=true \
                             -Dproperty.report.dtp.publish=true; \
