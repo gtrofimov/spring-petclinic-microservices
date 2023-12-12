@@ -127,7 +127,7 @@ pipeline {
                             jtest:agent \
                             test \
                             jtest:jtest \
-                            -s ../jtest/.m2/settings.xml \
+                            -s '../jtest/.m2/settings.xml' \
                             -Dmaven.test.failure.ignore=true \
                             -Djtest.settingsList='../jtest/jtestcli.properties,../jtest/jtestcli-ut.properties' \
                             -Djtest.config='${jtestUTConfig}' \
