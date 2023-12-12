@@ -30,7 +30,8 @@ pipeline {
         app_name = 'spring-petclinic-microservices' // top level DTP Project
         jtestUTConfig="jtest.builtin://Unit Tests"
         TIMESTAMP = sh(script: 'date +%Y%m%d%H%M%S', returnStdout: true).trim()
-        service='foo' // why is this needed?
+        //service='foo' // why is this needed?
+        services_list = "spring-petclinic-api-gateway,spring-petclinic-vets-service,spring-petclinic-visits-service,spring-petclinic-customers-service"
     }
 
     stages {
@@ -47,14 +48,14 @@ pipeline {
                     env.GID = sh(script: 'id -g jenkins', returnStdout: true).trim()
                 }
                 // define services
-                script {
-                    ARRAY = [
-                        "spring-petclinic-api-gateway", 
-                        "spring-petclinic-vets-service", 
-                        "spring-petclinic-visits-service", 
-                        "spring-petclinic-customers-service"
-                        ]
-                }
+                // script {
+                //     ARRAY = [
+                //         "spring-petclinic-api-gateway", 
+                //         "spring-petclinic-vets-service", 
+                //         "spring-petclinic-visits-service", 
+                //         "spring-petclinic-customers-service"
+                //         ]
+                // }
                 // set up configs
                 sh '''
                     # Set Up and write .properties file
@@ -95,54 +96,66 @@ pipeline {
         stage('Build') {
             when { equals expected: true, actual: true }
             steps {
-                
+
+                // Run Jtest Unit test with CC
                 script {
-                    // def servicesArray = services_list.split(',')
-                    sh "echo ${ARRAY}"
-                    for (service in ARRAY) {
-                        sh "echo ${service}"
+                    def servicesArray = services_list.split(',')
+                    for (def dir in servicesArray) {
+                        // Setup stage-specific additional settings
                         sh '''
-                            echo '''service'''
-                            '''
-
-                        def unitCovImage="${service};${service}-UT"
-                        def buildId="${service}-${TIMESTAMP}"
-
-                        sh "echo ${unitCovImage}"
-                        sh "echo ${buildId}"
-                        // Run Maven build with Jtest tasks via Docker
+                            # Set Up and write .properties file
+                            echo $"
+                            dtp.project='''+dir+'''
+                            build.id='''+dir+'''-${TIMESTAMP}
+                            report.coverage.images=${project_name};'''+dir+''';'''+dir+'''-UT
+                            " >> ./jtest/jtestcli-ut.properties
+                        '''
+                        // Execute the build with Jtest Maven plugin in docker
                         sh '''
-                            echo "'''unitCovImage'''"
-                            echo "'''buildId'''"
-                            
-                            docker run --rm -i \
-                            -u "$UID:$GID" \
+                            # Run Maven build with Jtest tasks via Docker
+                            docker run \
+                            -u ${UID}:${GID} \
+                            --rm -i \
+                            --name jtest \
                             -v "$PWD:$PWD" \
-                            -w "$PWD/+'''service'''" \
+                            -v "$PWD:$PWD" \
+                            -w "$PWD/'''+dir+'''" \
                             $(docker build -q ./jtest) /bin/bash -c " \
-                            cd ${service}; \
-                            mvn \
+
+                            # Compile the test sources and run unit tests with Jtest
+                            mvn test-compile \
+                            jtest:agent \
+                            test \
+                            jtest:jtest \
+                            -s jtest/.m2/settings.xml \
                             -Dmaven.test.failure.ignore=true \
-                            test-compile jtest:agent \
-                            test jtest:jtest \
-                            -s '../jtest/.m2/settings.xml' \
-                            -Djtest.settings='../jtest/jtestcli.properties' \
+                            -Djtest.settingsList='../jtest/jtestcli.properties,../jtest/jtestcli-ut.properties' \
                             -Djtest.config='${jtestUTConfig}' \
-                            -Djtest.report.coverage.images=${unitCovImage} \
-                            -Djtest.dtp.project='''service''' \
-                            -Djtest.build.id=${buildId} \
+                            -Djtest.report=./target/jtest/ut \
                             -Djtest.showSettings=true \
-                            -Dproperty.report.dtp.publish=true; \
-                            mvn \
-                            -DskipTests=true \
-                            package jtest:monitor \
-                            -s '../jtest/.m2/settings.xml' \
-                            -Djtest.settings='../jtest/jtestcli.properties'; \
+                            -Djtest.report.dtp.publish=true \
                             "
                         '''
                     }
-
                 }
+                
+                echo '---> Parsing 10.x unit test reports'
+                script {
+                    step([$class: 'XUnitPublisher', 
+                        // thresholds: [failed(
+                        //     failureNewThreshold: '0', 
+                        //     failureThreshold: '0')
+                        // ],
+                        tools: [[$class: 'ParasoftType', 
+                            deleteOutputFiles: true, 
+                            failIfNotNew: false, 
+                            pattern: '**/target/jtest/ut/*report*.xml', 
+                            skipNoTestFiles: true, 
+                            stopProcessingIfError: false
+                        ]]
+                    ])
+                }
+
             }
         }
     }
