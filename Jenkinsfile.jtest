@@ -69,11 +69,21 @@ pipeline {
                     license.network.url=${LS_URL}
                     license.network.user=${DTP_USER}
                     license.network.password=${DTP_PASS}
+                    
+                    dtp.url=${DTP_URL}
+                    dtp.user=${DTP_USER}
+                    dtp.password=${DTP_PASS}
 
-                    # report.associations=false
-                    # report.coverage.images=${covImage}
+                    # dtp.project=${app_name}
+                    # build.id=${buildId}
+                    # session.tag=${jtestSessionTag}
+
                     report.scontrol=min
                     report.coverage.line.hashes=true
+                    report.dtp.publish=true
+                    
+                    # report.associations=false
+                    # report.coverage.images=${covImage}
                     # report.scontrol=full
                     # scope.local=true
                     # scope.scontrol=true
@@ -83,13 +93,7 @@ pipeline {
                     # scontrol.rep1.git.branch=main
                     # scontrol.rep1.git.url=${project_repo}
                     # scontrol.rep1.type=git
-
-                    # build.id=${buildId}
-                    # session.tag=${jtestSessionTag}
-                    dtp.url=${DTP_URL}
-                    dtp.user=${DTP_USER}
-                    dtp.password=${DTP_PASS}
-                    # dtp.project=${app_name}" >> ./jtest/jtestcli.properties
+                    " >> ./jtest/jtestcli.properties
                     '''
             }                
         }
@@ -133,7 +137,6 @@ pipeline {
                             -Djtest.config='${jtestUTConfig}' \
                             -Djtest.report=./target/jtest/ut \
                             -Djtest.showSettings=true \
-                            -Djtest.report.dtp.publish=true \
                             "
                         '''
                     }
