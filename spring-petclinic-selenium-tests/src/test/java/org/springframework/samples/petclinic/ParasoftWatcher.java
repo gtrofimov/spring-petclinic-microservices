@@ -19,7 +19,7 @@ public class ParasoftWatcher implements BeforeEachCallback, TestWatcher  {
 	static {
 		ENV_ID = Integer.parseInt(System.getProperty("ENV_ID", "32"));
 		// Get the base URL from a system property or environment variable
-		String ctpUrl = System.getProperty("ctpUrl", "http://35.91.243.95:8080");
+		String ctpUrl = System.getProperty("ctpUrl", "http://ctp:8080");
 
 		// Split the ctpUrl into URI and port components
 		String[] uriComponents = ctpUrl.split(":");
@@ -29,7 +29,7 @@ public class ParasoftWatcher implements BeforeEachCallback, TestWatcher  {
 	    // CTP connection
 		RestAssured.baseURI = uri;
 	    RestAssured.port = port;
-	    RestAssured.authentication = RestAssured.basic("demo", "demo-user");
+	    RestAssured.authentication = RestAssured.basic("demo", "d3mo-user");
 		sessionId = RestAssured.with().contentType(ContentType.JSON).post("em/api/v3/environments/" + ENV_ID + "/agents/session/start").body().jsonPath().getString("session");
 		Runtime.getRuntime().addShutdownHook(new ShutdownHook());
 		System.out.println("Session Id is: " + sessionId);
