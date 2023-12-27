@@ -40,7 +40,7 @@ public class RegisterOwnerAndPetTest {
         ChromeOptions options = new ChromeOptions();
         
         // Add any additional Chrome arguments or preferences if needed
-        options.addArguments("--headless");
+        // options.addArguments("--headless");
         options.addArguments("--remote-allow-origins=*");
 
         // Create a RemoteWebDriver instance with ChromeOptions and grid URL
