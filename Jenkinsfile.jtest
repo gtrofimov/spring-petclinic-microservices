@@ -44,7 +44,7 @@ pipeline {
                 checkout([$class: 'GitSCM', 
                     branches: [[name: 'master']], 
                     userRemoteConfigs: [[url: 'https://github.com/gtrofimov/spring-petclinic-microservices.git']]])
-                     
+
                 // set GID
                 script {
                     env.GID = sh(script: 'id -g jenkins', returnStdout: true).trim()
@@ -116,6 +116,14 @@ pipeline {
                             report.coverage.images=${project_name};'''+dir+''';'''+dir+'''-UT
                             " >> ./jtest/jtestcli-ut.properties
                         '''
+                                                sh '''
+                            # Set Up and write .properties file
+                            echo $"
+                            dtp.project='''+dir+'''
+                            build.id='''+dir+'''-${TIMESTAMP}
+                            report.coverage.images=${project_name};'''+dir+''';'''+dir+'''-FT
+                            " >> ./jtest/jtestcli-ft.properties
+                        '''
                         // Execute the build with Jtest Maven plugin in docker
                         sh '''
                             # Run Maven build with Jtest tasks via Docker
@@ -123,7 +131,6 @@ pipeline {
                             -u ${UID}:${GID} \
                             --rm -i \
                             --name jtest \
-                            -v "$PWD:$PWD" \
                             -v "$PWD:$PWD" \
                             -w "$PWD/'''+dir+'''" \
                             $(docker build -q ./jtest) /bin/bash -c " \
@@ -138,6 +145,13 @@ pipeline {
                             -Djtest.settingsList='../jtest/jtestcli.properties,../jtest/jtestcli-ut.properties' \
                             -Djtest.config='${jtestUTConfig}' \
                             -Djtest.report=./target/jtest/ut \
+                            -Djtest.showSettings=true; \
+                            
+                            # Package the application with the Jtest Monitor
+                            mvn package jtest:monitor \
+                            -s '../jtest/.m2/settings.xml' \
+                            -Dmaven.test.skip=true \
+                            -Djtest.settingsList='../jtest/jtestcli.properties,../jtest/jtestcli-ft.properties' \
                             -Djtest.showSettings=true \
                             "
                         '''
@@ -168,7 +182,7 @@ pipeline {
         // Clean after build
         success {
             archiveArtifacts(artifacts: ''' 
-                    **/target/*.jar, 
+                    **/target/**/*.jar, 
                     ''',
                 fingerprint: true, 
                 onlyIfSuccessful: true,
