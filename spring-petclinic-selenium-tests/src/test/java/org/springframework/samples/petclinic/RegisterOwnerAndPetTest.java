@@ -86,6 +86,7 @@ public class RegisterOwnerAndPetTest {
 		Thread.sleep(1000);
 		iPAddress_18_237_133_64_Page.clickMarkVerdugoLink();
 		iPAddress_18_237_133_64_Page.clickAddNewPetLink();
+		Thread.sleep(1000);
 		iPAddress_18_237_133_64_Page.setNameField("Arty");
 		iPAddress_18_237_133_64_Page.setBirthDate("02022010");
 		iPAddress_18_237_133_64_Page.selectTypeDropdown("dog");
