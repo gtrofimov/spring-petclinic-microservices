@@ -83,10 +83,11 @@ public class RegisterOwnerAndPetTest {
 		iPAddress_18_237_133_64_Page.setCityField("Monrovia");
 		iPAddress_18_237_133_64_Page.setTelephoneField("6267391734");
 		iPAddress_18_237_133_64_Page.clickSubmitButton();
-		Thread.sleep(1000);
+		Thread.sleep(2000);
 		iPAddress_18_237_133_64_Page.clickMarkVerdugoLink();
+		Thread.sleep(2000);
 		iPAddress_18_237_133_64_Page.clickAddNewPetLink();
-		Thread.sleep(1000);
+		Thread.sleep(2000);
 		iPAddress_18_237_133_64_Page.setNameField("Arty");
 		iPAddress_18_237_133_64_Page.setBirthDate("02022010");
 		iPAddress_18_237_133_64_Page.selectTypeDropdown("dog");
