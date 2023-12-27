@@ -28,7 +28,9 @@ pipeline {
         app_name = 'spring-petclinic-microservices' // top level DTP Project
 
         // dynamic vars
-        BUILD_TIMESTAMP = sh(script: 'date +%Y%m%d%H%M%S', returnStdout: true).trim()
+        //BUILD_TIMESTAMP = sh(script: 'date +%Y%m%d%H%M%S', returnStdout: true).trim()
+        BUILD_TIMESTAMP = 'latest'
+    
     }
 
     stages {
@@ -90,6 +92,7 @@ pipeline {
                     string(name: 'DTP_URL', value: params.DTP_URL),
                     string(name: 'DTP_USER', value: params.DTP_USER),
                     string(name: 'DTP_PASS', value: params.DTP_PASS),
+                    string(name: 'BUILD_TIMESTAMP', value: env.BUILD_TIMESTAMP),
                     //string(name: 'ENV_NAME', value: params.ENV_NAME),
                     //string(name: 'SERVICES_ARRAY', value: params.SERVICES_ARRAY),
                     //string(name: 'PORTS', value: params.PORTS)
@@ -109,6 +112,7 @@ pipeline {
                     string(name: 'DTP_URL', value: params.DTP_URL),
                     string(name: 'DTP_USER', value: params.DTP_USER),
                     string(name: 'DTP_PASS', value: params.DTP_PASS),
+                    string(name: 'BUILD_TIMESTAMP', value: env.BUILD_TIMESTAMP),
                           //string(name: 'ENV_NAME', value: params.ENV_NAME),
                           //string(name: 'SERVICES_ARRAY', value: params.SERVICES_ARRAY),
                           //string(name: 'PORTS', value: params.PORTS)
