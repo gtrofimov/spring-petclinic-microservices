@@ -54,7 +54,7 @@ pipeline {
             steps {
                 
                 // Params?
-                build job: 'Jenkinsfile.build', parameters: []
+                build job: 'Petclinic-build', parameters: []
 
             }
         }
@@ -63,7 +63,7 @@ pipeline {
             steps {
                 
                 // Params?
-                build job: 'Jenkinsfile.jtest', parameters: [
+                build job: 'Petclinic-jtest', parameters: [
                     string(name: 'LS_URL', value: params.LS_URL),
                     string(name: 'CTP_URL', value: params.CTP_URL),
                     string(name: 'DTP_URL', value: params.DTP_URL),
@@ -86,7 +86,7 @@ pipeline {
                 // Services ARRAY
                 // Ports
     
-                build job: 'Jenkinsfile.deploy', parameters: [
+                build job: 'Petclinic-deploy', parameters: [
                     string(name: 'LS_URL', value: params.LS_URL),
                     string(name: 'CTP_URL', value: params.CTP_URL),
                     string(name: 'DTP_URL', value: params.DTP_URL),
@@ -106,7 +106,7 @@ pipeline {
             steps {
                 // run regression suite
                 // Params: GRID_URL, APP_URL, CTP_URL, ENV_NAME, BaselineId             
-                build job: 'Jenkinsfile.test', parameters: [
+                build job: 'Petclinic-test', parameters: [
                     string(name: 'LS_URL', value: params.LS_URL),
                     string(name: 'CTP_URL', value: params.CTP_URL),
                     string(name: 'DTP_URL', value: params.DTP_URL),
