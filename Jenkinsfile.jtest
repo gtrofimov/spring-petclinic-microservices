@@ -112,7 +112,7 @@ pipeline {
                             echo $"
                             dtp.project='''+dir+'''
                             build.id='''+dir+'''-${BUILD_TIMESTAMP}
-                            report.coverage.images=${project_name};'''+dir+''';'''+dir+'''-UT
+                            report.coverage.images='''+dir+''';'''+dir+'''-UT
                             " >> ./jtest/jtestcli-ut.properties
                         '''
                                                 sh '''
@@ -120,7 +120,7 @@ pipeline {
                             echo $"
                             dtp.project='''+dir+'''
                             build.id='''+dir+'''-${BUILD_TIMESTAMP}
-                            report.coverage.images=${project_name};'''+dir+''';'''+dir+'''-FT
+                            report.coverage.images='''+dir+''';'''+dir+'''-FT
                             " >> ./jtest/jtestcli-ft.properties
                         '''
                         // Execute the build with Jtest Maven plugin in docker
@@ -186,6 +186,7 @@ pipeline {
                     **/target/**/*.jar,
                     ***/target/jtest/ut/*, 
                     ''',
+                excludes: '**/target/jtest/.jtest/*'
                 fingerprint: true, 
                 onlyIfSuccessful: true,
             )
