@@ -79,7 +79,6 @@ pipeline {
                 // run Selenium tests
                 // docker run -d -p 4444:4444 -p 7900:7900 selenium/standalone-chrome:latest
                 sh """
-                    testNames=$(jq -r '.[] | select(.analysisType == "FT") | .testName' impactedTests.json | paste -sd "," -)
                     cd spring-petclinic-selenium-tests
                     mvn clean test \
                     -DbaseUrl='http://${PUBLIC_IP}:8099' \
