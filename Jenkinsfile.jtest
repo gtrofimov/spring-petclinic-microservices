@@ -173,8 +173,8 @@ pipeline {
                         ]]
                     ])
                 }
-                echo '---> Parsing 10.x unit test code coverage'
-                recordParasoftCoverage pattern: '**/target/jtest/ut/*coverage*.xml'
+                // echo '---> Parsing 10.x unit test code coverage'
+                // recordParasoftCoverage pattern: '**/target/jtest/ut/*coverage*.xml'
 
             }
         }
