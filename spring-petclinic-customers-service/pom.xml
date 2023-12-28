@@ -113,6 +113,15 @@
         </dependency>
 	</dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.parasoft.jtest.tia</groupId>
+                <artifactId>tia-maven-plugin</artifactId>
+                <version>2020.1.0</version>
+            </plugin>
+        </plugins>
+    </build>
     <profiles>
         <profile>
             <id>buildDocker</id>
