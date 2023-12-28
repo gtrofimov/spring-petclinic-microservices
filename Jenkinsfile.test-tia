@@ -90,10 +90,10 @@ pipeline {
                     """
                 
                 // Update Baseline build in CTP with latest
-                sh """
-                    curl -X DELETE -H 'accept: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments/${envId}/coverage/baselines/latest
-                    curl -X POST -H 'accept: application/json' -H 'Content-Type: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments/${envId}/coverage/baselines/latest -d '"string"'
-                    """
+                //sh """
+                //    curl -X DELETE -H 'accept: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments/${envId}/coverage/baselines/latest
+                //    curl -X POST -H 'accept: application/json' -H 'Content-Type: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments/${envId}/coverage/baselines/latest -d '"string"'
+                //    """
                 
             }    
         }
