@@ -84,8 +84,8 @@ pipeline {
                     -DbaseUrl='http://${PUBLIC_IP}:8099' \
                     -DgridUrl='http://${PUBLIC_IP}:4444/wd/hub' \
                     -DenvId=${envId} \
-                    -DctpUrl='${CTP_URL} \
-                    -Dtest=${testName}
+                    -DctpUrl='${CTP_URL}' \
+                    -Dtest='${testName}'
                     """
                 
                 // Update Baseline build in CTP with latest
