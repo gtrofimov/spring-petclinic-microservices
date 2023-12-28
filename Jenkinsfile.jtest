@@ -183,7 +183,7 @@ pipeline {
         // Clean after build
         success {
             archiveArtifacts(artifacts: ''' 
-                    **/target/**/*.jar,
+                    **/target/*.jar,
                     ***/target/jtest/ut/*, 
                     ''',
                 fingerprint: true, 
