@@ -35,7 +35,7 @@ class PetDetails {
 
     private String owner;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "dd-MM-YYYY")
     private Date birthDate;
 
     private PetType type;
