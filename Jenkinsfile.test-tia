@@ -76,18 +76,25 @@ pipeline {
             when { equals expected: true, actual: true}
             steps {
                 script {
-                    // Fetch impacted test names as a comma-separated list
-                    def impactedTests = sh(script: "jq -r '.[] | select(.analysisType == \"FT\") | .testName' impactedTests.json | paste -sd \",\" -", returnStdout: true).trim()
-                    // Run Selenium tests with Maven
-                    sh """
-                        cd spring-petclinic-selenium-tests
-                        mvn clean test \
-                        -DbaseUrl='http://${PUBLIC_IP}:8099' \
-                        -DgridUrl='http://${PUBLIC_IP}:4444/wd/hub' \
-                        -DenvId=${envId} \
-                        -DctpUrl='${CTP_URL}' \
-                        -Dtest='${impactedTests}'
-                    """
+                    // get list of impacted Test from Json file
+                    def impactedTests = sh(
+                        script: "if jq -e 'has(0) and .[0].analysisType == \"FT\"' impactedTests.json > /dev/null 2>&1; then jq -r '.[] | select(.analysisType == \"FT\") | .testName' impactedTests.json | paste -sd \",\" -; else echo 'NoFTTestsFound'; fi",
+                        returnStdout: true
+                    ).trim()
+
+                    if (impactedTests == 'NoFTTestsFound') {
+                        echo "No impacted FT tests found. Skipping test execution."
+                    } else {
+                        // Run Selenium tests with Maven using impactedTests as parameters
+                        sh """
+                            cd spring-petclinic-selenium-tests
+                            mvn clean test \
+                            -DbaseUrl='http://${PUBLIC_IP}:8099' \
+                            -DgridUrl='http://${PUBLIC_IP}:4444/wd/hub' \
+                            -DenvId=${envId} \
+                            -DctpUrl='${CTP_URL}' \
+                            -Dtest='${impactedTests}'
+                        """
                     }
                 // run Selenium tests
                 // docker run -d -p 4444:4444 -p 7900:7900 selenium/standalone-chrome:latest
