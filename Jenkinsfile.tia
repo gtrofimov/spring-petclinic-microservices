@@ -29,7 +29,7 @@ pipeline {
 
         // dynamic vars
         //BUILD_TIMESTAMP = sh(script: 'date +%Y%m%d%H%M%S', returnStdout: true).trim()
-        BUILD_TIMESTAMP = 'latest'
+        BUILD_TIMESTAMP = 'latest-tia'
     
     }
 
@@ -106,7 +106,7 @@ pipeline {
             steps {
                 // run regression suite
                 // Params: GRID_URL, APP_URL, CTP_URL, ENV_NAME, BaselineId             
-                build job: 'Petclinic-test', parameters: [
+                build job: 'Petclinic-test-tia', parameters: [
                     string(name: 'LS_URL', value: params.LS_URL),
                     string(name: 'CTP_URL', value: params.CTP_URL),
                     string(name: 'DTP_URL', value: params.DTP_URL),
@@ -120,13 +120,6 @@ pipeline {
                 ]
 
             }
-        stage('Release')
-            steps {
-                
-                //copyArtifacts(projectName: 'Petclinic-build', selector: lastSuccessful())
-                copyArtifacts(projectName: 'Petclinic-jtest', selector: lastSuccessful())
-                recordParasoftCoverage pattern: '**/target/jtest/ut/coverage.xml', referenceBuild: '20', referenceJob: 'Demo', sourceCodeEncoding: 'UTF-8'
-    }
         }
     }
     post {
