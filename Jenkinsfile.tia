@@ -106,7 +106,7 @@ pipeline {
             steps {
                 // run regression suite
                 // Params: GRID_URL, APP_URL, CTP_URL, ENV_NAME, BaselineId             
-                build job: 'Petclinic-test-tia', parameters: [
+                build job: 'Petclinic-test', parameters: [
                     string(name: 'LS_URL', value: params.LS_URL),
                     string(name: 'CTP_URL', value: params.CTP_URL),
                     string(name: 'DTP_URL', value: params.DTP_URL),
