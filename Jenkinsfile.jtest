@@ -186,7 +186,7 @@ pipeline {
                     **/target/**/*.jar,
                     ***/target/jtest/ut/*, 
                     ''',
-                excludes: '**/target/jtest/.jtest/*'
+                excludes: '**/target/jtest/.jtest/*',
                 fingerprint: true, 
                 onlyIfSuccessful: true,
             )
