@@ -143,7 +143,7 @@ pipeline {
                             -Djtest.referenceCoverageFile=./target/jtest/ut/coverage.xml \
                             -Djtest.referenceReportFile=./target/jtest/ut/report.xml \
                             -Djtest.runFailedTests=false \
-                            -Djtest.runModifiedTests=true; \
+                            -Djtest.runModifiedTests=true \
                             -Djtest.config='${jtestUTConfig}' \
                             -Djtest.report=./target/jtest/ut \
                             -Djtest.showSettings=true; \
