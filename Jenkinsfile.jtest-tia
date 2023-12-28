@@ -101,7 +101,7 @@ pipeline {
         stage('Build') {
             when { equals expected: true, actual: true }
             steps {
-                copyArtifacts(projectName: 'Petclinic-jtest', selector: lastSuccessful())
+                //copyArtifacts(projectName: 'Petclinic-jtest', selector: lastSuccessful())
 
                 // Run Jtest Unit test with CC
                 script {
@@ -135,43 +135,17 @@ pipeline {
                             -w "$PWD/'''+dir+'''" \
                             $(docker build -q ./jtest) /bin/bash -c " \
 
-                            # Compile the test sources and run unit tests with Jtest TIA
-                            mvn process-test-classes \
-                            tia:affected-tests \
-                            jtest:agent \
-                            test \
-                            jtest:jtest \
+                            # Package the application with the Jtest Monitor
+                            mvn package jtest:monitor \
                             -s '../jtest/.m2/settings.xml' \
-                            -Dmaven.test.failure.ignore=true \
-                            -Djtest.settingsList='../jtest/jtestcli.properties,../jtest/jtestcli-ut.properties' \
-                            -Djtest.referenceCoverageFile=./target/jtest/ut/coverage.xml \
-                            -Djtest.referenceReportFile=./target/jtest/ut/report.xml \
-                            -Djtest.runFailedTests=false \
-                            -Djtest.runModifiedTests=true \
-                            -Djtest.config='${jtestUTConfig}' \
-                            -Djtest.report=./target/jtest/ut \
-                            -Djtest.showSettings=true; \
+                            -Dmaven.test.skip=true \
+                            -Djtest.settingsList='../jtest/jtestcli.properties,../jtest/jtestcli-ft.properties' \
+                            -Djtest.showSettings=true \
                             "
                         '''
                     }
                 }
 
-                echo '---> Parsing 10.x unit test reports'
-                script {
-                    step([$class: 'XUnitPublisher', 
-                        // thresholds: [failed(
-                        //     failureNewThreshold: '0', 
-                        //     failureThreshold: '0')
-                        // ],
-                        tools: [[$class: 'ParasoftType', 
-                            deleteOutputFiles: true, 
-                            failIfNotNew: false, 
-                            pattern: '**/target/jtest/ut/*report*.xml', 
-                            skipNoTestFiles: true, 
-                            stopProcessingIfError: false
-                        ]]
-                    ])
-                }
                 // echo '---> Parsing 10.x unit test code coverage'
                 // recordParasoftCoverage pattern: '**/target/jtest/ut/*coverage*.xml'
 
