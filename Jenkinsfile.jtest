@@ -173,6 +173,8 @@ pipeline {
                         ]]
                     ])
                 }
+                echo '---> Parsing 10.x unit test code coverage'
+                recordParasoftCoverage pattern: '**/target/jtest/ut/*coverage*.xml'
 
             }
         }
@@ -181,7 +183,8 @@ pipeline {
         // Clean after build
         success {
             archiveArtifacts(artifacts: ''' 
-                    **/target/**/*.jar, 
+                    **/target/**/*.jar,
+                    ***/target/jtest/ut/*, 
                     ''',
                 fingerprint: true, 
                 onlyIfSuccessful: true,
