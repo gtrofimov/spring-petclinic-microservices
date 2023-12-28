@@ -96,6 +96,7 @@ pipeline {
                             -Dtest='${impactedTests}'
                         """
                     }
+                }
                 // run Selenium tests
                 // docker run -d -p 4444:4444 -p 7900:7900 selenium/standalone-chrome:latest
                 // sh """
