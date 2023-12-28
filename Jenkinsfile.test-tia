@@ -54,7 +54,7 @@ pipeline {
 
                 // Checkout project
                 checkout([$class: 'GitSCM', 
-                    branches: [[name: 'tia']], 
+                    branches: [[name: 'master']], 
                     userRemoteConfigs: [[url: 'https://github.com/gtrofimov/spring-petclinic-microservices.git']]])
                 
                 // set GID
@@ -67,8 +67,7 @@ pipeline {
                     curl -X 'GET' \
                     -u '${DTP_USER}:${DTP_PASS}' \
                     -H 'accept: application/json' \
-                    ${CTP_URL}/em/api/v3/environments/${envId}/coverage/impactedTests?baselineBuildId=latest > impactedTests.json || true
-                    
+                    ${CTP_URL}/em/api/v3/environments/${envId}/coverage/impactedTests?baselineBuildId=latest  > impactedTests.json || true
                     """
                 }
             }   
@@ -76,23 +75,38 @@ pipeline {
         stage('Test') {
             when { equals expected: true, actual: true}
             steps {
+                script {
+                    // Fetch impacted test names as a comma-separated list
+                    def impactedTests = sh(script: "jq -r '.[] | select(.analysisType == \"FT\") | .testName' impactedTests.json | paste -sd \",\" -", returnStdout: true).trim()
+                    // Run Selenium tests with Maven
+                    sh """
+                        cd spring-petclinic-selenium-tests
+                        mvn clean test \
+                        -DbaseUrl='http://${PUBLIC_IP}:8099' \
+                        -DgridUrl='http://${PUBLIC_IP}:4444/wd/hub' \
+                        -DenvId=${envId} \
+                        -DctpUrl='${CTP_URL}' \
+                        -Dtest='${impactedTests}'
+                    """
+                    }
                 // run Selenium tests
                 // docker run -d -p 4444:4444 -p 7900:7900 selenium/standalone-chrome:latest
-                sh """
-                    cd spring-petclinic-selenium-tests
-                    mvn clean test \
-                    -DbaseUrl='http://${PUBLIC_IP}:8099' \
-                    -DgridUrl='http://${PUBLIC_IP}:4444/wd/hub' \
-                    -DenvId=${envId} \
-                    -DctpUrl='${CTP_URL}' \
-                    -Dtest='${testName}'
-                    """
-                
+                // sh """
+                //     impactedTests='NavigateTest.java'
+                //     cd spring-petclinic-selenium-tests
+                //     mvn clean test \
+                //     -DbaseUrl='http://${PUBLIC_IP}:8099' \
+                //     -DgridUrl='http://${PUBLIC_IP}:4444/wd/hub' \
+                //     -DenvId=${envId} \
+                //     -DctpUrl='${CTP_URL}' \
+                //     -Dtest='${impactedTests}'
+                //     """
+                // 
                 // Update Baseline build in CTP with latest
                 // sh """
-                //    curl -X DELETE -H 'accept: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments/${envId}/coverage/baselines/latest
-                //    curl -X POST -H 'accept: application/json' -H 'Content-Type: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments/${envId}/coverage/baselines/latest -d '"string"'
-                //    """
+                //     curl -X DELETE -H 'accept: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments/${envId}/coverage/baselines/latest
+                //     curl -X POST -H 'accept: application/json' -H 'Content-Type: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments/${envId}/coverage/baselines/latest -d '"string"'
+                //     """
                 
             }    
         }
