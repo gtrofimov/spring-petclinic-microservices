@@ -30,7 +30,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 class PetRequest {
     private int id;
 
-    @JsonFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "MM-dd-YYYY")
     private Date birthDate;
 
     @Size(min = 1)

@@ -28,8 +28,8 @@ pipeline {
         app_name = 'spring-petclinic-microservices' // top level DTP Project
 
         // dynamic vars
-        //BUILD_TIMESTAMP = sh(script: 'date +%Y%m%d%H%M%S', returnStdout: true).trim()
-        BUILD_TIMESTAMP = 'latest-tia'
+        TIMESTAMP = sh(script: 'date +%Y%m%d%H%M%S', returnStdout: true).trim()
+        BUILD_TIMESTAMP = "tia-${TIMESTAMP}"
     
     }
 
