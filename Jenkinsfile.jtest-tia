@@ -112,7 +112,7 @@ pipeline {
                             # Set Up and write .properties file
                             echo $"
                             dtp.project='''+dir+'''
-                            build.id='''+dir+'''-tia-${BUILD_TIMESTAMP}
+                            build.id='''+dir+'''-${BUILD_TIMESTAMP}
                             report.coverage.images='''+dir+''';'''+dir+'''-UT
                             " >> ./jtest/jtestcli-ut.properties
                         '''
