@@ -141,6 +141,7 @@ pipeline {
                             -Dmaven.test.skip=true \
                             -Djtest.settingsList='../jtest/jtestcli.properties,../jtest/jtestcli-ft.properties' \
                             -Djtest.showSettings=true \
+                            -PbuildDocker
                             "
                         '''
                     }
