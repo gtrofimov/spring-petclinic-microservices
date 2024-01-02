@@ -28,8 +28,8 @@ pipeline {
         app_name = 'spring-petclinic-microservices' // top level DTP Project
 
         // dynamic vars
-        //BUILD_TIMESTAMP = sh(script: 'date +%Y%m%d%H%M%S', returnStdout: true).trim()
-        BUILD_TIMESTAMP = 'latest'
+        TIMESTAMP = sh(script: 'date +%Y%m%d%H%M%S', returnStdout: true).trim()
+        BUILD_TIMESTAMP = "tia-${TIMESTAMP}"
     
     }
 
@@ -40,7 +40,7 @@ pipeline {
                 cleanWs()
                 // Checkout project
                 checkout([$class: 'GitSCM', 
-                    branches: [[name: 'master']], 
+                    branches: [[name: 'tia']], 
                     userRemoteConfigs: [[url: 'https://github.com/gtrofimov/spring-petclinic-microservices.git']]])
 
                 // set GID
@@ -63,7 +63,7 @@ pipeline {
             steps {
                 
                 // Params?
-                build job: 'Petclinic-jtest', parameters: [
+                build job: 'Petclinic-jtest-tia', parameters: [
                     string(name: 'LS_URL', value: params.LS_URL),
                     string(name: 'CTP_URL', value: params.CTP_URL),
                     string(name: 'DTP_URL', value: params.DTP_URL),
@@ -120,13 +120,6 @@ pipeline {
                 ]
 
             }
-        stage('Release')
-            steps {
-                
-                //copyArtifacts(projectName: 'Petclinic-build', selector: lastSuccessful())
-                copyArtifacts(projectName: 'Petclinic-jtest', selector: lastSuccessful())
-                recordParasoftCoverage pattern: '**/target/jtest/ut/coverage.xml', referenceBuild: '20', referenceJob: 'Demo', sourceCodeEncoding: 'UTF-8'
-    }
         }
     }
     post {

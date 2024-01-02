@@ -179,6 +179,11 @@
                     </dependency>
                 </dependencies>
             </plugin>
+            <plugin>
+                <groupId>com.parasoft.jtest.tia</groupId>
+                <artifactId>tia-maven-plugin</artifactId>
+                <version>2023.2.1</version>
+            </plugin>
         </plugins>
     </build>
 
