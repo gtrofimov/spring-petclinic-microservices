@@ -7,7 +7,7 @@ pipeline {
     options {
         // This is required if you want to clean before build
         skipDefaultCheckout(true)
-        
+
         // Ontly keep 5 jobs history and 2 jobs artifacts
         buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '2'))
     }
@@ -17,9 +17,6 @@ pipeline {
         string(name: 'DTP_URL', defaultValue: '', description: 'Parasoft DTP URL')
         string(name: 'DTP_USER', defaultValue: '', description: 'Parasoft DTP Username')
         string(name: 'DTP_PASS', defaultValue: '', description: 'Parasoft DTP Password')
-        //string(name: 'ENV_NAME', defaultValue: 'Local PetClinic', description: 'Environment Name')
-        //string(name: 'SERVICES_ARRAY', defaultValue: '', description: 'Array of services')
-        //string(name: 'PORTS', defaultValue: '', description: 'Ports')
 
         // Add other parameters as needed
     }
@@ -40,7 +37,7 @@ pipeline {
                 cleanWs()
                 // Checkout project
                 checkout([$class: 'GitSCM', 
-                    branches: [[name: 'tia']], 
+                    branches: [[name: 'master']], 
                     userRemoteConfigs: [[url: 'https://github.com/gtrofimov/spring-petclinic-microservices.git']]])
 
                 // set GID
@@ -50,11 +47,11 @@ pipeline {
             }
         }
         stage('Build') {
-            when { equals expected: true, actual: false }
+            when { equals expected: true, actual: true }
             steps {
                 
                 // Params?
-                build job: 'Petclinic-build', parameters: []
+                build job: 'Petclinic-build-tia', parameters: []
 
             }
         }
@@ -65,14 +62,11 @@ pipeline {
                 // Params?
                 build job: 'Petclinic-jtest-tia', parameters: [
                     string(name: 'LS_URL', value: params.LS_URL),
-                    string(name: 'CTP_URL', value: params.CTP_URL),
                     string(name: 'DTP_URL', value: params.DTP_URL),
                     string(name: 'DTP_USER', value: params.DTP_USER),
                     string(name: 'DTP_PASS', value: params.DTP_PASS),
                     string(name: 'BUILD_TIMESTAMP', value: env.BUILD_TIMESTAMP),
-                    //string(name: 'ENV_NAME', value: params.ENV_NAME),
-                    //string(name: 'SERVICES_ARRAY', value: params.SERVICES_ARRAY),
-                    //string(name: 'PORTS', value: params.PORTS)
+
                     // Add other parameters as needed
                 ]
 
@@ -86,16 +80,14 @@ pipeline {
                 // Services ARRAY
                 // Ports
     
-                build job: 'Petclinic-deploy', parameters: [
+                build job: 'master/Petclinic-deploy', parameters: [
                     string(name: 'LS_URL', value: params.LS_URL),
                     string(name: 'CTP_URL', value: params.CTP_URL),
                     string(name: 'DTP_URL', value: params.DTP_URL),
                     string(name: 'DTP_USER', value: params.DTP_USER),
                     string(name: 'DTP_PASS', value: params.DTP_PASS),
                     string(name: 'BUILD_TIMESTAMP', value: env.BUILD_TIMESTAMP),
-                    //string(name: 'ENV_NAME', value: params.ENV_NAME),
-                    //string(name: 'SERVICES_ARRAY', value: params.SERVICES_ARRAY),
-                    //string(name: 'PORTS', value: params.PORTS)
+
                     // Add other parameters as needed
                 ]
             
@@ -106,17 +98,12 @@ pipeline {
             steps {
                 // run regression suite
                 // Params: GRID_URL, APP_URL, CTP_URL, ENV_NAME, BaselineId             
-                build job: 'Petclinic-test', parameters: [
-                    string(name: 'LS_URL', value: params.LS_URL),
+                build job: 'Petclinic-test-tia', parameters: [
                     string(name: 'CTP_URL', value: params.CTP_URL),
-                    string(name: 'DTP_URL', value: params.DTP_URL),
                     string(name: 'DTP_USER', value: params.DTP_USER),
                     string(name: 'DTP_PASS', value: params.DTP_PASS),
-                    string(name: 'BUILD_TIMESTAMP', value: env.BUILD_TIMESTAMP),
-                          //string(name: 'ENV_NAME', value: params.ENV_NAME),
-                          //string(name: 'SERVICES_ARRAY', value: params.SERVICES_ARRAY),
-                          //string(name: 'PORTS', value: params.PORTS)
-                          // Add other parameters as needed
+
+                    // Add other parameters as needed
                 ]
 
             }

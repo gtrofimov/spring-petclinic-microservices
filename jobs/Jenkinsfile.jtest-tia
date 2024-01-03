@@ -13,14 +13,10 @@ pipeline {
     }
     parameters {
         string(name: 'LS_URL', description: 'Parasoft LS URL')
-        string(name: 'CTP_URL', description: 'Parasoft CTP URL')
         string(name: 'DTP_URL', description: 'Parasoft DTP URL')
         string(name: 'DTP_USER', description: 'Parasoft DTP Username')
         string(name: 'DTP_PASS', description: 'Parasoft DTP Password')
         string(name: 'BUILD_TIMESTAMP', description: 'DTP Build Id')
-        //string(name: 'ENV_NAME', defaultValue: 'Local PetClinic', description: 'Environment Name')
-        //string(name: 'SERVICES_ARRAY', defaultValue: '', description: 'Array of services')
-        //string(name: 'PORTS', defaultValue: '', description: 'Ports')
 
         // Add other parameters as needed
     }
@@ -29,7 +25,7 @@ pipeline {
         app_name = 'spring-petclinic-microservices' // top level DTP Project
         jtestUTConfig="jtest.builtin://Unit Tests"
         //BUILD_TIMESTAMP = sh(script: 'date +%Y%m%d%H%M%S', returnStdout: true).trim()
-        //service='foo' // why is this needed?
+
         services_list = "spring-petclinic-api-gateway,spring-petclinic-vets-service,spring-petclinic-visits-service,spring-petclinic-customers-service"
     }
 
@@ -48,16 +44,7 @@ pipeline {
                 script {
                     env.GID = sh(script: 'id -g jenkins', returnStdout: true).trim()
                 }
-                // define services
-                // script {
-                //     ARRAY = [
-                //         "spring-petclinic-api-gateway", 
-                //         "spring-petclinic-vets-service", 
-                //         "spring-petclinic-visits-service", 
-                //         "spring-petclinic-customers-service"
-                //         ]
-                // }
-                // set up configs
+
                 sh '''
                     # Set Up and write .properties file
                     echo $"
