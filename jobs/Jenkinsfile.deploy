@@ -52,8 +52,8 @@ pipeline {
 
 
         envId = '32' // need to be dynamically acquired via curl
-        covImage='SeleniumTests'
-        sessionTag='jenkins-build'
+        //covImage='SeleniumTests'
+        //sessionTag='jenkins-build'
 
     }
 
@@ -117,7 +117,8 @@ pipeline {
                             // Combine PUBLIC_IP with the original port
                             matchingComponent.instances[0].coverage.agentUrl = "http://${PUBLIC_IP}:${originalPort}"
                             matchingComponent.instances[0].coverage.buildId = "${service}-${BUILD_TIMESTAMP}"
-                            matchingComponent.instances[0].coverage.coverageImages = "${service}"
+                            matchingComponent.instances[0].coverage.dtpFilter = "${service}"
+                            matchingComponent.instances[0].coverage.coverageImages = "${service};${service}-FT"
                         } else {
                             echo "Something is NULL!"
                         }
@@ -187,7 +188,7 @@ pipeline {
                         -settings jtestcov/jtestcli.properties \
                         -property dtp.project=${service} \
                         -property report.dtp.publish=true \
-                        -property report.session.tag=${sessionTag} \
+                        -property report.coverage.images='${service};${service}-FT' \
                         -property build.id='${service}-${BUILD_TIMESTAMP}'"
                     }
                 }

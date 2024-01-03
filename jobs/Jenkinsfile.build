@@ -60,17 +60,5 @@ pipeline {
                 onlyIfSuccessful: true,
             )
         }
-
-        always {            
-            
-            sh  '''
-                echo "cleaning up..."
-                rm -rf "jtest_agent"
-                rm -rf "jtestcov"
-                
-                # rm -rf ".jtest/cache"
-                # rm -rf "*/*/*/.jtest/cache"
-                '''
-        }
     }
 }
