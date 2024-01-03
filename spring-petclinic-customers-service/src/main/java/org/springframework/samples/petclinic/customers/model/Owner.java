@@ -86,7 +86,7 @@ public class Owner {
     @Setter
     @Column(name = "telephone")
     @NotBlank
-    @Digits(fraction = 0, integer = 12)
+    @Digits(fraction = 0, integer = 10) // US standard 
     private String telephone;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "owner")
