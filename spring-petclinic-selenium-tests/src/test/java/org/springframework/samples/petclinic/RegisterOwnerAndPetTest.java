@@ -81,7 +81,7 @@ public class RegisterOwnerAndPetTest {
 		iPAddress_18_237_133_64_Page.setLastNameField("Verdugo");
 		iPAddress_18_237_133_64_Page.setAddressField("101 E. Huntington Dr.");
 		iPAddress_18_237_133_64_Page.setCityField("Monrovia");
-		iPAddress_18_237_133_64_Page.setTelephoneField("6267391734");
+		iPAddress_18_237_133_64_Page.setTelephoneField("016267391734");
 		iPAddress_18_237_133_64_Page.clickSubmitButton();
 		Thread.sleep(2000);
 		iPAddress_18_237_133_64_Page.clickMarkVerdugoLink();
