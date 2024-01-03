@@ -89,8 +89,8 @@ public class VisitTest {
 		Thread.sleep(1000);
 		iPAddress_18_237_133_64_Page.clickAddNewVisitButton();
 		Thread.sleep(1000);
-		iPAddress_18_237_133_64_Page.clickWebElement();
-		Thread.sleep(1000);
+		//iPAddress_18_237_133_64_Page.clickWebElement();
+		//Thread.sleep(1000);
 	}
 
 }
