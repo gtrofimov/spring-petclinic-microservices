@@ -15,11 +15,8 @@ pipeline {
         string(name: 'LS_URL', defaultValue: '', description: 'Parasoft LS URL')
         string(name: 'CTP_URL', defaultValue: '', description: 'Parasoft CTP URL')
         string(name: 'DTP_URL', defaultValue: '', description: 'Parasoft DTP URL')
-        string(name: 'DTP_USER', defaultValue: 'demo', description: 'Parasoft DTP Username')
-        string(name: 'DTP_PASS', defaultValue: 'demo-user', description: 'Parasoft DTP Password')
-        //string(name: 'ENV_NAME', defaultValue: 'Local PetClinic', description: 'Environment Name')
-        //string(name: 'SERVICES_ARRAY', defaultValue: '', description: 'Array of services')
-        //string(name: 'PORTS', defaultValue: '', description: 'Ports')
+        string(name: 'DTP_USER', defaultValue: '', description: 'Parasoft DTP Username')
+        string(name: 'DTP_PASS', defaultValue: '', description: 'Parasoft DTP Password')
 
         // Add other parameters as needed
     }
@@ -27,7 +24,7 @@ pipeline {
         // App Settings
         app_name = 'spring-petclinic-microservices' // top level DTP Project
 
-        // dynamic vars
+        // BuildId Timestamp
         //BUILD_TIMESTAMP = sh(script: 'date +%Y%m%d%H%M%S', returnStdout: true).trim()
         BUILD_TIMESTAMP = 'latest'
     
@@ -36,7 +33,7 @@ pipeline {
     stages {
         stage('Set Up') {
             steps {
-                // Clean before build
+                // Clean workspace before build
                 cleanWs()
                 // Checkout project
                 checkout([$class: 'GitSCM', 
@@ -113,9 +110,7 @@ pipeline {
                     string(name: 'DTP_USER', value: params.DTP_USER),
                     string(name: 'DTP_PASS', value: params.DTP_PASS),
                     string(name: 'BUILD_TIMESTAMP', value: env.BUILD_TIMESTAMP),
-                          //string(name: 'ENV_NAME', value: params.ENV_NAME),
-                          //string(name: 'SERVICES_ARRAY', value: params.SERVICES_ARRAY),
-                          //string(name: 'PORTS', value: params.PORTS)
+
                           // Add other parameters as needed
                 ]
 

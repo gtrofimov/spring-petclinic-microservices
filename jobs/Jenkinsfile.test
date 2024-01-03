@@ -14,36 +14,24 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '2'))
     }
     parameters {
-        string(name: 'LS_URL', description: 'Parasoft LS URL')
         string(name: 'CTP_URL', description: 'Parasoft CTP URL')
-        string(name: 'DTP_URL', description: 'Parasoft DTP URL')
         string(name: 'DTP_USER', description: 'Parasoft DTP Username')
         string(name: 'DTP_PASS', description: 'Parasoft DTP Password')
-        //string(name: 'ENV_NAME', defaultValue: 'Local PetClinic', description: 'Environment Name')
-        //string(name: 'SERVICES_ARRAY', defaultValue: '', description: 'Array of services')
-        //string(name: 'PORTS', defaultValue: '', description: 'Ports')
 
         // Add other parameters as needed
     }
     environment {
         // App Settings
         app_name = 'spring-petclinic-microservices' // top level DTP Project
-        ENV_NAME = 'Local PetClinic' // no longer makes sense
+
         envId = '32' // need to be dynamically acquired via curl
-        covImage='SeleniumTests'
-        sessionTag='jenkins-build'
 
         // dynamic vars
         //BUILD_TIMESTAMP = sh(script: 'date +%Y%m%d%H%M%S', returnStdout: true).trim()
         
         PUBLIC_IP = sh(script: """curl -s https://httpbin.org/ip | jq -r '.origin'""", returnStdout: true).trim()
-        ENCODED_ENV_NAME = URLEncoder.encode(ENV_NAME, 'UTF-8')
-        // envId = sh(script: """curl -s -X 'GET' -H 'accept: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments?name=${ENCODED_ENV_NAME}&limit=50&offset=0 | jq -r '.environments[0].id'""", returnStdout: true).trim()
-        // buildId = "${app_name}-${BUILD_TIMESTAMP}"
 
-        // Build Controls
-        //BASELINE_ID='latest'
-        //lastSuccessfulBaselineId='latest'
+
     }
 
     stages {
