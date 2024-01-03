@@ -28,7 +28,7 @@ pipeline {
         envId = '32' // need to be dynamically acquired via curl
 
         PUBLIC_IP = sh(script: """curl -s https://httpbin.org/ip | jq -r '.origin'""", returnStdout: true).trim()
-
+    }
 
     stages {
         stage('Set Up') {
