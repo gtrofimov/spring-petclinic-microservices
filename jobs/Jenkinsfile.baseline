@@ -46,82 +46,64 @@ pipeline {
                 }                
             }
         }
-        stage('Build') {
+        stage('Build: Create Docker Images') {
             when { equals expected: true, actual: false }
             steps {
                 
-                // Params?
                 build job: 'Petclinic-build', parameters: []
 
             }
         }
-        stage('Build w/ Jtest') {
+        stage('Build: Jtest UT + Static Cov') {
             when { equals expected: true, actual: true }
             steps {
                 
-                // Params?
-                build job: 'Petclinic-jtest-tia', parameters: [
+                build job: 'Petclinic-jtest', parameters: [
                     string(name: 'LS_URL', value: params.LS_URL),
                     string(name: 'CTP_URL', value: params.CTP_URL),
                     string(name: 'DTP_URL', value: params.DTP_URL),
                     string(name: 'DTP_USER', value: params.DTP_USER),
                     string(name: 'DTP_PASS', value: params.DTP_PASS),
                     string(name: 'BUILD_TIMESTAMP', value: env.BUILD_TIMESTAMP),
-                    //string(name: 'ENV_NAME', value: params.ENV_NAME),
-                    //string(name: 'SERVICES_ARRAY', value: params.SERVICES_ARRAY),
-                    //string(name: 'PORTS', value: params.PORTS)
-                    // Add other parameters as needed
+                   // Add other parameters as needed
                 ]
 
             }
         }
-        stage('Deploy') {
+        stage('Deploy: Docker Compose + CTP') {
             when { equals expected: true, actual: true }
             steps {
-                      
-                // LS_URL, CTP_URL, DTP_URL, DTP_USER, DTP_PASS, Env Name, 
-                // Services ARRAY
-                // Ports
-    
+
                 build job: 'Petclinic-deploy', parameters: [
-                    string(name: 'LS_URL', value: params.LS_URL),
                     string(name: 'CTP_URL', value: params.CTP_URL),
-                    string(name: 'DTP_URL', value: params.DTP_URL),
                     string(name: 'DTP_USER', value: params.DTP_USER),
                     string(name: 'DTP_PASS', value: params.DTP_PASS),
                     string(name: 'BUILD_TIMESTAMP', value: env.BUILD_TIMESTAMP),
-                    //string(name: 'ENV_NAME', value: params.ENV_NAME),
-                    //string(name: 'SERVICES_ARRAY', value: params.SERVICES_ARRAY),
-                    //string(name: 'PORTS', value: params.PORTS)
+
                     // Add other parameters as needed
                 ]
-            
             }
         }
-        stage('Test') {
+        stage('Test: Full Selenium Suite') {
             when { equals expected: true, actual: true}
             steps {
-                // run regression suite
                 // Params: GRID_URL, APP_URL, CTP_URL, ENV_NAME, BaselineId             
                 build job: 'Petclinic-test', parameters: [
-                    string(name: 'LS_URL', value: params.LS_URL),
                     string(name: 'CTP_URL', value: params.CTP_URL),
-                    string(name: 'DTP_URL', value: params.DTP_URL),
                     string(name: 'DTP_USER', value: params.DTP_USER),
                     string(name: 'DTP_PASS', value: params.DTP_PASS),
-                    string(name: 'BUILD_TIMESTAMP', value: env.BUILD_TIMESTAMP),
 
-                          // Add other parameters as needed
+                    // Add other parameters as needed
                 ]
-
             }
-        stage('Release')
+        }
+        stage('Release') {
             steps {
                 
                 //copyArtifacts(projectName: 'Petclinic-build', selector: lastSuccessful())
                 copyArtifacts(projectName: 'Petclinic-jtest', selector: lastSuccessful())
-                recordParasoftCoverage pattern: '**/target/jtest/ut/coverage.xml', referenceBuild: '20', referenceJob: 'Demo', sourceCodeEncoding: 'UTF-8'
-    }
+                recordParasoftCoverage pattern: '**/target/jtest/ut/coverage.xml'
+            }   
         }
     }
     post {
@@ -130,8 +112,8 @@ pipeline {
             // delete Cov-tool stuff
             sh  '''
                 echo "cleaning up..."
-                rm -rf "jtest_agent"
-                rm -rf "jtestcov"
+                # rm -rf "jtest_agent"
+                # rm -rf "jtestcov"
                 '''
         }
     }

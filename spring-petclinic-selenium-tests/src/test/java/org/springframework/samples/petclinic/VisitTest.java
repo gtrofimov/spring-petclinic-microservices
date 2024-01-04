@@ -88,7 +88,7 @@ public class VisitTest {
 		iPAddress_18_237_133_64_Page.setDescriptionField("yearly checkup");
 		Thread.sleep(1000);
 		iPAddress_18_237_133_64_Page.clickAddNewVisitButton();
-		Thread.sleep(1000);
+		Thread.sleep(2000);
 		//iPAddress_18_237_133_64_Page.clickWebElement();
 		//Thread.sleep(1000);
 	}

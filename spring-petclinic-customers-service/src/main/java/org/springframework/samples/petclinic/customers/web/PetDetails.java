@@ -47,9 +47,4 @@ class PetDetails {
         this.birthDate = pet.getBirthDate();
         this.type = pet.getType();
     }
-    
-    public void doNothing() {
-        System.out.println("Inside doNothing() method");
-        System.out.println("This method doesn't do anything.");
-    }
 }

@@ -18,9 +18,6 @@ pipeline {
         string(name: 'DTP_USER', description: 'Parasoft DTP Username')
         string(name: 'DTP_PASS', description: 'Parasoft DTP Password')
         string(name: 'BUILD_TIMESTAMP', description: 'DTP Build Id')
-        //string(name: 'ENV_NAME', defaultValue: 'Local PetClinic', description: 'Environment Name')
-        //string(name: 'SERVICES_ARRAY', defaultValue: '', description: 'Array of services')
-        //string(name: 'PORTS', defaultValue: '', description: 'Ports')
 
         // Add other parameters as needed
     }
@@ -29,7 +26,7 @@ pipeline {
         app_name = 'spring-petclinic-microservices' // top level DTP Project
         jtestUTConfig="jtest.builtin://Unit Tests"
         //BUILD_TIMESTAMP = sh(script: 'date +%Y%m%d%H%M%S', returnStdout: true).trim()
-        //service='foo' // why is this needed?
+
         services_list = "spring-petclinic-api-gateway,spring-petclinic-vets-service,spring-petclinic-visits-service,spring-petclinic-customers-service"
     }
 
@@ -48,15 +45,7 @@ pipeline {
                 script {
                     env.GID = sh(script: 'id -g jenkins', returnStdout: true).trim()
                 }
-                // define services
-                // script {
-                //     ARRAY = [
-                //         "spring-petclinic-api-gateway", 
-                //         "spring-petclinic-vets-service", 
-                //         "spring-petclinic-visits-service", 
-                //         "spring-petclinic-customers-service"
-                //         ]
-                // }
+
                 // set up configs
                 sh '''
                     # Set Up and write .properties file
@@ -174,7 +163,7 @@ pipeline {
                     ])
                 }
                 // echo '---> Parsing 10.x unit test code coverage'
-                // recordParasoftCoverage pattern: '**/target/jtest/ut/*coverage*.xml'
+                recordParasoftCoverage pattern: '**/target/jtest/ut/*coverage*.xml'
 
             }
         }
@@ -182,24 +171,15 @@ pipeline {
     post {
         // Clean after build
         success {
-            archiveArtifacts(artifacts: ''' 
-                    **/target/*.jar,
-                    ***/target/jtest/ut/*, 
-                    ''',
-                fingerprint: true, 
-                onlyIfSuccessful: true,
-            )
+            archiveArtifacts artifacts: '**/target/*.jar,***/target/jtest/ut/*', excludes: '**/target/ut/.jtest/cache', followSymlinks: false
         }
-
         always {            
             
             sh  '''
                 echo "cleaning up..."
                 rm -rf "jtest_agent"
                 rm -rf "jtestcov"
-                
-                # rm -rf ".jtest/cache"
-                # rm -rf "*/*/*/.jtest/cache"
+
                 '''
         }
     }

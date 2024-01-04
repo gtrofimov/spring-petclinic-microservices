@@ -37,7 +37,7 @@ pipeline {
                 cleanWs()
                 // Checkout project
                 checkout([$class: 'GitSCM', 
-                    branches: [[name: 'master']], 
+                    branches: [[name: 'tia']], 
                     userRemoteConfigs: [[url: 'https://github.com/gtrofimov/spring-petclinic-microservices.git']]])
 
                 // set GID
@@ -46,7 +46,7 @@ pipeline {
                 }                
             }
         }
-        stage('Build') {
+        stage('Build: Create Docker Images') {
             when { equals expected: true, actual: true }
             steps {
                 
@@ -55,7 +55,7 @@ pipeline {
 
             }
         }
-        stage('Build w/ Jtest') {
+        stage('Build: Jtest Static Cov') {
             when { equals expected: true, actual: true }
             steps {
                 
@@ -72,14 +72,9 @@ pipeline {
 
             }
         }
-        stage('Deploy') {
+        stage('Deploy: Docker Compose + CTP') {
             when { equals expected: true, actual: true }
             steps {
-                      
-                // LS_URL, CTP_URL, DTP_URL, DTP_USER, DTP_PASS, Env Name, 
-                // Services ARRAY
-                // Ports
-    
                 build job: 'master/Petclinic-deploy', parameters: [
                     string(name: 'LS_URL', value: params.LS_URL),
                     string(name: 'CTP_URL', value: params.CTP_URL),
@@ -93,11 +88,9 @@ pipeline {
             
             }
         }
-        stage('Test') {
+        stage('Test: TIA Regression Suite') {
             when { equals expected: true, actual: true}
-            steps {
-                // run regression suite
-                // Params: GRID_URL, APP_URL, CTP_URL, ENV_NAME, BaselineId             
+            steps {        
                 build job: 'Petclinic-test-tia', parameters: [
                     string(name: 'CTP_URL', value: params.CTP_URL),
                     string(name: 'DTP_USER', value: params.DTP_USER),
@@ -115,8 +108,8 @@ pipeline {
             // delete Cov-tool stuff
             sh  '''
                 echo "cleaning up..."
-                rm -rf "jtest_agent"
-                rm -rf "jtestcov"
+                # rm -rf "jtest_agent"
+                # rm -rf "jtestcov"
                 '''
         }
     }

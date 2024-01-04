@@ -38,7 +38,7 @@ pipeline {
     }
 
     stages {
-        stage('Set Up') {
+        stage('Deploy: Set Up') {
             steps {
                 // Clean before build
                 cleanWs()
@@ -50,13 +50,7 @@ pipeline {
                 script {
                     env.GID = sh(script: 'id -g jenkins', returnStdout: true).trim()
                 }
-                // downlaod the agent.jar and cov-tool
-                sh '''
                 
-                    curl -LO -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/coverageagent/java_agent_coverage.zip
-                    unzip java_agent_coverage.zip
-                
-                    '''
                 // define services
                 script {
                     ARRAY = [
@@ -66,7 +60,23 @@ pipeline {
                         "spring-petclinic-customers-service"
                         ]
                 }
-                // prepare CTP JSON file
+
+                // downlaod the agent.jar and cov-tool
+                sh '''
+                
+                    curl -LO -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/coverageagent/java_agent_coverage.zip
+                    unzip java_agent_coverage.zip
+                
+                    '''
+                
+                // copy jars
+                script {
+                    for (service in ARRAY) {
+                        sh "cp jtest_agent/agent.jar ${service}/src/test/resources/coverage/agent.jar"
+                    }
+                }
+
+                // Prepare CTP JSON file
                 script {
                     // get ctp.json file form CTP
                     sh '''
@@ -94,7 +104,7 @@ pipeline {
                             def url = new URL(matchingComponent.instances[0].coverage.agentUrl)
                             def originalPort = url.port
                             
-                            // Combine PUBLIC_IP with the original port
+                            // Set CTP values for all components
                             matchingComponent.instances[0].coverage.agentUrl = "http://${PUBLIC_IP}:${originalPort}"
                             matchingComponent.instances[0].coverage.buildId = "${service}-${BUILD_TIMESTAMP}"
                             matchingComponent.instances[0].coverage.dtpFilter = "${service}"    
@@ -107,17 +117,12 @@ pipeline {
                     writeJSON file: "ctp.json", json: json, pretty: 4
                     sh "cat ctp.json"
                 }     
-                // copy jars
-                script {
-                    for (service in ARRAY) {
-                        sh "cp jtest_agent/agent.jar ${service}/src/test/resources/coverage/agent.jar"
-                    }
-                }
+
                 
 
             }
         }        
-        stage('Deploy') {
+        stage('Deploy: Update CTP') {
             when { equals expected: true, actual: true }
             steps {
 
@@ -129,7 +134,7 @@ pipeline {
                 // deploy the project
                 sh  '''
                     # Run PetClinic with Jtest coverage agent configured
-                    docker-compose -f docker-compose-cc.yml up -d
+                    docker-compose -f docker-compose-cc.yml up -d --force-recreate
                     sleep 120s
                     '''
 
@@ -158,9 +163,7 @@ pipeline {
                 echo "cleaning up..."
                 rm -rf "jtest_agent"
                 rm -rf "jtestcov"
-                
-                # rm -rf ".jtest/cache"
-                # rm -rf "*/*/*/.jtest/cache"
+
                 '''
         }
     }
