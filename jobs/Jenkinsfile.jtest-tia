@@ -143,13 +143,8 @@ pipeline {
     post {
         // Clean after build
         success {
-            archiveArtifacts(artifacts: ''' 
-                    **/target/*.jar,
-                    ***/target/jtest/ut/*, 
-                    ''',
-                fingerprint: true, 
-                onlyIfSuccessful: true,
-            )
+            archiveArtifacts artifacts: '**/target/*.jar,***/target/jtest/ut/*', excludes: '**/target/jtest/.jtest/cache', followSymlinks: false
+
         }
 
         always {            
@@ -158,9 +153,6 @@ pipeline {
                 echo "cleaning up..."
                 rm -rf "jtest_agent"
                 rm -rf "jtestcov"
-                
-                # rm -rf ".jtest/cache"
-                # rm -rf "*/*/*/.jtest/cache"
                 '''
         }
     }

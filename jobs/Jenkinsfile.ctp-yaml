@@ -14,15 +14,11 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '2'))
     }
     parameters {
-        //string(name: 'LS_URL', description: 'Parasoft LS URL')
         string(name: 'CTP_URL', description: 'Parasoft CTP URL')
-        //string(name: 'DTP_URL', description: 'Parasoft DTP URL')
         string(name: 'DTP_USER', description: 'Parasoft DTP Username')
         string(name: 'DTP_PASS', description: 'Parasoft DTP Password')
         string(name: 'BUILD_TIMESTAMP', description: 'DTP Build Id')
-        //string(name: 'ENV_NAME', defaultValue: 'Local PetClinic', description: 'Environment Name')
-        //string(name: 'SERVICES_ARRAY', defaultValue: '', description: 'Array of services')
-        //string(name: 'PORTS', defaultValue: '', description: 'Ports')
+
 
         // Add other parameters as needed
     }
@@ -32,17 +28,12 @@ pipeline {
         ENV_NAME = 'Local PetClinic' // no longer makes sense
         ENCODED_ENV_NAME = URLEncoder.encode(ENV_NAME, 'UTF-8')
 
-        // dtp_publish="${DTP_PUBLISH}" //false
 
         // dynamic vars
         // BUILD_TIMESTAMP = sh(script: 'date +%Y%m%d%H%M%S', returnStdout: true).trim()
         PUBLIC_IP = sh(script: """curl -s https://httpbin.org/ip | jq -r '.origin'""", returnStdout: true).trim()
 
-
-
         envId = '32' // need to be dynamically acquired via curl
-
-
     }
 
     stages {
@@ -129,18 +120,6 @@ pipeline {
             when { equals expected: true, actual: true }
             steps {
 
-                //// check running containers
-                //sh '''
-                //    docker-compose -f docker-compose-cc.yml down || true
-                //    sleep 10s
-                //    '''
-                //// deploy the project
-                //sh  '''
-                //    # Run PetClinic with Jtest coverage agent configured
-                //    docker-compose -f docker-compose-cc.yml up -d
-                //    sleep 120s
-                //    '''
-
                 // Health check coverage agents
                 sh '''
                     curl -iv --raw http://localhost:8051/status
@@ -166,9 +145,6 @@ pipeline {
                 echo "cleaning up..."
                 rm -rf "jtest_agent"
                 rm -rf "jtestcov"
-                
-                # rm -rf ".jtest/cache"
-                # rm -rf "*/*/*/.jtest/cache"
                 '''
         }
     }
