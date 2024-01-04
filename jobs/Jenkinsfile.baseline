@@ -65,8 +65,7 @@ pipeline {
                     string(name: 'DTP_USER', value: params.DTP_USER),
                     string(name: 'DTP_PASS', value: params.DTP_PASS),
                     string(name: 'BUILD_TIMESTAMP', value: env.BUILD_TIMESTAMP),
-)
-                    // Add other parameters as needed
+                   // Add other parameters as needed
                 ]
 
             }
@@ -96,15 +95,15 @@ pipeline {
 
                     // Add other parameters as needed
                 ]
-
             }
-        stage('Release')
+        }
+        stage('Release') {
             steps {
                 
                 //copyArtifacts(projectName: 'Petclinic-build', selector: lastSuccessful())
                 copyArtifacts(projectName: 'Petclinic-jtest', selector: lastSuccessful())
                 recordParasoftCoverage pattern: '**/target/jtest/ut/coverage.xml'
-    }
+            }   
         }
     }
     post {
