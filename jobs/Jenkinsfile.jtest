@@ -172,7 +172,7 @@ pipeline {
         // Clean after build
         success {
             archiveArtifacts artifacts: '**/target/*.jar,***/target/jtest/ut/*', excludes: '**/target/ut/.jtest/cache', followSymlinks: false
-
+        }
         always {            
             
             sh  '''
