@@ -47,4 +47,12 @@ class PetDetails {
         this.birthDate = pet.getBirthDate();
         this.type = pet.getType();
     }
+
+    public void doSomethingCondition(boolean condition) {
+        if (condition) {
+            System.out.println("Condition is true. Doing Something...");
+        } else {
+            System.out.println("Condition is false. Doing Nothing...");
+        }
+    }
 }
