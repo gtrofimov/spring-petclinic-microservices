@@ -44,7 +44,13 @@ pipeline {
                 sh  '''
 
                     # Build the Maven package
-                    ./mvnw clean install -P buildDocker -DskipTests=true
+                    #./mvnw clean install -P buildDocker -DskipTests=true
+
+                    # Build a a specific service
+                    export service="spring-petclinic-customer-service"
+                    echo "${service}"
+                    #mvn mvn clean install -P buildDocker -DskipTests=true
+
 
                     '''
             }
