@@ -25,6 +25,7 @@ pipeline {
         // App Settings
         app_name = 'spring-petclinic-microservices' // top level DTP Project
         jtestUTConfig="jtest.builtin://Unit Tests"
+        jtestSAConfig="jtest.builtin://Recommended Rules"
         //BUILD_TIMESTAMP = sh(script: 'date +%Y%m%d%H%M%S', returnStdout: true).trim()
 
         services_list = "spring-petclinic-api-gateway,spring-petclinic-vets-service,spring-petclinic-visits-service,spring-petclinic-customers-service"
@@ -101,10 +102,19 @@ pipeline {
                             echo $"
                             dtp.project='''+dir+'''
                             build.id='''+dir+'''-${BUILD_TIMESTAMP}
+                            " > ./jtest/jtestcli-sa.properties
+                        '''
+                        
+                        sh '''
+                            # Set Up and write .properties file
+                            echo $"
+                            dtp.project='''+dir+'''
+                            build.id='''+dir+'''-${BUILD_TIMESTAMP}
                             report.coverage.images='''+dir+''';'''+dir+'''-UT
                             " >> ./jtest/jtestcli-ut.properties
                         '''
-                                                sh '''
+                        
+                        sh '''
                             # Set Up and write .properties file
                             echo $"
                             dtp.project='''+dir+'''
@@ -122,10 +132,19 @@ pipeline {
                             -v "$PWD:$PWD" \
                             -w "$PWD/'''+dir+'''" \
                             $(docker build -q ./jtest) /bin/bash -c " \
+                            
+                            # Compile the project and run Jtest Static Analysis
+                            mvn test-compile \
+                            jtest:jtest \
+                            -DskipTests=true \
+                            -s /home/parasoft/.m2/settings.xml \
+                            -Djtest.settingsList='../jtest/jtestcli.properties,../jtest/jtestcli-sa.properties' \
+                            -Djtest.config='${jtestSAConfig}' \
+                            -Djtest.report=./target/jtest/sa \
+                            -Djtest.showSettings=true \
 
                             # Compile the test sources and run unit tests with Jtest
-                            mvn test-compile \
-                            jtest:agent \
+                            mvn jtest:agent \
                             test \
                             jtest:jtest \
                             -s '../jtest/.m2/settings.xml' \
