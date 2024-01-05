@@ -48,9 +48,8 @@ pipeline {
 
                     # Build a a specific service
                     export service="spring-petclinic-customer-service"
-                    echo "${service}"
-                    #mvn mvn clean install -P buildDocker -DskipTests=true
-
+                    cd "${service}"
+                    mvn mvn clean install -P buildDocker -DskipTests=true
 
                     '''
             }
