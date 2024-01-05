@@ -47,7 +47,7 @@ pipeline {
                     #./mvnw clean install -P buildDocker -DskipTests=true
 
                     # Build a a specific service
-                    export service="spring-petclinic-customer-service"
+                    export service="spring-petclinic-customers-service"
                     cd "${service}"
                     mvn clean install -P buildDocker -DskipTests=true
 
