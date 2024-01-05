@@ -25,6 +25,7 @@ pipeline {
         app_name = 'spring-petclinic-microservices' // top level DTP Project
         services_list = "spring-petclinic-api-gateway,spring-petclinic-vets-service,spring-petclinic-visits-service,spring-petclinic-customers-service"
         envId = '32' // need to be dynamically acquired via curl
+        jtestUTConfig="jtest.builtin://Unit Tests"
 
         // Dynamic configs
         BUILD_TIMESTAMP = 'latest'

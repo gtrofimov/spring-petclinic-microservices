@@ -41,10 +41,6 @@ services:
     depends_on:
      - config-server
      - discovery-server
-#    env_file:
-#      - /home/ec2-user/microservices/spring-petclinic-microservices/spring-petclinic-visits-service/src/test/resources/coverage/cov.env
-#    environment:
-#      JAVA_OPTS: '-javaagent:/tmp/coverage/agent.jar=settings=/tmp/coverage/agent.properties,runtimeData=/tmp/coverage/runtime_coverage'
     ports:
      - 8082:8082
      - 8054:8054 # cov agent

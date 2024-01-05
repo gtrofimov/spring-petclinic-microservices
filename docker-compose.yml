@@ -25,14 +25,10 @@ services:
     depends_on:
      - config-server
      - discovery-server
-    entrypoint: ["./dockerize","-wait=tcp://discovery-server:8761","-timeout=60s","--","java", "${COV_AGENT_ARGS},port=8051", "org.springframework.boot.loader.JarLauncher"]
+    entrypoint: ["./dockerize","-wait=tcp://discovery-server:8761","-timeout=60s","--","java", "org.springframework.boot.loader.JarLauncher"]
     ports:
     - 8081:8081
-    - 8051:8051
-    volumes:
-      - type: bind
-        source: ./spring-petclinic-customers-service/src/test/resources/coverage
-        target: /tmp/coverage
+
   visits-service:
     image: springcommunity/spring-petclinic-visits-service
     container_name: visits-service
@@ -41,18 +37,9 @@ services:
     depends_on:
      - config-server
      - discovery-server
-#    env_file:
-#      - /home/ec2-user/microservices/spring-petclinic-microservices/spring-petclinic-visits-service/src/test/resources/coverage/cov.env
-#    environment:
-#      JAVA_OPTS: '-javaagent:/tmp/coverage/agent.jar=settings=/tmp/coverage/agent.properties,runtimeData=/tmp/coverage/runtime_coverage'
     ports:
      - 8082:8082
-     - 8052:8052 # cov agent
-    volumes:
-      - type: bind
-        source: ./spring-petclinic-visits-service/src/test/resources/coverage
-        target: /tmp/coverage
-    entrypoint: ["./dockerize","-wait=tcp://discovery-server:8761","-timeout=60s","--","java", "${COV_AGENT_ARGS},port=8052", "org.springframework.boot.loader.JarLauncher"]
+    entrypoint: ["./dockerize","-wait=tcp://discovery-server:8761","-timeout=60s","--","java", "org.springframework.boot.loader.JarLauncher"]
     
   vets-service:
     user: root:root
@@ -62,14 +49,9 @@ services:
     depends_on:
      - config-server
      - discovery-server
-    entrypoint: ["./dockerize","-wait=tcp://discovery-server:8761","-timeout=60s","--","java", "${COV_AGENT_ARGS},port=8053", "org.springframework.boot.loader.JarLauncher"]
+    entrypoint: ["./dockerize","-wait=tcp://discovery-server:8761","-timeout=60s","--","java", "org.springframework.boot.loader.JarLauncher"]
     ports:
      - 8083:8083
-     - 8053:8053 # cov agent
-    volumes:
-      - type: bind
-        source: ./spring-petclinic-vets-service/src/test/resources/coverage
-        target: /tmp/coverage
 
   api-gateway:
     image: springcommunity/spring-petclinic-api-gateway
