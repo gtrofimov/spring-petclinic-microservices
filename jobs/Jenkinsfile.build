@@ -47,6 +47,8 @@ pipeline {
                     ./mvnw clean install -P buildDocker -DskipTests=true
 
                     '''
+        
+
             }
         }
     }
