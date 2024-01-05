@@ -1,5 +1,3 @@
-def ARRAY
-
 pipeline {
     agent any
     tools {
@@ -14,113 +12,187 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '2'))
     }
     parameters {
-        string(name: 'LS_URL', description: 'Parasoft LS URL')
-        string(name: 'CTP_URL', description: 'Parasoft CTP URL')
-        string(name: 'DTP_URL', description: 'Parasoft DTP URL')
-        string(name: 'DTP_USER', description: 'Parasoft DTP Username')
-        string(name: 'DTP_PASS', description: 'Parasoft DTP Password')
-        //string(name: 'ENV_NAME', defaultValue: 'Local PetClinic', description: 'Environment Name')
-        //string(name: 'SERVICES_ARRAY', defaultValue: '', description: 'Array of services')
-        //string(name: 'PORTS', defaultValue: '', description: 'Ports')
+        string(name: 'LS_URL', defaultValue: '', description: 'Parasoft LS URL')
+        string(name: 'CTP_URL', defaultValue: '', description: 'Parasoft CTP URL')
+        string(name: 'DTP_URL', defaultValue: '', description: 'Parasoft DTP URL')
+        string(name: 'DTP_USER', defaultValue: '', description: 'Parasoft DTP Username')
+        string(name: 'DTP_PASS', defaultValue: '', description: 'Parasoft DTP Password')
 
         // Add other parameters as needed
     }
     environment {
         // App Settings
         app_name = 'spring-petclinic-microservices' // top level DTP Project
-//        ENV_NAME = 'Local PetClinic' // no longer makes sense
-//        ENCODED_ENV_NAME = URLEncoder.encode(ENV_NAME, 'UTF-8')
-//
-//        // Parasoft Licenses
-//        ls_url = "${LS_URL}" //https\://dtp:8443
-//        ls_user = "${LS_USER}" //admin
-//        ls_pass = "${LS_PASS}"
-//
-//        // Parasoft Common Settings
-//        dtp_url = "${DTP_URL}" //https://dtp:8443
-//        dtp_user = "${DTP_USER}" //admin
-//        dtp_pass = "${DTP_PASS}"
-//        ctp_url = "${CTP_URL}"
-//
-//        // dtp_publish="${DTP_PUBLISH}" //false
-//
-//        // dynamic vars
-//        BUILD_TIMESTAMP = sh(script: 'date +%Y%m%d%H%M%S', returnStdout: true).trim()
-//        PUBLIC_IP = sh(script: """curl -s https://httpbin.org/ip | jq -r '.origin'""", returnStdout: true).trim()
-//        // envId = sh(script: """curl -s -X 'GET' -H 'accept: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments?name=${ENCODED_ENV_NAME}&limit=50&offset=0 | jq -r '.environments[0].id'""", returnStdout: true).trim()
-//        // buildId = "${app_name}-${BUILD_TIMESTAMP}"
-//
-//
-//        envId = '32' // need to be dynamically acquired via curl
-//        covImage='SeleniumTests'
-//        sessionTag='jenkins-build'
 
+        // BuildId Timestamp
+        //BUILD_TIMESTAMP = sh(script: 'date +%Y%m%d%H%M%S', returnStdout: true).trim()
+        BUILD_TIMESTAMP = 'latest'
+    
     }
 
     stages {
         stage('Set Up') {
             steps {
-                // Clean before build
+                // Clean workspace before build
                 cleanWs()
-
                 // Checkout project
-                checkout scm
-                
+                checkout([$class: 'GitSCM', 
+                    branches: [[name: 'tia']], 
+                    userRemoteConfigs: [[url: 'https://github.com/gtrofimov/spring-petclinic-microservices.git']]])
+
                 // set GID
                 script {
                     env.GID = sh(script: 'id -g jenkins', returnStdout: true).trim()
-                }                
+                }
+                
+                // set Licenses
+                sh '''
+                    # Set Up and write .properties file
+                    echo $"
+                    parasoft.eula.accepted=true
+
+                    jtest.license.use_network=true
+                    jtest.license.network.edition=custom_edition
+                    jtest.license.custom_edition_features=Jtest, Static Analysis, Flow Analysis, OWASP Rules, CWE Rules, PCI DSS Rules, DISA STIG Rules, Security Rules, Automation, Desktop Command Line, DTP Publish, Coverage, Unit Test, Unit Test Bulk Creation, Unit Test Tier 1, Unit Test Tier 2, Unit Test Tier 3, Unit Test Tier 4, Unit Test Spring Framework, Change Based Testing
+                    
+                    license.network.use.specified.server=true
+                    license.network.auth.enabled=true
+                    license.network.url=${LS_URL}
+                    license.network.user=${DTP_USER}
+                    license.network.password=${DTP_PASS}
+                    
+                    dtp.url=${DTP_URL}
+                    dtp.user=${DTP_USER}
+                    dtp.password=${DTP_PASS}
+
+                    report.scontrol=min
+                    report.coverage.line.hashes=true
+                    report.dtp.publish=true
+                    " >> ./jtest/jtestcli.properties
+                    '''
+
+            }
+
+            
+        }
+        stage('Build: Create Docker Images') {
+            when { equals expected: true, actual: false }
+            steps {
+
+                // build the binaries
+                echo "Building ${env.JOB_NAME}..."
+                sh  '''
+
+                    # Build the Maven package
+                    ./mvnw clean install -P buildDocker -DskipTests=true
+                    '''
             }
         }
-        stage('Build') {
+        stage('Build: Jtest UT + Static Cov') {
             when { equals expected: true, actual: true }
             steps {
-                
-                // Params?
-                build job: 'Petclinic-build', parameters: []
+
+                // Run Jtest Unit test with CC
+                script {
+                    def servicesArray = services_list.split(',')
+                    for (def dir in servicesArray) {
+                        // Setup stage-specific additional settings
+                        sh '''
+                            # Set Up and write .properties file
+                            echo $"
+                            dtp.project='''+dir+'''
+                            build.id='''+dir+'''-${BUILD_TIMESTAMP}
+                            report.coverage.images='''+dir+''';'''+dir+'''-UT
+                            " >> ./jtest/jtestcli-ut.properties
+                        '''
+                                                sh '''
+                            # Set Up and write .properties file
+                            echo $"
+                            dtp.project='''+dir+'''
+                            build.id='''+dir+'''-${BUILD_TIMESTAMP}
+                            report.coverage.images='''+dir+''';'''+dir+'''-FT
+                            " >> ./jtest/jtestcli-ft.properties
+                        '''
+                        // Execute the build with Jtest Maven plugin in docker
+                        sh '''
+                            # Run Maven build with Jtest tasks via Docker
+                            docker run \
+                            -u ${UID}:${GID} \
+                            --rm -i \
+                            --name jtest \
+                            -v "$PWD:$PWD" \
+                            -w "$PWD/'''+dir+'''" \
+                            $(docker build -q ./jtest) /bin/bash -c " \
+
+                            # Package the application with the Jtest Monitor
+                            mvn package jtest:monitor \
+                            -s '../jtest/.m2/settings.xml' \
+                            -Dmaven.test.skip=true \
+                            -Djtest.settingsList='../jtest/jtestcli.properties,../jtest/jtestcli-ft.properties' \
+                            -Djtest.showSettings=true \
+                            -P buildDocker \
+                            "
+                        '''
+                    }
+                }
 
             }
         }
-        stage('Deploy') {
+        stage('Deploy: Docker Compose + CTP') {
             when { equals expected: true, actual: true }
             steps {
-                      
-                // LS_URL, CTP_URL, DTP_URL, DTP_USER, DTP_PASS, Env Name, 
-                // Services ARRAY
-                // Ports
-    
+
                 build job: 'Petclinic-deploy', parameters: [
-                    string(name: 'LS_URL', value: params.LS_URL),
                     string(name: 'CTP_URL', value: params.CTP_URL),
-                    string(name: 'DTP_URL', value: params.DTP_URL),
                     string(name: 'DTP_USER', value: params.DTP_USER),
                     string(name: 'DTP_PASS', value: params.DTP_PASS),
-                    //string(name: 'ENV_NAME', value: params.ENV_NAME),
-                    //string(name: 'SERVICES_ARRAY', value: params.SERVICES_ARRAY),
-                    //string(name: 'PORTS', value: params.PORTS)
+                    string(name: 'BUILD_TIMESTAMP', value: env.BUILD_TIMESTAMP),
+
                     // Add other parameters as needed
                 ]
-            
             }
         }
-        stage('Test') {
+        stage('Test: Calculate Impacted Tests') {
             when { equals expected: true, actual: true}
             steps {
-                // run regression suite
-                // Params: GRID_URL, APP_URL, CTP_URL, ENV_NAME, BaselineId             
-                build job: 'Petclinic-test', parameters: [
-                    string(name: 'LS_URL', value: params.LS_URL),
-                          string(name: 'CTP_URL', value: params.CTP_URL),
-                          string(name: 'DTP_URL', value: params.DTP_URL),
-                          string(name: 'DTP_USER', value: params.DTP_USER),
-                          string(name: 'DTP_PASS', value: params.DTP_PASS),
-                          //string(name: 'ENV_NAME', value: params.ENV_NAME),
-                          //string(name: 'SERVICES_ARRAY', value: params.SERVICES_ARRAY),
-                          //string(name: 'PORTS', value: params.PORTS)
-                          // Add other parameters as needed
-                ]
-
+                // get Impacted Tests for current deployment and baseline build
+                sh """
+                    curl -X 'GET' \
+                    -u '${DTP_USER}:${DTP_PASS}' \
+                    -H 'accept: application/json' \
+                    ${CTP_URL}/em/api/v3/environments/${envId}/coverage/impactedTests?baselineBuildId=latest  > impactedTests.json || true
+                    """
+                }                 
             }
+        stage('Test: Run Optimized Suite') {
+            when { equals expected: true, actual: true}
+            steps {
+
+                script {
+                    // get list of impacted Test from Json file
+                    def testNames = sh(script: "jq -r '.[] | select(.analysisType == \"FT\") | .testName' impactedTests.json | paste -sd \",\" -", returnStdout: true).trim()
+                    
+                    // Run Selenium tests with Maven using impactedTests as parameters
+                    sh """
+                        echo ${testNames}
+                        cd spring-petclinic-selenium-tests
+                        mvn clean test \
+                        -DbaseUrl='http://${PUBLIC_IP}:8099' \
+                        -DgridUrl='http://${PUBLIC_IP}:4444/wd/hub' \
+                        -DenvId=${envId} \
+                        -DctpUrl='${CTP_URL}' \
+                        -Dtest='${testNames}'
+                    """
+                }                  
+            }
+        }
+        stage('Release') {
+            steps {
+                
+                //copyArtifacts(projectName: 'Petclinic-build', selector: lastSuccessful())
+                //copyArtifacts(projectName: 'Petclinic-jtest', selector: lastSuccessful())
+                //recordParasoftCoverage pattern: '**/target/jtest/ut/coverage.xml'
+            }   
         }
     }
     post {
@@ -129,8 +201,8 @@ pipeline {
             // delete Cov-tool stuff
             sh  '''
                 echo "cleaning up..."
-                rm -rf "jtest_agent"
-                rm -rf "jtestcov"
+                # rm -rf "jtest_agent"
+                # rm -rf "jtestcov"
                 '''
         }
     }
