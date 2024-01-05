@@ -23,6 +23,7 @@ pipeline {
     environment {
         // App Settings
         app_name = 'spring-petclinic-microservices' // top level DTP Project
+        services_list = "spring-petclinic-api-gateway,spring-petclinic-vets-service,spring-petclinic-visits-service,spring-petclinic-customers-service"
 
         // BuildId Timestamp
         //BUILD_TIMESTAMP = sh(script: 'date +%Y%m%d%H%M%S', returnStdout: true).trim()
@@ -43,6 +44,7 @@ pipeline {
                 // set GID
                 script {
                     env.GID = sh(script: 'id -g jenkins', returnStdout: true).trim()
+                    env.PUBLIC_IP = sh(script: """curl -s https://httpbin.org/ip | jq -r '.origin'""", returnStdout: true).trim()
                 }
                 
                 // set Licenses
@@ -84,7 +86,9 @@ pipeline {
                 sh  '''
 
                     # Build the Maven package
-                    ./mvnw clean install -P buildDocker -DskipTests=true
+                    export service="spring-petclinic-customers-service"
+                    cd ${service}
+                    mvn clean install -P buildDocker -DskipTests=true
                     '''
             }
         }
