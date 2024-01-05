@@ -24,11 +24,11 @@ pipeline {
         // App Settings
         app_name = 'spring-petclinic-microservices' // top level DTP Project
         services_list = "spring-petclinic-api-gateway,spring-petclinic-vets-service,spring-petclinic-visits-service,spring-petclinic-customers-service"
+        envId = '32' // need to be dynamically acquired via curl
 
         // BuildId Timestamp
         //BUILD_TIMESTAMP = sh(script: 'date +%Y%m%d%H%M%S', returnStdout: true).trim()
         BUILD_TIMESTAMP = 'latest'
-    
     }
 
     stages {
