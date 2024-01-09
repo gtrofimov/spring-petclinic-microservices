@@ -122,6 +122,7 @@ pipeline {
                             report.coverage.images='''+dir+''';'''+dir+'''-FT
                             " >> ./jtest/jtestcli-ft.properties
                         '''
+                        
                         // Execute the build with Jtest Maven plugin in docker
                         sh '''
                             # Run Maven build with Jtest tasks via Docker
