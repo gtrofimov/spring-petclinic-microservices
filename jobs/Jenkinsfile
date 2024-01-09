@@ -28,7 +28,7 @@ pipeline {
 
         // BuildId Timestamp
         //BUILD_TIMESTAMP = sh(script: 'date +%Y%m%d%H%M%S', returnStdout: true).trim()
-        BUILD_TIMESTAMP = 'latest'
+        BUILD_TIMESTAMP = 'tia-latest'
     }
 
     stages {
@@ -195,7 +195,7 @@ pipeline {
                 
                 //copyArtifacts(projectName: 'Petclinic-build', selector: lastSuccessful())
                 //copyArtifacts(projectName: 'Petclinic-jtest', selector: lastSuccessful())
-                //recordParasoftCoverage pattern: '**/target/jtest/ut/coverage.xml'
+                recordParasoftCoverage pattern: '**/target/jtest/ut/coverage.xml'
             }   
         }
     }
