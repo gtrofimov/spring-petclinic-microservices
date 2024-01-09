@@ -146,7 +146,7 @@ pipeline {
             when { equals expected: true, actual: true }
             steps {
 
-                build job: 'Petclinic-deploy', parameters: [
+                build job: 'master/Petclinic-deploy', parameters: [
                     string(name: 'CTP_URL', value: params.CTP_URL),
                     string(name: 'DTP_USER', value: params.DTP_USER),
                     string(name: 'DTP_PASS', value: params.DTP_PASS),
