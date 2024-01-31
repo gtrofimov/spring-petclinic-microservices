@@ -109,12 +109,15 @@ pipeline {
     post {
         // Clean after build
         always {
+            script {
             // delete Cov-tool stuff
             sh  '''
                 echo "cleaning up..."
                 # rm -rf "jtest_agent"
                 # rm -rf "jtestcov"
                 '''
+        
+            }
         }
     }
 }
