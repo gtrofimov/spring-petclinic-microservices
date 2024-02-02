@@ -166,6 +166,7 @@ pipeline {
                     }
                 }
 
+                // Parasoft Findings plugin for Unit Tests
                 echo '---> Parsing 10.x unit test reports'
                 script {
                     step([$class: 'XUnitPublisher', 
@@ -182,14 +183,15 @@ pipeline {
                         ]]
                     ])
                 }
-                // echo '---> Parsing 10.x unit test code coverage'
+
+                // Parasoft Findings plugin for Code Coverage
                 recordParasoftCoverage pattern: '**/target/jtest/ut/*coverage*.xml'
 
             }
         }
     }
     post {
-        // Clean after build
+        // Archive artifacts
         success {
             archiveArtifacts artifacts: '**/target/*.jar,***/target/jtest/ut/*', excludes: '**/target/ut/.jtest/cache', followSymlinks: false
         }

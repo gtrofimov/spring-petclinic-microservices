@@ -56,7 +56,7 @@ public class PetTest {
 		driver.findElement(By.xpath("//a[@ui-sref=\"owners\"]")).click();
 		Thread.sleep(1000);
 
-        System.out.println("Still testing");
+        System.out.println("Navigate Add Pet");
 		driver.navigate().refresh();
         Thread.sleep(2000);
         driver.findElement(By.xpath("//owner-list/table/tbody/tr[1]/td[1]/a")).click();
@@ -68,7 +68,7 @@ public class PetTest {
 		Thread.sleep(1000);
 		driver.findElement(By.xpath("//button[@type=\"submit\"]")).click();
 		Thread.sleep(1000);
-        System.out.println("Still testing");
+        System.out.println("Navigate Rename Pet");
 		driver.navigate().refresh();
         Thread.sleep(2000);
         driver.findElement(By.xpath("//a[@class=\"dropdown-toggle\"]")).click();
