@@ -31,7 +31,7 @@ pipeline {
         jtestSAConfig="jtest.builtin://Recommended Rules"
 
         // Dynamic configs
-        BUILD_TIMESTAMP = 'v1'
+        BUILD_TIMESTAMP = 'v2'
         //BUILD_TIMESTAMP = sh(script: 'date +%Y%m%d%H%M', returnStdout: true).trim()
     }
 
@@ -42,7 +42,7 @@ pipeline {
                 cleanWs()
                 // Checkout project
                 checkout([$class: 'GitSCM', 
-                    branches: [[name: 'master']], 
+                    branches: [[name: 'tia']], 
                     userRemoteConfigs: [[url: 'https://github.com/gtrofimov/spring-petclinic-microservices.git']]])
                 
                 // set GID
@@ -203,7 +203,7 @@ pipeline {
                 }
 
                 // Parasoft Findings plugin for Code Coverage
-                recordParasoftCoverage pattern: '**/target/jtest/ut/*coverage*.xml'
+                // pattern: '**/target/jtest/ut/*coverage*.xml'
 
             }
         }
@@ -247,10 +247,10 @@ pipeline {
         }
         stage('Release') {
             steps {
-                
+                sh 'echo "Release"'
                 //copyArtifacts(projectName: 'master/Petclinic-build', selector: lastSuccessful())
                 //copyArtifacts(projectName: 'master/Petclinic-jtest', selector: lastSuccessful())
-                recordParasoftCoverage pattern: '**/target/jtest/ut/coverage.xml'
+                //recordParasoftCoverage pattern: '**/target/jtest/ut/coverage.xml'
             }   
         }
     }
