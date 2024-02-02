@@ -248,8 +248,8 @@ pipeline {
         stage('Release') {
             steps {
                 
-                //copyArtifacts(projectName: 'Petclinic-build', selector: lastSuccessful())
-                //copyArtifacts(projectName: 'Petclinic-jtest', selector: lastSuccessful())
+                //copyArtifacts(projectName: 'master/Petclinic-build', selector: lastSuccessful())
+                //copyArtifacts(projectName: 'master/Petclinic-jtest', selector: lastSuccessful())
                 recordParasoftCoverage pattern: '**/target/jtest/ut/coverage.xml'
             }   
         }
