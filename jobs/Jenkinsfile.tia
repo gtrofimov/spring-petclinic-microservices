@@ -21,15 +21,14 @@ pipeline {
         // Add other parameters as needed
     }
     environment {
-        // App Details
+        // App Settings
         app_name = 'spring-petclinic-microservices' // top level DTP Project
         services_list = "spring-petclinic-api-gateway,spring-petclinic-vets-service,spring-petclinic-visits-service,spring-petclinic-customers-service"
         envId = '32' // need to be dynamically acquired via curl
-        jtestUTConfig="jtest.builtin://Unit Tests"
 
-        // Dynamic configs
-        BUILD_TIMESTAMP = 'master'
-        BUILD_TIMESTAMP = sh(script: 'date +%Y%m%d%H%M', returnStdout: true).trim()
+        // BuildId Timestamp
+        //BUILD_TIMESTAMP = sh(script: 'date +%Y%m%d%H%M%S', returnStdout: true).trim()
+        BUILD_TIMESTAMP = 'master-tia'
     }
 
     stages {
@@ -41,20 +40,19 @@ pipeline {
                 checkout([$class: 'GitSCM', 
                     branches: [[name: 'master']], 
                     userRemoteConfigs: [[url: 'https://github.com/gtrofimov/spring-petclinic-microservices.git']]])
-                
+
                 // set GID
-                // set PUBLIC_IP
                 script {
                     env.GID = sh(script: 'id -g jenkins', returnStdout: true).trim()
                     env.PUBLIC_IP = sh(script: """curl -s https://httpbin.org/ip | jq -r '.origin'""", returnStdout: true).trim()
                 }
-
-                // set up Parasoft License
+                
+                // set Licenses
                 sh '''
                     # Set Up and write .properties file
                     echo $"
                     parasoft.eula.accepted=true
-                    
+
                     jtest.license.use_network=true
                     jtest.license.network.edition=custom_edition
                     jtest.license.custom_edition_features=Jtest, Static Analysis, Flow Analysis, OWASP Rules, CWE Rules, PCI DSS Rules, DISA STIG Rules, Security Rules, Automation, Desktop Command Line, DTP Publish, Coverage, Unit Test, Unit Test Bulk Creation, Unit Test Tier 1, Unit Test Tier 2, Unit Test Tier 3, Unit Test Tier 4, Unit Test Spring Framework, Change Based Testing
@@ -68,27 +66,16 @@ pipeline {
                     dtp.url=${DTP_URL}
                     dtp.user=${DTP_USER}
                     dtp.password=${DTP_PASS}
-                    
+
                     report.scontrol=min
                     report.coverage.line.hashes=true
                     report.dtp.publish=true
-
-                    # dtp.project=${app_name}
-                    # build.id=${buildId}
-                    # session.tag=${jtestSessionTag}
-                    # report.associations=false
-                    # report.coverage.images=${covImage}
-                    # report.scontrol=full
-                    # scope.local=true
-                    # scope.scontrol=true
-                    # scope.xmlmap=false
-                    # scontrol.git.exec=git
-                    # scontrol.rep1.git.branch=main
-                    # scontrol.rep1.git.url=${project_repo}
-                    # scontrol.rep1.type=git
                     " >> ./jtest/jtestcli.properties
-                    '''                
+                    '''
+
             }
+
+            
         }
         stage('Build: Create Docker Images') {
             when { equals expected: true, actual: true }
@@ -99,7 +86,9 @@ pipeline {
                 sh  '''
 
                     # Build the Maven package
-                    ./mvnw clean install -P buildDocker -DskipTests=true
+                    export service="spring-petclinic-customers-service"
+                    cd ${service}
+                    mvn clean install -P buildDocker -DskipTests=true
                     '''
             }
         }
@@ -117,19 +106,10 @@ pipeline {
                             echo $"
                             dtp.project='''+dir+'''
                             build.id='''+dir+'''-${BUILD_TIMESTAMP}
-                            " > ./jtest/jtestcli-sa.properties
-                        '''
-                        
-                        sh '''
-                            # Set Up and write .properties file
-                            echo $"
-                            dtp.project='''+dir+'''
-                            build.id='''+dir+'''-${BUILD_TIMESTAMP}
                             report.coverage.images='''+dir+''';'''+dir+'''-UT
                             " >> ./jtest/jtestcli-ut.properties
                         '''
-                        
-                        sh '''
+                                                sh '''
                             # Set Up and write .properties file
                             echo $"
                             dtp.project='''+dir+'''
@@ -137,7 +117,6 @@ pipeline {
                             report.coverage.images='''+dir+''';'''+dir+'''-FT
                             " >> ./jtest/jtestcli-ft.properties
                         '''
-                        
                         // Execute the build with Jtest Maven plugin in docker
                         sh '''
                             # Run Maven build with Jtest tasks via Docker
@@ -148,59 +127,18 @@ pipeline {
                             -v "$PWD:$PWD" \
                             -w "$PWD/'''+dir+'''" \
                             $(docker build -q ./jtest) /bin/bash -c " \
-                            
-                            # Compile the project and run Jtest Static Analysis
-                            mvn test-compile \
-                            jtest:jtest \
-                            -DskipTests=true \
-                            -s /home/parasoft/.m2/settings.xml \
-                            -Djtest.settingsList='../jtest/jtestcli.properties,../jtest/jtestcli-sa.properties' \
-                            -Djtest.config='${jtestSAConfig}' \
-                            -Djtest.report=./target/jtest/sa \
-                            -Djtest.showSettings=true \
 
-                            # Compile the test sources and run unit tests with Jtest
-                            mvn jtest:agent \
-                            test \
-                            jtest:jtest \
-                            -s '../jtest/.m2/settings.xml' \
-                            -Dmaven.test.failure.ignore=true \
-                            -Djtest.settingsList='../jtest/jtestcli.properties,../jtest/jtestcli-ut.properties' \
-                            -Djtest.config='${jtestUTConfig}' \
-                            -Djtest.report=./target/jtest/ut \
-                            -Djtest.showSettings=true; \
-                            
                             # Package the application with the Jtest Monitor
                             mvn package jtest:monitor \
                             -s '../jtest/.m2/settings.xml' \
                             -Dmaven.test.skip=true \
                             -Djtest.settingsList='../jtest/jtestcli.properties,../jtest/jtestcli-ft.properties' \
                             -Djtest.showSettings=true \
+                            -P buildDocker \
                             "
                         '''
                     }
                 }
-
-                // Parasoft Findings plugin for Unit Tests Results
-                echo '---> Parsing 10.x unit test reports'
-                script {
-                    step([$class: 'XUnitPublisher', 
-                        // thresholds: [failed(
-                        //     failureNewThreshold: '0', 
-                        //     failureThreshold: '0')
-                        // ],
-                        tools: [[$class: 'ParasoftType', 
-                            deleteOutputFiles: true, 
-                            failIfNotNew: false, 
-                            pattern: '**/target/jtest/ut/*report*.xml', 
-                            skipNoTestFiles: true, 
-                            stopProcessingIfError: false
-                        ]]
-                    ])
-                }
-
-                // Parasoft Findings plugin for Code Coverage
-                recordParasoftCoverage pattern: '**/target/jtest/ut/*coverage*.xml'
 
             }
         }
@@ -218,33 +156,45 @@ pipeline {
                 ]
             }
         }
-        stage('Test: Full Selenium Suite') {
+        stage('Test: Calculate Impacted Tests') {
             when { equals expected: true, actual: true}
             steps {
-                // run Selenium tests
-                // docker run -d -p 4444:4444 -p 7900:7900 selenium/standalone-chrome:latest
+                // get Impacted Tests for current deployment and baseline build
                 sh """
-                    cd spring-petclinic-selenium-tests
-                    mvn clean test \
-                    -DbaseUrl='http://${PUBLIC_IP}:8099' \
-                    -DgridUrl='http://${PUBLIC_IP}:4444/wd/hub' \
-                    -DenvId=${envId} \
-                    -DctpUrl='${CTP_URL}'
+                    curl -X 'GET' \
+                    -u '${DTP_USER}:${DTP_PASS}' \
+                    -H 'accept: application/json' \
+                    ${CTP_URL}/em/api/v3/environments/${envId}/coverage/impactedTests?baselineBuildId=latest  > impactedTests.json || true
                     """
-                
-                // Update Baseline build in CTP with latest
-                sh """
-                    curl -X DELETE -H 'accept: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments/${envId}/coverage/baselines/latest
-                    curl -X POST -H 'accept: application/json' -H 'Content-Type: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments/${envId}/coverage/baselines/latest -d '"string"'
+                }                 
+            }
+        stage('Test: Run Optimized Suite') {
+            when { equals expected: true, actual: true}
+            steps {
+
+                script {
+                    // get list of impacted Test from Json file
+                    def testNames = sh(script: "jq -r '.[] | select(.analysisType == \"FT\") | .testName' impactedTests.json | paste -sd \",\" -", returnStdout: true).trim()
+                    
+                    // Run Selenium tests with Maven using impactedTests as parameters
+                    sh """
+                        echo ${testNames}
+                        cd spring-petclinic-selenium-tests
+                        mvn clean test \
+                        -DbaseUrl='http://${PUBLIC_IP}:8099' \
+                        -DgridUrl='http://${PUBLIC_IP}:4444/wd/hub' \
+                        -DenvId=${envId} \
+                        -DctpUrl='${CTP_URL}' \
+                        -Dtest='${testNames}'
                     """
-                
-            } 
+                }                  
+            }
         }
         stage('Release') {
             steps {
                 
                 //copyArtifacts(projectName: 'Petclinic-build', selector: lastSuccessful())
-                copyArtifacts(projectName: 'Petclinic-jtest', selector: lastSuccessful())
+                //copyArtifacts(projectName: 'Petclinic-jtest', selector: lastSuccessful())
                 recordParasoftCoverage pattern: '**/target/jtest/ut/coverage.xml'
             }   
         }
