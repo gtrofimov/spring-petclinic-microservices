@@ -24,11 +24,14 @@ pipeline {
         // App Details
         app_name = 'spring-petclinic-microservices' // top level DTP Project
         services_list = "spring-petclinic-api-gateway,spring-petclinic-vets-service,spring-petclinic-visits-service,spring-petclinic-customers-service"
+        
+        // Parasoft Settings
         envId = '32' // need to be dynamically acquired via curl
         jtestUTConfig="jtest.builtin://Unit Tests"
+        jtestSAConfig="jtest.builtin://Recommended Rules"
 
         // Dynamic configs
-        BUILD_TIMESTAMP = 'master'
+        BUILD_TIMESTAMP = 'v1'
         //BUILD_TIMESTAMP = sh(script: 'date +%Y%m%d%H%M', returnStdout: true).trim()
     }
 
@@ -221,8 +224,10 @@ pipeline {
         stage('Test: Full Selenium Suite') {
             when { equals expected: true, actual: true}
             steps {
-                // run Selenium tests
+                // Start Selenium grid
                 // docker run -d -p 4444:4444 -p 7900:7900 selenium/standalone-chrome:latest
+                
+                // run Selenium tests
                 sh """
                     cd spring-petclinic-selenium-tests
                     mvn clean test \
@@ -244,7 +249,7 @@ pipeline {
             steps {
                 
                 //copyArtifacts(projectName: 'Petclinic-build', selector: lastSuccessful())
-                copyArtifacts(projectName: 'Petclinic-jtest', selector: lastSuccessful())
+                //copyArtifacts(projectName: 'Petclinic-jtest', selector: lastSuccessful())
                 recordParasoftCoverage pattern: '**/target/jtest/ut/coverage.xml'
             }   
         }
