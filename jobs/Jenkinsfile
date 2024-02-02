@@ -28,8 +28,8 @@ pipeline {
         jtestUTConfig="jtest.builtin://Unit Tests"
 
         // Dynamic configs
-        BUILD_TIMESTAMP = 'latest'
-        //BUILD_TIMESTAMP = sh(script: 'date +%Y%m%d%H%M%S', returnStdout: true).trim()
+        // BUILD_TIMESTAMP = 'latest'
+        BUILD_TIMESTAMP = sh(script: 'date +%Y%m%d%H%M', returnStdout: true).trim()
     }
 
     stages {
@@ -117,10 +117,19 @@ pipeline {
                             echo $"
                             dtp.project='''+dir+'''
                             build.id='''+dir+'''-${BUILD_TIMESTAMP}
+                            " > ./jtest/jtestcli-sa.properties
+                        '''
+                        
+                        sh '''
+                            # Set Up and write .properties file
+                            echo $"
+                            dtp.project='''+dir+'''
+                            build.id='''+dir+'''-${BUILD_TIMESTAMP}
                             report.coverage.images='''+dir+''';'''+dir+'''-UT
                             " >> ./jtest/jtestcli-ut.properties
                         '''
-                                                sh '''
+                        
+                        sh '''
                             # Set Up and write .properties file
                             echo $"
                             dtp.project='''+dir+'''
@@ -128,6 +137,7 @@ pipeline {
                             report.coverage.images='''+dir+''';'''+dir+'''-FT
                             " >> ./jtest/jtestcli-ft.properties
                         '''
+                        
                         // Execute the build with Jtest Maven plugin in docker
                         sh '''
                             # Run Maven build with Jtest tasks via Docker
@@ -139,10 +149,18 @@ pipeline {
                             -w "$PWD/'''+dir+'''" \
                             $(docker build -q ./jtest) /bin/bash -c " \
                             
+                            # Compile the project and run Jtest Static Analysis
+                            mvn test-compile \
+                            jtest:jtest \
+                            -DskipTests=true \
+                            -s /home/parasoft/.m2/settings.xml \
+                            -Djtest.settingsList='../jtest/jtestcli.properties,../jtest/jtestcli-sa.properties' \
+                            -Djtest.config='${jtestSAConfig}' \
+                            -Djtest.report=./target/jtest/sa \
+                            -Djtest.showSettings=true \
 
                             # Compile the test sources and run unit tests with Jtest
-                            mvn test-compile \
-                            jtest:agent \
+                            mvn jtest:agent \
                             test \
                             jtest:jtest \
                             -s '../jtest/.m2/settings.xml' \
@@ -151,7 +169,7 @@ pipeline {
                             -Djtest.config='${jtestUTConfig}' \
                             -Djtest.report=./target/jtest/ut \
                             -Djtest.showSettings=true; \
-
+                            
                             # Package the application with the Jtest Monitor
                             mvn package jtest:monitor \
                             -s '../jtest/.m2/settings.xml' \
@@ -163,6 +181,7 @@ pipeline {
                     }
                 }
 
+                // Parasoft Findings plugin for Unit Tests Results
                 echo '---> Parsing 10.x unit test reports'
                 script {
                     step([$class: 'XUnitPublisher', 
@@ -179,7 +198,8 @@ pipeline {
                         ]]
                     ])
                 }
-                // echo '---> Parsing 10.x unit test code coverage'
+
+                // Parasoft Findings plugin for Code Coverage
                 recordParasoftCoverage pattern: '**/target/jtest/ut/*coverage*.xml'
 
             }
