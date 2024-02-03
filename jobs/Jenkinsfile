@@ -31,7 +31,7 @@ pipeline {
         jtestSAConfig="jtest.builtin://Recommended Rules"
 
         // Dynamic configs
-        BUILD_TIMESTAMP = 'v2'
+        BUILD_TIMESTAMP = 'v3'
         //BUILD_TIMESTAMP = sh(script: 'date +%Y%m%d%H%M', returnStdout: true).trim()
     }
 
@@ -42,7 +42,7 @@ pipeline {
                 cleanWs()
                 // Checkout project
                 checkout([$class: 'GitSCM', 
-                    branches: [[name: 'tia']], 
+                    branches: [[name: 'master']], 
                     userRemoteConfigs: [[url: 'https://github.com/gtrofimov/spring-petclinic-microservices.git']]])
                 
                 // set GID
