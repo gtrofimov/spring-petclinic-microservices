@@ -12,7 +12,7 @@ pipeline {
         buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '2'))
     }
     parameters {
-        string(name: 'LS_URL', description: 'Parasoft LS URL')
+        password(name: 'LS_URL', description: 'Parasoft LS URL')
         string(name: 'DTP_URL', description: 'Parasoft DTP URL')
         string(name: 'DTP_USER', description: 'Parasoft DTP Username')
         string(name: 'DTP_PASS', description: 'Parasoft DTP Password')
