@@ -148,6 +148,7 @@ pipeline {
                             -u ${UID}:${GID} \
                             --rm -i \
                             --name jtest \
+                            --network=demo-net \
                             -v "$PWD:$PWD" \
                             -w "$PWD/'''+dir+'''" \
                             $(docker build -q ./jtest) /bin/bash -c " \
