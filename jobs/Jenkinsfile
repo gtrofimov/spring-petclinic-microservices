@@ -145,12 +145,13 @@ pipeline {
                         sh '''
                             # Run Maven build with Jtest tasks via Docker
                             docker run \
+                            -u ${UID}:${GID} \
                             --rm -i \
                             --name jtest \
                             --network=demo-net \
                             -v "$PWD:$PWD" \
                             -w "$PWD/'''+dir+'''" \
-                            jtest:jenkins /bin/bash -c " \
+                            $(docker build -q ./jtest) /bin/bash -c " \
                             
                             # Compile the project and run Jtest Static Analysis
                             mvn test-compile \
