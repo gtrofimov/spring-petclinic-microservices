@@ -145,7 +145,6 @@ pipeline {
                         sh '''
                             # Run Maven build with Jtest tasks via Docker
                             docker run \
-                            -u ${UID}:${GID} \
                             --rm -i \
                             --name jtest \
                             --network=demo-net \
