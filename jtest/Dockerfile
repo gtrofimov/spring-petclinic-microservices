@@ -1,31 +1,27 @@
 # baseline image
-FROM parasoft/jtest:latest
+FROM parasoft/jtest
 
-ARG HOST_UID=992
-ARG HOST_GID=991
-ARG DOCKER_GID=992
+ARG HOST_UID=995
+ARG HOST_GID=992
 
 ## Permissions to create dirs
 USER root
 ARG USER_HOME_DIR=/home/parasoft
 
-# Install Lombok for Jtest
-## TODO
-
 # Install JDK 17
-RUN mkdir -p /opt/java
-RUN curl -L -O https://download.java.net/java/GA/jdk17.0.2/dfd4a8d0985749f896bed50d7138ee7f/8/GPL/openjdk-17.0.2_linux-x64_bin.tar.gz
-RUN tar -xvzf openjdk-17.0.2_linux-x64_bin.tar.gz -C /opt/java
-RUN rm openjdk-17.0.2_linux-x64_bin.tar.gz
-ENV JAVA_HOME /opt/java/jdk-17.0.2
-ENV PATH $PATH:$JAVA_HOME/bin
-#RUN update-alternatives --set java ${JAVA_HOME}/bin/java
+ARG JAVA_VER=17
+ARG JDK_VERSION=jdk-17.0.11
+ENV JAVA_HOME=${USER_HOME_DIR}/${JDK_VERSION}
 
-# Setup Docker permissions
-RUN groupmod -g ${HOST_GID} parasoft \
- && groupadd -g ${DOCKER_GID} docker \
- && usermod -aG docker parasoft \
- && usermod -u ${HOST_UID} -g ${HOST_GID} parasoft
+# Download Java 17
+RUN wget https://download.oracle.com/java/${JAVA_VER}/archive/${JDK_VERSION}_linux-x64_bin.tar.gz \
+    && tar xvzf ${JDK_VERSION}_linux-x64_bin.tar.gz -C ${USER_HOME_DIR}
+
+# Update alternatives to use Java 17
+RUN update-alternatives --install /usr/bin/java java /${USER_HOME_DIR}/${JDK_VERSION}/bin/java 1 \
+    && update-alternatives --install /usr/bin/javac javac /${USER_HOME_DIR}/${JDK_VERSION}/bin/javac 1
+
+ENV PATH="${JAVA_HOME}/bin:${PATH}"
 
 # Install MVN
 ## Set MVN args
@@ -36,13 +32,15 @@ RUN mkdir -p ${MAVEN_HOME} \
  && curl -fsSL -o /tmp/apache-maven.tar.gz ${BASE_URL}/apache-maven-${MAVEN_VERSION}-bin.tar.gz \
  && tar -xzf /tmp/apache-maven.tar.gz -C ${MAVEN_HOME} --strip-components=1 \
  && rm -f /tmp/apache-maven.tar.gz \
- && ln -s ${MAVEN_HOME}/bin/mvn /usr/bin/mvn
+ && ln -s ${MAVEN_HOME}/bin/mvn /usr/bin/mvn \
+ && groupmod -g ${HOST_GID} parasoft \
+ && usermod -u ${HOST_UID} -g ${HOST_GID} parasoft
 
 ENV PATH="${MAVEN_HOME}/bin:${PATH}"
 
 ## Copy Deps
-## COPY jtestcli.properties /home/parasoft/jtestcli.properties
-## COPY .m2 /home/parasoft/.m2
+# COPY jtestcli.properties /home/parasoft/jtestcli.properties
+# COPY .m2 /home/parasoft/.m2
 
 ## Fix permissions
 RUN chown -h -R ${HOST_UID}:${HOST_GID} ${USER_HOME_DIR}
