@@ -1,7 +1,7 @@
 # baseline image
 FROM parasoft/jtest:latest
 
-ARG HOST_UID=995
+ARG HOST_UID=992
 ARG HOST_GID=991
 ARG DOCKER_GID=992
 
