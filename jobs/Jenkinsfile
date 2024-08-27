@@ -126,7 +126,7 @@ pipeline {
                             --name jtest \
                             -v "$PWD:$PWD" \
                             -w "$PWD/'''+dir+'''" \
-                            $(docker build -q ./jtest) /bin/bash -c " \
+                            $(docker build --build-arg HOST_UID="$UID" -q ./jtest) /bin/bash -c " \
 
                             # Package the application with the Jtest Monitor
                             mvn package jtest:monitor \
