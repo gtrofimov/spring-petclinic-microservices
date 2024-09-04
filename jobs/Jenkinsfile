@@ -196,7 +196,7 @@ pipeline {
                 build job: 'master/Petclinic-deploy', parameters: [
                     string(name: 'CTP_URL', value: params.CTP_URL),
                     string(name: 'DTP_USER', value: params.DTP_USER),
-                    string(name: 'DTP_PASS', value: params.DTP_PASS),
+                    password(name: 'DTP_PASS', value: params.DTP_PASS),
                     string(name: 'BUILD_TIMESTAMP', value: env.BUILD_TIMESTAMP),
 
                     // Add other parameters as needed
