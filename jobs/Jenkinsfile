@@ -32,7 +32,7 @@ pipeline {
         jtestSAConfig="jtest.builtin://Recommended Rules"
 
         // Dynamic configs
-        BUILD_TIMESTAMP = ${BUILD_ID}
+        BUILD_TIMESTAMP = "${BUILD_ID}"
         //BUILD_TIMESTAMP = sh(script: 'date +%Y%m%d%H%M', returnStdout: true).trim()
     }
 
