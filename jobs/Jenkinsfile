@@ -16,7 +16,8 @@ pipeline {
         string(name: 'CTP_URL', defaultValue: '', description: 'Parasoft CTP URL')
         string(name: 'DTP_URL', defaultValue: '', description: 'Parasoft DTP URL')
         string(name: 'DTP_USER', defaultValue: '', description: 'Parasoft DTP Username')
-        string(name: 'DTP_PASS', defaultValue: '', description: 'Parasoft DTP Password')
+        password(name: 'DTP_PASS', defaultValue: '', description: 'Parasoft DTP Password')
+        string(name: 'BUILD_ID', defaultValue: 'v3', description: 'The build Id of the project in DTP and CTP')
 
         // Add other parameters as needed
     }
@@ -31,7 +32,7 @@ pipeline {
         jtestSAConfig="jtest.builtin://Recommended Rules"
 
         // Dynamic configs
-        BUILD_TIMESTAMP = 'v3'
+        BUILD_TIMESTAMP = ${BUILD_ID}
         //BUILD_TIMESTAMP = sh(script: 'date +%Y%m%d%H%M', returnStdout: true).trim()
     }
 
@@ -42,7 +43,7 @@ pipeline {
                 cleanWs()
                 // Checkout project
                 checkout([$class: 'GitSCM', 
-                    branches: [[name: 'master']], 
+                    branches: [[name: 'dev']], 
                     userRemoteConfigs: [[url: 'https://github.com/gtrofimov/spring-petclinic-microservices.git']]])
                 
                 // set GID
@@ -59,8 +60,7 @@ pipeline {
                     parasoft.eula.accepted=true
                     
                     jtest.license.use_network=true
-                    jtest.license.network.edition=custom_edition
-                    jtest.license.custom_edition_features=Jtest, Static Analysis, Flow Analysis, OWASP Rules, CWE Rules, PCI DSS Rules, DISA STIG Rules, Security Rules, Automation, Desktop Command Line, DTP Publish, Coverage, Unit Test, Unit Test Bulk Creation, Unit Test Tier 1, Unit Test Tier 2, Unit Test Tier 3, Unit Test Tier 4, Unit Test Spring Framework, Change Based Testing
+                    jtest.license.network.edition=server_edition
                     
                     license.network.use.specified.server=true
                     license.network.auth.enabled=true
@@ -75,20 +75,6 @@ pipeline {
                     report.scontrol=min
                     report.coverage.line.hashes=true
                     report.dtp.publish=true
-
-                    # dtp.project=${app_name}
-                    # build.id=${buildId}
-                    # session.tag=${jtestSessionTag}
-                    # report.associations=false
-                    # report.coverage.images=${covImage}
-                    # report.scontrol=full
-                    # scope.local=true
-                    # scope.scontrol=true
-                    # scope.xmlmap=false
-                    # scontrol.git.exec=git
-                    # scontrol.rep1.git.branch=main
-                    # scontrol.rep1.git.url=${project_repo}
-                    # scontrol.rep1.type=git
                     " >> ./jtest/jtestcli.properties
                     '''                
             }
@@ -112,32 +98,31 @@ pipeline {
 
                 // Run Jtest Unit test with CC
                 script {
-                    def servicesArray = services_list.split(',')
-                    for (def dir in servicesArray) {
+
                         // Setup stage-specific additional settings
                         sh '''
                             # Set Up and write .properties file
                             echo $"
-                            dtp.project='''+dir+'''
-                            build.id='''+dir+'''-${BUILD_TIMESTAMP}
+                            dtp.project=${app_name}
+                            build.id=${app_name}-${BUILD_TIMESTAMP}
                             " > ./jtest/jtestcli-sa.properties
                         '''
                         
                         sh '''
                             # Set Up and write .properties file
                             echo $"
-                            dtp.project='''+dir+'''
-                            build.id='''+dir+'''-${BUILD_TIMESTAMP}
-                            report.coverage.images='''+dir+''';'''+dir+'''-UT
+                            dtp.project=${app_name}
+                            build.id=${app_name}-${BUILD_TIMESTAMP}
+                            report.coverage.images=${app_name};${app_name}-UT
                             " >> ./jtest/jtestcli-ut.properties
                         '''
                         
                         sh '''
                             # Set Up and write .properties file
                             echo $"
-                            dtp.project='''+dir+'''
-                            build.id='''+dir+'''-${BUILD_TIMESTAMP}
-                            report.coverage.images='''+dir+''';'''+dir+'''-FT
+                            dtp.project=${app_name}
+                            build.id=${app_name}-${BUILD_TIMESTAMP}
+                            report.coverage.images=${app_name};${app_name}-FT
                             " >> ./jtest/jtestcli-ft.properties
                         '''
                         
@@ -150,7 +135,7 @@ pipeline {
                             --name jtest \
                             --network=demo-net \
                             -v "$PWD:$PWD" \
-                            -w "$PWD/'''+dir+'''" \
+                            -w "$PWD/${app_name}" \
                             $(docker build --build-arg HOST_UID="$UID" -q ./jtest) /bin/bash -c " \
                             
                             # Compile the project and run Jtest Static Analysis
@@ -182,7 +167,7 @@ pipeline {
                             -Djtest.showSettings=true \
                             "
                         '''
-                    }
+                    
                 }
 
                 // Parasoft Findings plugin for Unit Tests Results
@@ -202,10 +187,6 @@ pipeline {
                         ]]
                     ])
                 }
-
-                // Parasoft Findings plugin for Code Coverage
-                // pattern: '**/target/jtest/ut/*coverage*.xml'
-
             }
         }
         stage('Deploy: Docker Compose + CTP') {

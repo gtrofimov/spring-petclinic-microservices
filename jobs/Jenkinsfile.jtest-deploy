@@ -106,9 +106,9 @@ pipeline {
                             
                             // Set CTP values for all components
                             matchingComponent.instances[0].coverage.agentUrl = "http://${PUBLIC_IP}:${originalPort}"
-                            matchingComponent.instances[0].coverage.buildId = "${service}-${BUILD_TIMESTAMP}"
-                            matchingComponent.instances[0].coverage.dtpFilter = "${service}"    
-                            matchingComponent.instances[0].coverage.coverageImages = "${service};${service}-FT"
+                            matchingComponent.instances[0].coverage.buildId = "${app_name}-${BUILD_TIMESTAMP}"
+                            matchingComponent.instances[0].coverage.dtpFilter = "${app_name}"    
+                            matchingComponent.instances[0].coverage.coverageImages = "${app_name};${app_name}-FT"
                         } else {
                             echo "Something is NULL!"
                         }
