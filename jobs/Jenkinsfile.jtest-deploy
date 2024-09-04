@@ -54,13 +54,21 @@ pipeline {
                 // define services
                 script {
                     ARRAY = [
+                        "spring-petclinic-api-gateway", 
+                        "spring-petclinic-vets-service", 
+                        "spring-petclinic-visits-service", 
+                        "spring-petclinic-customers-service"
+                        ]
+                
+                    NAMES = [
                         "Local Gateway", 
                         "Vets Microservice", 
                         "Visits Microservice", 
                         "Customers Microservice"
-                        ]
+                    ]
                 }
-
+                
+ 
                 // downlaod the agent.jar and cov-tool
                 sh '''
                 
@@ -95,7 +103,7 @@ pipeline {
                     echo "${PUBLIC_IP}"
 
                     // Update the 'buildId' and 'coverageImages' properties
-                    for (service in ARRAY) {
+                    for (service in NAMES) {
                         echo "service is: ${service}"
                         def matchingComponent = json.components.find { it.instances.find { it.name == service  } }
                         if (matchingComponent) {
