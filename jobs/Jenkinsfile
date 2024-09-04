@@ -147,6 +147,7 @@ pipeline {
                             -Djtest.config='${jtestSAConfig}' \
                             -Djtest.report=./target/jtest/sa \
                             -Djtest.showSettings=true \
+                            -Dconsole.verbosity.level=high; \
 
                             # Compile the test sources and run unit tests with Jtest
                             mvn jtest:agent \
