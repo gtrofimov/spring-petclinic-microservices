@@ -54,10 +54,10 @@ pipeline {
                 // define services
                 script {
                     ARRAY = [
-                        "spring-petclinic-api-gateway", 
-                        "spring-petclinic-vets-service", 
-                        "spring-petclinic-visits-service", 
-                        "spring-petclinic-customers-service"
+                        "Local Gateway", 
+                        "Vets Microservice", 
+                        "Visits Microservice", 
+                        "Customers Microservice"
                         ]
                 }
 
@@ -97,7 +97,7 @@ pipeline {
                     // Update the 'buildId' and 'coverageImages' properties
                     for (service in ARRAY) {
                         echo "service is: ${service}"
-                        def matchingComponent = json.components.find { it.instances.find { it.coverage?.dtpProject == service } }
+                        def matchingComponent = json.components.find { it.instances.find { it.name? == service  }
                         if (matchingComponent) {
                             
                             // retain ports
@@ -109,6 +109,7 @@ pipeline {
                             matchingComponent.instances[0].coverage.buildId = "${app_name}-${BUILD_TIMESTAMP}"
                             matchingComponent.instances[0].coverage.dtpFilter = "${app_name}"    
                             matchingComponent.instances[0].coverage.coverageImages = "${app_name};${app_name}-FT"
+                            matchingComponent.instances[0].coverage.dtpProject = "${app_name}"
                         } else {
                             echo "Something is NULL!"
                         }
