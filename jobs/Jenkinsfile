@@ -80,7 +80,7 @@ pipeline {
             }
         }
         stage('Build: Create Docker Images') {
-            when { equals expected: true, actual: true }
+            when { equals expected: true, actual: false }
             steps {
 
                 // build the binaries
@@ -142,7 +142,7 @@ pipeline {
                             mvn test-compile \
                             jtest:jtest \
                             -DskipTests=true \
-                            -s /home/parasoft/.m2/settings.xml \
+                            -s './jtest/.m2/settings.xml' \
                             -Djtest.settingsList='./jtest/jtestcli.properties,./jtest/jtestcli-sa.properties' \
                             -Djtest.config='${jtestSAConfig}' \
                             -Djtest.report=./target/jtest/sa \
@@ -152,7 +152,7 @@ pipeline {
                             mvn jtest:agent \
                             test \
                             jtest:jtest \
-                            -s '../jtest/.m2/settings.xml' \
+                            -s './jtest/.m2/settings.xml' \
                             -Dmaven.test.failure.ignore=true \
                             -Djtest.settingsList='./jtest/jtestcli.properties,./jtest/jtestcli-ut.properties' \
                             -Djtest.config='${jtestUTConfig}' \
@@ -161,7 +161,7 @@ pipeline {
                             
                             # Package the application with the Jtest Monitor
                             mvn package jtest:monitor \
-                            -s '../jtest/.m2/settings.xml' \
+                            -s './jtest/.m2/settings.xml' \
                             -Dmaven.test.skip=true \
                             -Djtest.settingsList='./jtest/jtestcli.properties,./jtest/jtestcli-ft.properties' \
                             -Djtest.showSettings=true \
