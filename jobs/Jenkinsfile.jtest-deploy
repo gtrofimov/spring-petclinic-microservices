@@ -144,7 +144,7 @@ pipeline {
                 sh  '''
                     # Run PetClinic with Jtest coverage agent configured
                     docker-compose -f docker-compose-cc.yml up -d --force-recreate
-                    sleep 120s
+                    sleep 105s
                     '''
 
                 // Health check coverage agents
