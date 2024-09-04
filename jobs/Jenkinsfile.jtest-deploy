@@ -97,7 +97,7 @@ pipeline {
                     // Update the 'buildId' and 'coverageImages' properties
                     for (service in ARRAY) {
                         echo "service is: ${service}"
-                        def matchingComponent = json.components.find { it.instances.find { it.name? == service  }
+                        def matchingComponent = json.components.find { it.instances.find { it.name == service  }
                         if (matchingComponent) {
                             
                             // retain ports
