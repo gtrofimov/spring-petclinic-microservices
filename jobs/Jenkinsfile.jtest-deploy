@@ -16,7 +16,7 @@ pipeline {
     parameters {
         string(name: 'CTP_URL', description: 'Parasoft CTP URL')
         string(name: 'DTP_USER', description: 'Parasoft DTP Username')
-        string(name: 'DTP_PASS', description: 'Parasoft DTP Password')
+        password(name: 'DTP_PASS', description: 'Parasoft DTP Password')
         string(name: 'BUILD_TIMESTAMP', description: 'DTP Build Id')
 
 
