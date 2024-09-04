@@ -143,7 +143,7 @@ pipeline {
                             jtest:jtest \
                             -DskipTests=true \
                             -s /home/parasoft/.m2/settings.xml \
-                            -Djtest.settingsList='../jtest/jtestcli.properties,../jtest/jtestcli-sa.properties' \
+                            -Djtest.settingsList='./jtest/jtestcli.properties,./jtest/jtestcli-sa.properties' \
                             -Djtest.config='${jtestSAConfig}' \
                             -Djtest.report=./target/jtest/sa \
                             -Djtest.showSettings=true \
@@ -154,7 +154,7 @@ pipeline {
                             jtest:jtest \
                             -s '../jtest/.m2/settings.xml' \
                             -Dmaven.test.failure.ignore=true \
-                            -Djtest.settingsList='../jtest/jtestcli.properties,../jtest/jtestcli-ut.properties' \
+                            -Djtest.settingsList='./jtest/jtestcli.properties,./jtest/jtestcli-ut.properties' \
                             -Djtest.config='${jtestUTConfig}' \
                             -Djtest.report=./target/jtest/ut \
                             -Djtest.showSettings=true; \
@@ -163,7 +163,7 @@ pipeline {
                             mvn package jtest:monitor \
                             -s '../jtest/.m2/settings.xml' \
                             -Dmaven.test.skip=true \
-                            -Djtest.settingsList='../jtest/jtestcli.properties,../jtest/jtestcli-ft.properties' \
+                            -Djtest.settingsList='./jtest/jtestcli.properties,./jtest/jtestcli-ft.properties' \
                             -Djtest.showSettings=true \
                             "
                         '''
