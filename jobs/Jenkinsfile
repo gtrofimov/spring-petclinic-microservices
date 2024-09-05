@@ -24,7 +24,7 @@ pipeline {
     environment {
         // App Details
         app_name = 'spring-petclinic-microservices' // top level DTP Project
-        services_list = "spring-petclinic-api-gateway,spring-petclinic-vets-service,spring-petclinic-visits-service,spring-petclinic-customers-service"
+        //services_list = "spring-petclinic-api-gateway,spring-petclinic-vets-service,spring-petclinic-visits-service,spring-petclinic-customers-service"
         
         // Parasoft Settings
         envId = '32' // need to be dynamically acquired via curl
@@ -43,8 +43,8 @@ pipeline {
                 cleanWs()
                 // Checkout project
                 checkout([$class: 'GitSCM', 
-                    branches: [[name: "${env.GIT_BRANCH}"]], 
-                    userRemoteConfigs: [[url: "${env.GIT_URL}"]]])
+                    branches: [[name: 'dev']], 
+                    userRemoteConfigs: [[url: 'https://github.com/gtrofimov/spring-petclinic-microservices.git']]])
                 
                 // set GID
                 // set PUBLIC_IP
