@@ -75,6 +75,8 @@ pipeline {
                     report.scontrol=min
                     report.coverage.line.hashes=true
                     report.dtp.publish=true
+                    
+                    console.verbosity.level=high
                     " >> ./jtest/jtestcli.properties
                     '''                
             }
@@ -146,8 +148,7 @@ pipeline {
                             -Djtest.settingsList='./jtest/jtestcli.properties,./jtest/jtestcli-sa.properties' \
                             -Djtest.config='${jtestSAConfig}' \
                             -Djtest.report=./target/jtest/sa \
-                            -Djtest.showSettings=true \
-                            -Dconsole.verbosity.level=high; \
+                            -Djtest.showSettings=true; \
 
                             # Compile the test sources and run unit tests with Jtest
                             mvn jtest:agent \
