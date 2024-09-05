@@ -26,7 +26,7 @@ pipeline {
 
                 // Checkout project
                 checkout([$class: 'GitSCM', 
-                    branches: [[name: 'tia']], 
+                    branches: [[name: 'tia-legacy']], 
                     userRemoteConfigs: [[url: 'https://github.com/gtrofimov/spring-petclinic-microservices.git']]])
                 
                 // set GID
