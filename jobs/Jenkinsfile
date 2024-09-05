@@ -43,8 +43,8 @@ pipeline {
                 cleanWs()
                 // Checkout project
                 checkout([$class: 'GitSCM', 
-                    branches: [[name: '${env.GIT_BRANCH}']], 
-                    userRemoteConfigs: [[url: '${env.GIT_URL}']]])
+                    branches: [[name: ${env.GIT_BRANCH}]], 
+                    userRemoteConfigs: [[url: ${env.GIT_URL}]]])
                 
                 // set GID
                 // set PUBLIC_IP
