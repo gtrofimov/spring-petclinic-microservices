@@ -43,8 +43,8 @@ pipeline {
                 cleanWs()
                 // Checkout project
                 checkout([$class: 'GitSCM', 
-                    branches: [[name: 'dev']], 
-                    userRemoteConfigs: [[url: 'https://github.com/gtrofimov/spring-petclinic-microservices.git']]])
+                    branches: [[name: '${GIT_BRANCH}']], 
+                    userRemoteConfigs: [[url: '${GIT_URL}']]])
                 
                 // set GID
                 // set PUBLIC_IP
