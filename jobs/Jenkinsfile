@@ -80,7 +80,7 @@ pipeline {
             }
         }
         stage('Build: Create Docker Images') {
-            when { equals expected: true, actual: false }
+            when { equals expected: true, actual: true }
             steps {
 
                 // build the binaries
