@@ -34,16 +34,19 @@ pipeline {
         // Dynamic configs
         BUILD_TIMESTAMP = "${BUILD_ID}"
         //BUILD_TIMESTAMP = sh(script: 'date +%Y%m%d%H%M', returnStdout: true).trim()
+
     }
 
     stages {
         stage('Set Up') {
             steps {
+                env.BRANCH_NAME = scm.branches[0].name
+                //BRANCH_URL = scm.repository[0].url
                 // Clean workspace before build
                 cleanWs()
                 // Checkout project
                 checkout([$class: 'GitSCM', 
-                    branches: [[name: 'master']], 
+                    branches: [[name: '${BRANCH_NAME}']], 
                     userRemoteConfigs: [[url: 'https://github.com/gtrofimov/spring-petclinic-microservices.git']]])
                 
                 // set GID
