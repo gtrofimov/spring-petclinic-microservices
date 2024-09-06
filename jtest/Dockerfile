@@ -4,6 +4,9 @@ FROM parasoft/jtest
 ARG HOST_UID=995
 ARG HOST_GID=992
 
+WORKDIR /opt/parasoft/jtest/integration/lombok
+RUN java -jar jtest-integration-lombok.jar
+
 ## Permissions to create dirs
 USER root
 ARG USER_HOME_DIR=/home/parasoft
@@ -42,12 +45,15 @@ ENV PATH="${MAVEN_HOME}/bin:${PATH}"
 # COPY jtestcli.properties /home/parasoft/jtestcli.properties
 # COPY .m2 /home/parasoft/.m2
 
+# RUN java -jar /opt/parasoft/jtest/integration/lombok/jtest-integration-lombok.jar
+
 ## Fix permissions
-RUN chown -h -R ${HOST_UID}:${HOST_GID} ${USER_HOME_DIR}
+# RUN chown -h -R ${HOST_UID}:${HOST_GID} ${USER_HOME_DIR}
 
 ## Switch user back and configure MVN
 USER parasoft
 ENV MAVEN_CONFIG "${USER_HOME_DIR}/.m2"
+# RUN java -jar /opt/parasoft/jtest/integration/lombok/jtest-integration-lombok.jar
 
 # Define working directory.
 WORKDIR ${USER_HOME_DIR}
