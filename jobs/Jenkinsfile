@@ -237,11 +237,14 @@ pipeline {
         }
     }
     post {
-        // Clean after build
-        always {
-            success {
+        // archive Artofacts after success
+        success {
                 archiveArtifacts artifacts: '**/target/*.jar,***/target/jtest/ut/*', excludes: '**/target/ut/.jtest/cache', followSymlinks: false
             }
+            
+        // Clean after build
+        always {
+
             // delete Cov-tool stuff
             sh  '''
                 echo "cleaning up..."
