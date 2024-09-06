@@ -40,16 +40,11 @@ pipeline {
     stages {
         stage('Set Up') {
             steps {
-                script {
-                    env.BRANCH_NAME = scm.branches[0].name
-                    
-                    //env.RANCH_URL = scm.repository[0].url
-                }
                 // Clean workspace before build
                 cleanWs()
                 // Checkout project
                 checkout([$class: 'GitSCM', 
-                    branches: [[name: '${BRANCH_NAME}']], 
+                    branches: [[name: 'master']], 
                     userRemoteConfigs: [[url: 'https://github.com/gtrofimov/spring-petclinic-microservices.git']]])
                 
                 // set GID
