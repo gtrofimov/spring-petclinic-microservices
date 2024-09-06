@@ -40,8 +40,11 @@ pipeline {
     stages {
         stage('Set Up') {
             steps {
-                env.BRANCH_NAME = scm.branches[0].name
-                //BRANCH_URL = scm.repository[0].url
+                script {
+                    env.BRANCH_NAME = scm.branches[0].name
+                    
+                    //env.RANCH_URL = scm.repository[0].url
+                }
                 // Clean workspace before build
                 cleanWs()
                 // Checkout project
