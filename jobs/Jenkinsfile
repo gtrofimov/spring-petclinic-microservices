@@ -67,7 +67,7 @@ pipeline {
                     license.network.auth.enabled=true
                     license.network.url=${LS_URL}
                     license.network.user=${DTP_USER}
-                    license.network.password=${params.DTP_PASS}
+                    license.network.password=${DTP_PASS}
                     
                     dtp.url=${DTP_URL}
                     dtp.user=${DTP_USER}
@@ -241,7 +241,7 @@ pipeline {
         success {
                 archiveArtifacts artifacts: '**/target/*.jar,***/target/jtest/ut/*', excludes: '**/target/ut/.jtest/cache', followSymlinks: false
             }
-            
+
         // Clean after build
         always {
 
