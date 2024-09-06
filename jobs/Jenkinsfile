@@ -42,7 +42,7 @@ pipeline {
                 // Clean workspace before build
                 cleanWs()
                 // Checkout project
-                sh 'git clone -b ${env.GIT_BRANCH} ${env.GIT_URL} .'
+                sh "git clone -b ${env.GIT_BRANCH} ${env.GIT_URL} ."
 
                 // set GID
                 // set PUBLIC_IP
