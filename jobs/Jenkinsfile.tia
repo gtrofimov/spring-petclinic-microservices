@@ -53,6 +53,9 @@ pipeline {
                     env.PUBLIC_IP = sh(script: """curl -s https://httpbin.org/ip | jq -r '.origin'""", returnStdout: true).trim()
                 }
 
+                // copy artfoacts from latest successful baseline
+                copyArtifacts projectName: "Petclinic-baseline", selector: lastSuccessful()
+
                 // set up Parasoft License
                 sh '''
                     # Set Up and write .properties file
