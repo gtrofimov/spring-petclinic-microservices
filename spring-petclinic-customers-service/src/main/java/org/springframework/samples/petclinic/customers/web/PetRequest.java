@@ -37,4 +37,7 @@ class PetRequest {
     private String name;
 
     private int typeId;
+
+    // tia: add a weight feild
+    private float weight;
 }
