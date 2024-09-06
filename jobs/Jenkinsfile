@@ -67,7 +67,7 @@ pipeline {
                     license.network.auth.enabled=true
                     license.network.url=${LS_URL}
                     license.network.user=${DTP_USER}
-                    license.network.password=${DTP_PASS}
+                    license.network.password=${params.DTP_PASS}
                     
                     dtp.url=${DTP_URL}
                     dtp.user=${DTP_USER}
