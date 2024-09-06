@@ -233,15 +233,15 @@ pipeline {
         stage('Release') {
             steps {
                 sh 'echo "Release"'
-                //copyArtifacts(projectName: 'master/Petclinic-build', selector: lastSuccessful())
-                //copyArtifacts(projectName: 'master/Petclinic-jtest', selector: lastSuccessful())
-                //recordParasoftCoverage pattern: '**/target/jtest/ut/coverage.xml'
             }   
         }
     }
     post {
         // Clean after build
         always {
+            success {
+                archiveArtifacts artifacts: '**/target/*.jar,***/target/jtest/ut/*', excludes: '**/target/ut/.jtest/cache', followSymlinks: false
+            }
             // delete Cov-tool stuff
             sh  '''
                 echo "cleaning up..."
