@@ -42,8 +42,10 @@ pipeline {
                 // Clean workspace before build
                 cleanWs()
                 // Checkout project
-                sh "git clone -b ${env.GIT_BRANCH} ${env.GIT_URL} ."
-
+                checkout([$class: 'GitSCM', 
+                    branches: [[name: 'master']], 
+                    userRemoteConfigs: [[url: 'https://github.com/gtrofimov/spring-petclinic-microservices.git']]])
+                
                 // set GID
                 // set PUBLIC_IP
                 script {
