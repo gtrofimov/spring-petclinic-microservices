@@ -17,7 +17,7 @@ pipeline {
         string(name: 'DTP_URL', defaultValue: '', description: 'Parasoft DTP URL')
         string(name: 'DTP_USER', defaultValue: '', description: 'Parasoft DTP Username')
         password(name: 'DTP_PASS', defaultValue: '', description: 'Parasoft DTP Password')
-        string(name: 'BUILD_ID', defaultValue: 'v3', description: 'The build Id of the project in DTP and CTP')
+        string(name: 'BUILD_ID', defaultValue: 'baseline', description: 'The build Id of the project in DTP and CTP')
 
         // Add other parameters as needed
     }
