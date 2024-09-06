@@ -32,8 +32,8 @@ pipeline {
         jtestSAConfig="jtest.builtin://Recommended Rules"
 
         // Dynamic configs
-        BUILD_TIMESTAMP = "${BUILD_ID}"
-        //BUILD_TIMESTAMP = sh(script: 'date +%Y%m%d%H%M', returnStdout: true).trim()
+        // BUILD_TIMESTAMP = "${BUILD_ID}"
+        BUILD_TIMESTAMP = sh(script: 'date +%Y%m%d%H%M', returnStdout: true).trim()
     }
 
     stages {
@@ -208,26 +208,31 @@ pipeline {
         stage('Test: Full Selenium Suite') {
             when { equals expected: true, actual: true}
             steps {
-                // Start Selenium grid
-                // docker run -d -p 4444:4444 -p 7900:7900 selenium/standalone-chrome:latest
-                
-                // run Selenium tests
-                sh """
-                    cd spring-petclinic-selenium-tests
-                    mvn clean test \
-                    -DbaseUrl='http://${PUBLIC_IP}:8099' \
-                    -DgridUrl='http://${PUBLIC_IP}:4444/wd/hub' \
-                    -DenvId=${envId} \
-                    -DctpUrl='${CTP_URL}'
+                script {
+                    
+                    // get Impacted Tests for current deployment and baseline build
+                    sh """
+                        curl -X 'GET' \
+                        -u '${DTP_USER}:${DTP_PASS}' \
+                        -H 'accept: application/json' \
+                        ${CTP_URL}/em/api/v3/environments/${envId}/coverage/impactedTests?baselineBuildId=latest  > impactedTests.json || true
+                        """
+
+                    def testNames = sh(script: "jq -r '.[] | select(.analysisType == \"FT\") | .testName' impactedTests.json | paste -sd \",\" -", returnStdout: true).trim()
+                    
+                    // Run Selenium tests with Maven using impactedTests as parameters
+                    sh """
+                        echo ${testNames}
+                        cd spring-petclinic-selenium-tests
+                        mvn clean test \
+                        -DbaseUrl='http://${PUBLIC_IP}:8099' \
+                        -DgridUrl='http://${PUBLIC_IP}:4444/wd/hub' \
+                        -DenvId=${envId} \
+                        -DctpUrl='${CTP_URL}' \
+                        -Dtest='${testNames}'
                     """
-                
-                // Update Baseline build in CTP with latest
-                sh """
-                    curl -X DELETE -H 'accept: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments/${envId}/coverage/baselines/latest
-                    curl -X POST -H 'accept: application/json' -H 'Content-Type: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments/${envId}/coverage/baselines/latest -d '"string"'
-                    """
-                
-            } 
+                }                
+            }
         }
         stage('Release') {
             steps {
