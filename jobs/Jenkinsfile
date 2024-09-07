@@ -237,9 +237,9 @@ pipeline {
         }
     }
     post {
-        // archive Artofacts after success
+        // archive jtest Artofacts after success
         success {
-                archiveArtifacts artifacts: '**/target/*.jar,***/target/jtest/ut/*', excludes: '**/target/ut/.jtest/cache', followSymlinks: false
+                archiveArtifacts artifacts: 'target/jtest/ut/*', excludes: 'target/ut/.jtest/cache', followSymlinks: false
             }
 
         // Clean after build
