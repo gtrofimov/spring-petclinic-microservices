@@ -53,9 +53,6 @@ pipeline {
                     env.PUBLIC_IP = sh(script: """curl -s https://httpbin.org/ip | jq -r '.origin'""", returnStdout: true).trim()
                 }
 
-                // copy artfoacts from latest successful baseline
-                copyArtifacts projectName: "Petclinic-baseline", selector: lastSuccessful()
-
                 // set up Parasoft License
                 sh '''
                     # Set Up and write .properties file
@@ -100,6 +97,8 @@ pipeline {
         stage('Build: Jtest UT + Static Cov') {
             when { equals expected: true, actual: true }
             steps {
+                // copy artfoacts from latest successful baseline
+                copyArtifacts projectName: "Petclinic-baseline", selector: lastSuccessful()
 
                 // Run Jtest Unit test with CC
                 script {
@@ -154,13 +153,17 @@ pipeline {
                             -Djtest.showSettings=true; \
 
                             # Compile the test sources and run unit tests with Jtest
-                            mvn jtest:agent \
+                            mvn tia:affected-tests \
+                            jtest:agent \
                             test \
                             jtest:jtest \
                             -s './jtest/.m2/settings.xml' \
                             -Dmaven.test.failure.ignore=true \
                             -Djtest.settingsList='./jtest/jtestcli.properties,./jtest/jtestcli-ut.properties' \
                             -Djtest.config='${jtestUTConfig}' \
+                            -Djtest.referenceCoverageFile=./target/jtest/ut/coverage.xml \
+                            -Djtest.referenceReportFile=./target/jtest/ut/report.xml \
+                            -Dparasoft.runModifiedTests=true \
                             -Djtest.report=./target/jtest/ut \
                             -Djtest.showSettings=true; \
                             
