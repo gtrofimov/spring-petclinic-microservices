@@ -90,7 +90,7 @@ pipeline {
                 sh  '''
 
                     # Build the Maven package
-                    ./mvnw clean install -P buildDocker -DskipTests=true
+                    ./mvnw -ntp clean install -P buildDocker -DskipTests=true
                     '''
             }
         }
@@ -141,7 +141,7 @@ pipeline {
                             $(docker build --build-arg HOST_UID="$UID" -q ./jtest) /bin/bash -c " \
                             
                             # Compile the project and run Jtest Static Analysis
-                            mvn test-compile \
+                            mvn -ntp test-compile \
                             jtest:jtest \
                             -DskipTests=true \
                             -s './jtest/.m2/settings.xml' \
@@ -151,7 +151,7 @@ pipeline {
                             -Djtest.showSettings=true; \
 
                             # Compile the test sources and run unit tests with Jtest
-                            mvn jtest:agent \
+                            mvn -ntp jtest:agent \
                             test \
                             jtest:jtest \
                             -s './jtest/.m2/settings.xml' \
@@ -162,7 +162,7 @@ pipeline {
                             -Djtest.showSettings=true; \
                             
                             # Package the application with the Jtest Monitor
-                            mvn package jtest:monitor \
+                            mvn -ntp package jtest:monitor \
                             -s './jtest/.m2/settings.xml' \
                             -Dmaven.test.skip=true \
                             -Djtest.settingsList='./jtest/jtestcli.properties,./jtest/jtestcli-ft.properties' \
@@ -214,7 +214,7 @@ pipeline {
                 // run Selenium tests
                 sh """
                     cd spring-petclinic-selenium-tests
-                    mvn clean test \
+                    mvn -ntp clean test \
                     -DbaseUrl='http://${PUBLIC_IP}:8099' \
                     -DgridUrl='http://${PUBLIC_IP}:4444/wd/hub' \
                     -DenvId=${envId} \
