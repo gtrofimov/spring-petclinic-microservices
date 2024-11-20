@@ -91,7 +91,7 @@ pipeline {
                 sh  '''
 
                     # Build the Maven package
-                    ./mvnw -ntp clean install -P buildDocker -DskipTests=true
+                    ./mvnw clean install -P buildDocker -DskipTests=true
                     '''
             }
         }
