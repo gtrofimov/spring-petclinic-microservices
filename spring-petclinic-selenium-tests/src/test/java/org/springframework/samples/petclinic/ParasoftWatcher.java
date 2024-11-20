@@ -30,7 +30,7 @@ public class ParasoftWatcher implements BeforeEachCallback, TestWatcher  {
 		RestAssured.baseURI = uri;
 	    RestAssured.port = port;
 	    RestAssured.authentication = RestAssured.basic("demo", "d3mo-user");
-		sessionId = RestAssured.relaxedHTTPSValidation().with().contentType(ContentType.JSON).post("em/api/v3/environments/" + ENV_ID + "/agents/session/start").body().jsonPath().getString("session");
+		sessionId = RestAssured.given().relaxedHTTPSValidation().contentType(ContentType.JSON).post("em/api/v3/environments/" + ENV_ID + "/agents/session/start").body().jsonPath().getString("session");
 		Runtime.getRuntime().addShutdownHook(new ShutdownHook());
 		System.out.println("Session Id is: " + sessionId);
 	}
@@ -38,7 +38,7 @@ public class ParasoftWatcher implements BeforeEachCallback, TestWatcher  {
 	@Override
 	public void beforeEach(ExtensionContext context) throws Exception {
 		String testId = getTestId(context);
-		Response response = RestAssured.relaxedHTTPSValidation().with().contentType(ContentType.JSON).body("{\"test\":\"" + testId + "\"}").post("em/api/v3/environments/" + ENV_ID + "/agents/test/start");
+		Response response = RestAssured.given().relaxedHTTPSValidation().contentType(ContentType.JSON).body("{\"test\":\"" + testId + "\"}").post("em/api/v3/environments/" + ENV_ID + "/agents/test/start");
 		System.out.println("Response Status Code: " + response.getStatusCode());
         System.out.println("Response Payload: " + response.getBody().asString());
     
@@ -53,7 +53,7 @@ public class ParasoftWatcher implements BeforeEachCallback, TestWatcher  {
 		bodyBuilder.append(',');
 		bodyBuilder.append("\"result\":\"PASS\"");
 		bodyBuilder.append('}');
-		Response response = RestAssured.relaxedHTTPSValidation().with().contentType(ContentType.JSON).body(bodyBuilder.toString()).post("em/api/v3/environments/" + ENV_ID + "/agents/test/stop");
+		Response response = RestAssured.given().relaxedHTTPSValidation().contentType(ContentType.JSON).body(bodyBuilder.toString()).post("em/api/v3/environments/" + ENV_ID + "/agents/test/stop");
 		System.out.println("Response Status Code: " + response.getStatusCode());
         System.out.println("Response Payload: " + response.getBody().asString());
     }
@@ -70,7 +70,7 @@ public class ParasoftWatcher implements BeforeEachCallback, TestWatcher  {
 		bodyBuilder.append(',');
 		bodyBuilder.append("\"message\":\"" + cause.getMessage() + "\"");
 		bodyBuilder.append('}');
-		Response response = RestAssured.relaxedHTTPSValidation().with().contentType(ContentType.JSON).body(bodyBuilder.toString()).post("em/api/v3/environments/" + ENV_ID + "/agents/test/stop");
+		Response response = RestAssured.given().relaxedHTTPSValidation().contentType(ContentType.JSON).body(bodyBuilder.toString()).post("em/api/v3/environments/" + ENV_ID + "/agents/test/stop");
 		System.out.println("Response Status Code: " + response.getStatusCode());
         System.out.println("Response Payload: " + response.getBody().asString());
     
@@ -84,16 +84,16 @@ public class ParasoftWatcher implements BeforeEachCallback, TestWatcher  {
 		@Override
 		public void run() {
 			//baselineId = System.getProperty("baselineId", "latestBaseline");
-			RestAssured.relaxedHTTPSValidation().with().contentType(ContentType.JSON).post("em/api/v3/environments/" + ENV_ID + "/agents/session/stop");
+			RestAssured.given().relaxedHTTPSValidation().contentType(ContentType.JSON).post("em/api/v3/environments/" + ENV_ID + "/agents/session/stop");
 			StringBuilder bodyBuilder = new StringBuilder();
 			bodyBuilder.append('{');
 			bodyBuilder.append("\"sessionTag\":\"jenkins-build\"");
 			bodyBuilder.append(',');
 			bodyBuilder.append("\"analysisType\":\"FUNCTIONAL_TEST\"");
 			bodyBuilder.append('}');
-			String publish = RestAssured.relaxedHTTPSValidation().with().contentType(ContentType.JSON).body(bodyBuilder.toString()).post("em/api/v3/environments/" + ENV_ID + "/coverage/" + sessionId).body().asString();
+			String publish = RestAssured.given().relaxedHTTPSValidation().contentType(ContentType.JSON).body(bodyBuilder.toString()).post("em/api/v3/environments/" + ENV_ID + "/coverage/" + sessionId).body().asString();
 			System.out.println(publish);
-			//String baseline = RestAssured.relaxedHTTPSValidation().with().contentType(ContentType.JSON).body("string").post("em/api/v3/environments/" + ENV_ID + "/coverage/baselines/" + baselineId).body().asString();
+			//String baseline = RestAssured.given().relaxedHTTPSValidation().contentType(ContentType.JSON).body("string").post("em/api/v3/environments/" + ENV_ID + "/coverage/baselines/" + baselineId).body().asString();
 			//System.out.println(baseline);
 		}
 	}
