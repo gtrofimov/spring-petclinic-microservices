@@ -4,6 +4,7 @@ FROM parasoft/jtest:2024.2
 ARG HOST_UID=995
 ARG HOST_GID=992
 
+# Enable Lombok
 WORKDIR /opt/parasoft/jtest/integration/lombok
 RUN java -jar jtest-integration-lombok.jar
 
