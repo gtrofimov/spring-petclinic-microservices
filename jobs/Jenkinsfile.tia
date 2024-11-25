@@ -52,6 +52,12 @@ pipeline {
                     env.GID = sh(script: 'id -g jenkins', returnStdout: true).trim()
                     env.PUBLIC_IP = sh(script: """curl -s https://httpbin.org/ip | jq -r '.origin'""", returnStdout: true).trim()
                 }
+                
+                // startup Selenium Grid
+                sh '''
+                    # Start Selenium Grid for Selenium test execution
+                    docker run -d --rm -p 4444:4444 -p 7900:7900 --network=demo-net --shm-size "2g" --name selenium-grid selenium/standalone-chrome:latest
+                    '''
 
                 // set up Parasoft License
                 sh '''
@@ -252,6 +258,10 @@ pipeline {
     post {
         // Clean after build
         always {
+            sh 'docker container stop selenium-grid'
+            sh 'docker container prune -f'
+            sh 'docker image prune -f'
+            
             // delete Cov-tool stuff
             sh  '''
                 echo "cleaning up..."
