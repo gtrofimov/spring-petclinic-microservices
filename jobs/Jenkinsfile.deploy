@@ -72,7 +72,7 @@ pipeline {
                 // downlaod the agent.jar and cov-tool
                 sh '''
                 
-                    curl -LO -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/coverageagent/java_agent_coverage.zip
+                    curl -kLO -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/coverageagent/java_agent_coverage.zip
                     unzip java_agent_coverage.zip
                 
                     '''
@@ -88,10 +88,10 @@ pipeline {
                 script {
                     // get ctp.json file form CTP
                     sh '''
-                        ctp_response=$(curl -s -X 'GET' -H 'accept: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments?name=${ENCODED_ENV_NAME}&limit=50&offset=0)
+                        ctp_response=$(curl -ks -X 'GET' -H 'accept: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments?name=${ENCODED_ENV_NAME}&limit=50&offset=0)
                         envId=$(echo "$ctp_response" | jq -r '.environments[0].id')
                         echo ${envId}
-                        curl -X 'GET' -H 'accept: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments/${envId}/config | jq . > ctp.json
+                        curl -k -X 'GET' -H 'accept: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments/${envId}/config | jq . > ctp.json
                         cat ctp.json
                         '''
 
@@ -155,7 +155,7 @@ pipeline {
                 // update CTP with yaml script upload
                 sh '''
                     # upload yaml file to CTP
-                    curl -X 'PUT' -u ${DTP_USER}:${DTP_PASS} \
+                    curl -k -X 'PUT' -u ${DTP_USER}:${DTP_PASS} \
                         ${CTP_URL}/em/api/v3/environments/${envId}/config \
                         -H 'accept: application/json' \
                         -H 'Content-Type: application/json' \
