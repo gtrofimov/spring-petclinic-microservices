@@ -223,8 +223,8 @@ pipeline {
                 sh """
                     cd spring-petclinic-selenium-tests
                     mvn -ntp clean test \
-                    -DbaseUrl='http://api-gateway:8099' \
-                    -DgridUrl='http://selenium-grid:4444/wd/hub' \
+                    -DbaseUrl='http://localhost:8099' \
+                    -DgridUrl='http://localhost:4444/wd/hub' \
                     -DenvId=${envId} \
                     -DctpUrl='${CTP_URL}'
                     """
