@@ -101,7 +101,10 @@ services:
     entrypoint: ["./dockerize","-wait=tcp://discovery-server:8761","-timeout=60s","--","java", "org.springframework.boot.loader.JarLauncher"]
     ports:
      - 9090:9090
-  
+networks:
+  demo-net:
+    external: true
+    name: demo-net
 #  selenium:
 #    image: selenium/standalone-chrome:latest
 #    container_name: standalone-chrome
