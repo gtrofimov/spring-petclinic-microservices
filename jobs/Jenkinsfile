@@ -51,7 +51,7 @@ pipeline {
                 // set PUBLIC_IP
                 script {
                     env.GID = sh(script: 'id -g jenkins', returnStdout: true).trim()
-                    env.PUBLIC_IP = sh(script: """curl -s https://httpbin.org/ip | jq -r '.origin'""", returnStdout: true).trim()
+                    //env.PUBLIC_IP = sh(script: """curl -s https://httpbin.org/ip | jq -r '.origin'""", returnStdout: true).trim()
 
                 }
                 
@@ -223,8 +223,8 @@ pipeline {
                 sh """
                     cd spring-petclinic-selenium-tests
                     mvn -ntp clean test \
-                    -DbaseUrl='http://${PUBLIC_IP}:8099' \
-                    -DgridUrl='http://host.docker.internal:4444/wd/hub' \
+                    -DbaseUrl='http://api-gateway:8099' \
+                    -DgridUrl='http://selenium-grid:4444/wd/hub' \
                     -DenvId=${envId} \
                     -DctpUrl='${CTP_URL}'
                     """
