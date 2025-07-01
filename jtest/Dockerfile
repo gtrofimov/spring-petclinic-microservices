@@ -17,7 +17,7 @@ ARG JDK_VERSION=jdk-17.0.11
 ENV JAVA_HOME=${USER_HOME_DIR}/${JDK_VERSION}
 
 # Download Java 17
-RUN wget https://download.oracle.com/java/${JAVA_VER}/archive/${JDK_VERSION}_linux-x64_bin.tar.gz \
+RUN wget https://downloads.oracle.com/java/${JAVA_VER}/archive/${JDK_VERSION}_linux-x64_bin.tar.gz \
     && tar xvzf ${JDK_VERSION}_linux-x64_bin.tar.gz -C ${USER_HOME_DIR}
 
 # Update alternatives to use Java 17
