@@ -17,7 +17,7 @@ ARG JDK_VERSION=jdk-17.0.11
 ENV JAVA_HOME=${USER_HOME_DIR}/${JDK_VERSION}
 
 # Download Java 17
-RUN wget https://downloads.oracle.com/java/${JAVA_VER}/archive/${JDK_VERSION}_linux-x64_bin.tar.gz \
+RUN wget https://download.oracle.com/java/${JAVA_VER}/archive/${JDK_VERSION}_linux-x64_bin.tar.gz \
     && tar xvzf ${JDK_VERSION}_linux-x64_bin.tar.gz -C ${USER_HOME_DIR}
 
 # Update alternatives to use Java 17
@@ -30,7 +30,7 @@ ENV PATH="${JAVA_HOME}/bin:${PATH}"
 ## Set MVN args
 ARG MAVEN_VERSION=3.9.10
 ENV MAVEN_HOME=${USER_HOME_DIR}/apache-maven-${MAVEN_VERSION}
-ARG BASE_URL=https://download.apache.org/maven/maven-3/${MAVEN_VERSION}/binaries
+ARG BASE_URL=https://downloads.apache.org/maven/maven-3/${MAVEN_VERSION}/binaries
 RUN mkdir -p ${MAVEN_HOME} \
  && curl -fsSL -o /tmp/apache-maven.tar.gz ${BASE_URL}/apache-maven-${MAVEN_VERSION}-bin.tar.gz \
  && tar -xzf /tmp/apache-maven.tar.gz -C ${MAVEN_HOME} --strip-components=1 \
