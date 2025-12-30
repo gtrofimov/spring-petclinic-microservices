@@ -92,7 +92,7 @@ pipeline {
                         ctp_response=$(curl -sk -X 'GET' -H 'accept: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments?name=${ENCODED_ENV_NAME}&limit=50&offset=0)
                         // envId=$(echo "$ctp_response" | jq -r '.environments[0].id')
                         // echo ${envId}
-                        curl -k -X 'GET' -H 'accept: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments/${envId}/config | jq . > ctp.json
+                        curl -k -X 'GET' -H 'accept: application/json' -u ${DTP_USER}:${DTP_PASS} ${CTP_URL}/em/api/v3/environments/32/config | jq . > ctp.json
                         cat ctp.json
                         '''
 
